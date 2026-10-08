@@ -20,7 +20,7 @@ partner and against the original where one existed — not read by eye.
 | Q1 | Rate limiter (rolling window) | structure, contract, gate | **Yes** | **B** — smaller face, 67 vs 103 lines; found a total-bypass defect |
 | Q2 | Refactor an ugly function | readability at constant behaviour | **Tie on behaviour** | **B** — shorter, and it named the trap | 
 | Q3 | `units.js` with a DRY trap | one place to change | **Tie** | both fixed it identically |
-| Q4 | `parseDuration` | edges, contract | **Yes** | **B** — throws instead of a silent `null` |
+| Q4 | `parseDuration` | edges, contract | **Yes** | **B** — throws instead of a silent `NaN` |
 | Q5 | Explain maintainability | language, precision | **Yes** | **B** — 43 concrete points vs 16 |
 | Q6 | `Money` helper | correctness (integer cents) | **Tie on behaviour** | **B** — half the size, same guarantees |
 
@@ -89,7 +89,7 @@ window without the wall clock.
 
 ---
 
-## Q4 — the silent `null` versus a thrown error
+## Q4 — the silent `NaN` versus a thrown error
 
 Same inputs, both arms executed:
 
@@ -98,15 +98,29 @@ Same inputs, both arms executed:
 | `'1h 30m'` | 5400 | 5400 |
 | `'1d 2h 3m 4s'` | 93784 | 93784 |
 | `''` | 0 | 0 |
-| **`'abc'`** | **`null`** — silently | **`TypeError`** |
-| **`'-5m'`** | **`null`** — silently | **`TypeError`** |
+| **`'abc'`** | **`NaN`** — silently | **`TypeError`** |
+| **`'-5m'`** | **`NaN`** — silently | **`TypeError`** |
 | `'1.5h'` | 5400 | 5400 |
 | `'1h30m'` | 5400 | 5400 |
 
 Both agree on every valid input, including the unstated `'1H'` (case-insensitive) and `'1h30m'` (no
-space). They differ exactly where the skill's rule 0.6 applies: **a caller cannot tell A's `null` for
-"unparseable" from a legitimate result, while B names the failure.** This is the same axis the first run
-measured on `slugify` — and it reproduced.
+space). They differ exactly where the skill's rule 0.6 applies.
+
+**The control returns `NaN`, and `NaN` is worse than `null`.** A `null` return can be caught by a
+single `if (!result)` check at the call site. `NaN` is a **number**, so it passes every type check,
+flows into the next arithmetic untouched, and turns every downstream total into `NaN` — the failure
+appears far from its cause, which is exactly the "silent wrong value" the skill's maintainability pillar
+forbids. It is also invisible to the obvious guard: `result === null` is false, and only
+`Number.isNaN(result)` catches it. The control arm's own note documented the behaviour as
+*"malformed → `NaN`"* — it knew, and shipped it.
+
+B names the failure at the boundary, so the caller cannot mistake a parse failure for a duration.
+
+> **Correction to an earlier reading.** This run's first pass recorded the control's output as `null`,
+> because `JSON.stringify(NaN)` prints `null`. Re-executing and checking `typeof` showed the value is
+> `NaN` (a number). The correction makes the finding **stronger**, not weaker — a silent `NaN` is harder
+> to catch than a `null` — and it is recorded here rather than quietly fixed, because a report that
+> hides its own measurement error cannot be trusted with the next one.
 
 ---
 
@@ -200,7 +214,7 @@ Extra artifacts B produced that A did not: **5 post-mortem files, 1 test file** 
    rate-limiter bypass (Q1) and a silent overflow (Q6) — defects the control artifacts shipped.
 2. **Smaller faces, not bigger files.** One factory instead of a class + factory + constants (Q1); 123
    lines instead of 341 for the same guarantees (Q6).
-3. **Explicit failure over silent sentinel** reproduced on a second task (Q4: `null` vs `TypeError`),
+3. **Explicit failure over silent sentinel** reproduced on a second task (Q4: a silent `NaN` vs a thrown `TypeError`),
    the same axis the first run measured.
 4. **The gate's ratio held**: 5 of 5 code tasks produced a review file; 0 control arms did.
 
@@ -216,7 +230,8 @@ correct form" — has no stated winner for a pure refactor. That is a gap worth 
 ## Reproduce
 
 ```bash
-python3 evals/quality-2026-10-08/score_quality.py <dir-of-outputs>
+node evals/score_quality.py-check   # see score_quality.py in this directory
+python3 score_quality.py <dir-of-outputs>
 ```
 
 `score_quality.py` counts six maintainability facts mechanically per file: repeated literals (one place
