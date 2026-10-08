@@ -4,7 +4,7 @@ description: 'Shape output and code for an autistic reader: literal meaning, eve
 license: MIT
 metadata:
   author: Ougi Oshino
-  version: "0.1.0"
+  version: "0.1.1"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, neurodivergent"
 ---
 
@@ -224,6 +224,17 @@ Follow the file you are in: its formatting, names, structure. Inconsistency is a
 
 **Bad:** `camelCase` in one file, `snake_case` in another.
 **Good:** as in the neighboring code, even if you would prefer otherwise.
+
+**Jurisdiction — this rule governs surface style, not readability.** It decides how code *looks*
+(indentation, bracket placement, name casing, quote style). It does **not** defend a surface habit that
+actively costs the reader: `var` where `const` is correct, a one-letter name, a nested `if` chain. When
+the task is to **improve** the code, the readability rules (Parts 1–2) outrank local consistency — changing
+`var` to `const` in a file that used `var` is the point of the task, not a violation of this rule. The test:
+if the surface habit is harmless, keep it for consistency; if the reader pays for it, fix it and keep the
+rest consistent.
+
+**Bad:** keeping `var x` in a rewrite whose whole purpose is clarity, "because the file used `var`".
+**Good:** `const x` for the rewritten lines, `var` left alone everywhere the task did not touch.
 
 ### 9. Simplicity — but never at the cost of correctness
 
