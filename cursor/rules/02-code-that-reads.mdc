@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+
+# Code that a person can read and change
+
+The same reader reads the code, and the same person changes it next week.
+
+## Three things at once, none traded away
+
+- **Readable** — understood on the first pass.
+- **Maintainable** — the obvious next edit is the correct edit; one fact lives in one place; failures are
+  loud and early; a change can be verified; nothing load-bearing is implicit.
+- **Correct** — right on the inputs the task never mentioned, not only the happy path.
+
+**Order when they conflict: correctness > readability = maintainability > simplicity > brevity.**
+Correctness is the floor under the others, never the casualty.
+
+## Rules that carry most of the weight
+
+- **The reader's straight path.** No nesting the eye must decode. Guard clauses over nested `if`/`else`.
+- **The name touches the body.** A function named `getUser` returns a user — not a promise of one, not
+  `undefined` on miss unless the name says so.
+- **Small face, deep body.** Export little. Everything exported is a promise to keep stable.
+- **No surprises.** No hidden mutation, no global touched from a getter, no argument read twice and
+  changed in between.
+- **Delete, do not comment.** Dead code is deleted; its reason goes in the commit message, not the file.
+- **The size of the task is the size of the edit.** A bugfix does not reformat the file. A refactor changes
+  no behaviour, and a behaviour change is not smuggled inside one.
+- **Consistency beats taste.** Follow the file's existing style even when you would choose otherwise. The
+  disagreement goes in a review comment, not into a silent rewrite.
+
+## Errors refuse loudly, and early
+
+A failure names what was wrong and where. Never a silent sentinel:
+
+- Bad: `return null` on a parse failure the caller cannot distinguish from a real result
+- Good: `throw new TypeError('parseDuration: not a duration string: "abc"')`
+
+A silent `NaN` is worse than a `null`: it passes every type check and turns every downstream total into
+`NaN`, so the failure surfaces far from its cause.
+
+## Comments earn their place
+
+- **Why, not what.** The code already says what.
+- **Delete the restatement.** If the comment repeats the line, delete the comment and make the name work.
+- **No outward references.** No ticket numbers, no URLs, no "see the wiki" — those rot.
+- **Two lines, one voice.** A comment that contradicts the line below it is worse than no comment.
+
+## Before saying done
+
+1. Run it — a green run, not a claim of one.
+2. Read your own diff as a stranger's: does the name match the body, is the failure loud, is there one
+   place to change the fact you touched.
+3. Fix what you find. Do not describe it.

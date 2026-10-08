@@ -22,8 +22,8 @@ Sibling to [i-have-adhd](https://github.com/ayghri/i-have-adhd). Same idea, diff
 
 ## Contents
 
-- [Why](#why) · [Install](#install) · [Works with](#works-with) · [What it does](#what-it-does)
-- [Before and after](#before-and-after) · [The difference from i-have-adhd](#the-difference-from-i-have-adhd)
+- [Why](#why) · [Install](#install) · [Works with](#works-with) · [Cursor: the hybrid setup](#cursor-the-hybrid-setup)
+- [What it does](#what-it-does) · [Before and after](#before-and-after) · [The difference from i-have-adhd](#the-difference-from-i-have-adhd)
 - [The parts](#the-parts) · [When it yields](#when-it-yields) · [Evidence](#evidence)
 - [Manifesto](#manifesto--change-this-it-is-yours-now) · [Credit](#credit)
 
@@ -60,13 +60,35 @@ native manifest for the clients that predate it. Nothing is rewritten per platfo
 |---|---|
 | **Claude Code** | `.claude-plugin/` manifest |
 | **Codex** | `.codex-plugin/` manifest |
-| **Cursor** | `.agents/plugins/` marketplace manifest |
+| **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
 | **Gemini CLI** | `gemini-extension.json` |
 | **opencode** | `.opencode/command/` — copies the skill into place |
 | **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
 
 If your client cannot read the package, the fix is a new manifest next to the existing ones — open an
 issue and say which client, and it gets added. The skill body itself does not change.
+
+## Cursor: the hybrid setup
+
+If you write the code yourself and let the editor complete it — the hybrid mode — Cursor's rules are the
+right layer, because they load **always** and reach the Agent.
+
+[`cursor/rules/`](cursor/rules/) holds four `.mdc` files:
+
+- three **always on** — literal output, the code standard, and the rule that makes this hybrid mode work:
+  when Cursor completes a line, it says what the line does, flags a decision hidden inside an
+  innocuous-looking completion, and refuses to slip a branch past you unread;
+- one **manual** (`@learning-mode`) — the teaching loop: **you write, it explains back, names the risk, and
+  asks one question.** Ask for it; it does not lecture you while you are just working.
+
+```bash
+bash cursor/install.sh /path/to/your/project
+```
+
+**The honest limitation, from Cursor's own docs:** rules reach **Agent (Chat)** and do **not** affect
+**Cursor Tab** (the grey ghost text). So Tab stays mechanical speed, and the explanation lives in the
+conversation — which is the split you want anyway: Tab for the keystrokes, the chat for the reading.
+Full notes in [`cursor/README.md`](cursor/README.md).
 
 ## What it does
 

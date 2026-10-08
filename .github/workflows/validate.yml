@@ -72,6 +72,30 @@ jobs:
           ! grep -rn 'skillled' --include='*.md' --include='*.py' --include='*.js' . \
             && echo 'no rename artifacts'
 
+      - name: Cursor rules are valid
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          rules = sorted(pathlib.Path('cursor/rules').glob('*.mdc'))
+          assert rules, 'no .mdc rules found'
+          for p in rules:
+              t = p.read_text(encoding='utf-8')
+              m = re.match(r'^---\n(.*?)\n---\n', t, re.S)
+              assert m, f'{p.name}: missing frontmatter (Cursor ignores it without it)'
+              assert re.search(r'alwaysApply:\s*(true|false)\b', m.group(1)), \
+                  f'{p.name}: alwaysApply must be true or false'
+              assert len(t.splitlines()) < 500, f'{p.name}: over Cursor\'s 500-line guidance'
+          print(f'{len(rules)} cursor rules valid')
+          PY
+
+      - name: Cursor installer runs
+        run: |
+          bash -n cursor/install.sh
+          dest="$(mktemp -d)"
+          bash cursor/install.sh "$dest"
+          test "$(ls "$dest/.cursor/rules"/*.mdc | wc -l)" -eq "$(ls cursor/rules/*.mdc | wc -l)"
+          echo 'installer ok'
+
       - name: JavaScript deliverables still run
         run: |
           for f in evals/quality-2026-10-08/*.js; do
