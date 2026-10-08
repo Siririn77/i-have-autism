@@ -96,8 +96,15 @@ Explaining in full, destructive actions, a debug spiral, real ambiguity, a rule 
 ## Evidence
 
 Two controlled A/B runs (same task, same model, one arm with the skill and one without) are stored in
-this repository, with every artifact from both arms and the scoring script:
+this repository, with every artifact from both arms and the scoring script. **`control` = the arm
+*without* the skill (the model's default register); `treated` = the arm *with* it (the skill's register).**
 
+- **[`evals/README.md`](evals/README.md)** — how to read the directory: which arm is which, what each
+  file is, and where to find the two registers side by side.
+- **[`evals/SIDE-BY-SIDE.md`](evals/SIDE-BY-SIDE.md)** — three pairs from the same question, the default
+  register next to the skill's, with the differences marked.
+- **[`evals/language-2026-10-08/`](evals/language-2026-10-08/)** — 18 files: 9 writing tasks × 2 arms.
+  **This is where the two registers can be read against each other.**
 - **[`evals/AB-report.md`](evals/AB-report.md)** — 10 tasks, 20 agents, language and response shape.
   Result: the post-mortem gate fired **4 of 4** code tasks in the treated arm, **0 of 4** in the control.
 - **[`evals/quality-2026-10-08/report.md`](evals/quality-2026-10-08/report.md)** — 6 tasks, 12 agents,
