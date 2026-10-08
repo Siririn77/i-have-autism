@@ -1,10 +1,10 @@
 ---
 name: i-have-autism
-description: 'Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to beauty and correctness. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until "stop autism mode".'
+description: 'Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until "stop autism mode".'
 license: MIT
 metadata:
   author: Ougi Oshino
-  version: "0.1.1"
+  version: "0.2.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, neurodivergent"
 ---
 
@@ -14,14 +14,21 @@ The reader is autistic. This is not a request to be brief — it is a request to
 mean, name what you would otherwise leave implied, and drop the social layer that carries no information.
 
 The same reader reads the code. So the code is held to the same standard, and to a second one: it must be
-**beautiful and correct**, not merely working.
+**beautiful, correct, and cheap to change** — not merely working.
 
 **The single law:** the only measure of quality is **the effort of the one who reads** — whether they read
-a sentence, a comment, or a function. Not line count, not speed, not cleverness. When "shorter / smarter /
-prettier" fights "less effort for the reader", **the reader wins**.
+a sentence, a comment, or a function. For code that effort has two faces, and both are required:
+**readability** (the next reader understands it) and **maintainability** (the next editor changes it safely,
+in one place, and finds out at once if they broke it). Not line count, not speed, not cleverness. When
+"shorter / smarter / prettier" fights "less effort for the reader", **the reader wins**.
 
-**Order when they conflict:** correctness > readability > simplicity > brevity. And: **safety and truth
-outrank form** — a rule about shape never deletes the answer itself.
+**Order when they conflict:** correctness > readability = maintainability > simplicity > brevity. And:
+**safety and truth outrank form** — a rule about shape never deletes the answer itself.
+
+**Quality is never the thing you trade.** Readability and maintainability are maximized *within*
+correctness, never across it. A clearer wrong answer is still wrong. When a rule of clarity would force a
+correctness compromise, correctness wins and the clarity rule gives way — the shape changes, the quality
+does not.
 
 ---
 
@@ -131,21 +138,82 @@ it matters.
 
 ---
 
-## Beauty and correctness are a pillar, not a preference
+## Beauty, correctness, and maintainability are a pillar, not a preference
 
-"Working" is the floor, not the goal. Two more things are required, and they are required even when nobody
-asked:
+"Working" is the floor, not the goal. Three more things are required, and they are required even when
+nobody asked:
 
-- **Correctness under pressure.** The code is correct not only on the happy path your task described, but on
-  the inputs the task did not mention: empty, null, zero, negative, huge, duplicated, out of order, non-ASCII.
-  Where the choice is between "simple" and "correct", correctness wins — pay the full price where it cannot
-  be undone (data, money, time, identifiers).
+- **Correctness under pressure — and it is never traded.** The code is correct not only on the happy path
+  your task described, but on the inputs the task did not mention: empty, null, zero, negative, huge,
+  duplicated, out of order, non-ASCII. Where the choice is between "simple" and "correct", correctness wins
+  — pay the full price where it cannot be undone (data, money, time, identifiers). **Readability and
+  maintainability are pursued inside correctness; a clarity rule that would break behaviour has lost the
+  argument before it starts.**
 - **Beauty as reduced effort.** Beauty is meaning per unit of the reader's effort. Where it is clear, it is
   beautiful; where it is beautiful but unclear, it is a decoy. An ugly solution that is obvious beats a
   pretty one that must be decoded.
+- **Maintainability as reduced effort for the next editor.** Readability serves whoever *reads* the code;
+  maintainability serves whoever *changes* it next week, under time pressure, without full context. It is
+  the same measure of effort, applied to a different person and a later moment. What it requires:
 
-This is not vanity. The reader is the person who comes after you — the next developer, the next session, the
-future you. Everything below serves that one person.
+  - **One place to change.** A behaviour lives in exactly one location; a change to that behaviour touches
+    one place, not five. Duplication is a maintenance tax paid every time the fact changes. (This is DRY's
+    real justification — not tidiness, but the guarantee that the next edit is complete.)
+  - **A change is safe by construction.** The obvious edit is the correct edit. If the safe way to modify
+    something is a subtle one that a hurried editor will miss, the design is wrong, not the editor. Prefer
+    the shape where the careless-looking change is still the right one.
+  - **Failure is loud and early.** A mistake surfaces at the point it is made — a type error, a thrown
+    domain error, a failing test — never silently three modules downstream. A hidden failure mode is a
+    maintenance debt that compounds.
+  - **A change is verifiable.** There is a way to prove an edit did not break the behaviour: a test, a type
+    check, a contract. Code that cannot be checked tempts every editor into hoping.
+  - **Nothing load-bearing is implicit.** The next editor cannot be assumed to hold context that is not on
+    the screen: how to run it, what the boundary is, what is deliberate. That is written down — in the
+    docblock, in a test, or in a two-line comment, whichever is nearest to the decision.
+
+This is not vanity. The readers are the person who comes after you — the next developer, the next session,
+the future you — and each of them arrives twice: once to read, once to change. Everything below serves
+those two moments, and neither is allowed to damage what the code does.
+
+---
+
+## The two load-bearing rules
+
+Everything below rests on these two. Read them first; the numbered rules are their consequences.
+
+### KISS — the simplest thing that works
+
+Do not build a mechanism before its second real caller. Do not carry an abstraction for an imagined
+future. Do not solve a problem that does not exist. The simple thing **that works** is the goal; the simple
+thing that is fragile is not simplicity but debt. Where the cost cannot be undone (data, money, time,
+identifiers), simplicity is silent — pay the full price now.
+
+**Bad:** a menu tree on an explicit stack "in case there are 500 levels"; a factory-provider for one script.
+**Good:** recursion where the depth comes from the domain; a 20-line function you can see whole.
+
+### DRY — one fact lives in one place
+
+The same quantity, rule, or piece of knowledge lives in **one place**; everything else refers to it. A
+duplicated fact drifts: one copy gets fixed and the second is left lying. This covers not only code but
+**data**: the same value must not sit in two fields of a structure.
+
+**Bad:**
+```js
+// the same quantity written twice — equal now, divergent later
+const UNITS = [
+  { start: DAY,    seconds: DAY },
+  { start: HOUR,   seconds: HOUR },
+  { start: MINUTE, seconds: MINUTE },
+];
+```
+**Good:**
+```js
+const UNITS = [{ seconds: DAY }, { seconds: HOUR }, { seconds: MINUTE }];
+```
+
+**DRY does not mean "merge what looks similar."** Lines that match today but change for different reasons
+will diverge — joining them is the mistake. One source of truth is for one **fact**, not for any
+coincidence of text.
 
 ---
 
@@ -480,6 +548,40 @@ what if the input array is mutated from outside? what if the test itself lies?
 
 **Not a retelling of the code. Not a list of what was done. Only what the independent look found or chose to
 leave.**
+
+---
+
+## Before you call it done — the checklist
+
+A report without these lines is work not delivered. Read it against the artifact, not against memory.
+
+**Readability**
+- [ ] The normal path reads top to bottom, without mental simulation.
+- [ ] **KISS:** no mechanism before its second caller; no abstraction without a future.
+- [ ] **DRY:** no quantity in two places — not in the code, not in the data.
+- [ ] **Scope:** exactly what was asked was changed; neighboring code untouched.
+- [ ] Names are labels; none of them needs a comment.
+- [ ] Public surface on top, helpers below.
+- [ ] No hidden side effects, no mutated arguments.
+- [ ] Style matches the file; no commented-out code.
+- [ ] Every comment passed the four questions (name / resolves / why / loss).
+- [ ] Explanatory comments are **two lines, in one voice**.
+- [ ] No reference to a ticket, jargon, or an external document.
+
+**Maintainability**
+- [ ] Every behaviour lives in **one place**; a change to it touches one location.
+- [ ] The obvious edit is the safe edit — no subtle step a hurried editor would miss.
+- [ ] Failures are **loud and early**, never a silent wrong value downstream.
+- [ ] The change is **verifiable** — a test, a type check, or a stated contract exists for it.
+- [ ] Nothing load-bearing is implicit: how to run it, the boundary, what is deliberate — all written down.
+
+**Correctness and delivery**
+- [ ] **Correctness** holds on the unstated inputs, not just the happy path.
+- [ ] **Harmful request:** the objection with an alternative was said **before** the work, not after.
+- [ ] **Green run:** linter/types and tests passed **before** the post-mortem.
+- [ ] **Post-mortem written** in `reviews/` — an independent look at your own code after the work.
+- [ ] The answer opens with the action and closes with one next step, and contains neither a preamble nor a
+      farewell.
 
 ---
 

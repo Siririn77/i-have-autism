@@ -8,7 +8,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
 </p>
 
-A skill for your coding agent that says what it means, names what it would otherwise leave implied, and holds the code to beauty and correctness — not just to "it runs".
+A skill for your coding agent that says what it means, names what it would otherwise leave implied, and holds the code to **readability, maintainability, and correctness — with no compromise on quality**.
 
 Sibling to [i-have-adhd](https://github.com/ayghri/i-have-adhd). Same idea, different mechanism. That one is about working memory and dopamine. This one is about ambiguity and literalism.
 
@@ -28,7 +28,13 @@ Two things, and they are one thing.
 
 **The words.** Meaning is literal first. `spill the beans` arrives as beans, and the reader pays the translation on every sentence. So: no idioms, no metaphor where a literal sentence works. Every implicit step is written down, because **unstated is absent** — the gap you filled without noticing is the gap the reader falls into. Disagreement is stated on the first line, not wrapped in a question or a compliment. Social softeners are removed, because a softener placed on an instruction turns the instruction into nothing.
 
-**The code.** The same reader reads the code. So code must be readable, commented only where it earns its place — and **beautiful and correct**, not merely working. Correct on the inputs the task never mentioned. An ugly solution that is obvious beats a pretty one that must be decoded. After the work: a green run, then a post-mortem that reads your own code as a stranger's.
+**The code.** The same reader reads the code — and the same person has to *change* it next week. So the code is held to three things at once, and quality is never the thing traded away:
+
+- **Readable** — the next reader understands it on the first pass.
+- **Maintainable** — the next editor changes it safely: one place to change, the obvious edit is the correct edit, failures are loud and early, a change is verifiable, and nothing load-bearing is implicit.
+- **Correct** — right on the inputs the task never mentioned, not only the happy path. **Correctness is the floor under the other two, never the casualty.**
+
+An ugly solution that is obvious beats a pretty one that must be decoded. After the work: a green run, then a post-mortem that reads your own code as a stranger's.
 
 ## Before and after
 
@@ -66,7 +72,7 @@ Two things, and they are one thing.
 | Core problem | Working memory, dopamine | Ambiguity, literalism |
 | Lead rule | Next action first | Meaning is literal first |
 | What is added | Steps, wins, time estimates | No idioms, no implicit steps, direct disagreement |
-| Code | — | Readability, comments, beauty, correctness, post-mortem |
+| Code | — | Readability, maintainability, comments, correctness, post-mortem |
 
 Both share the response shape (action first, numbered steps, no preamble). This one adds the language layer and the code layer.
 
@@ -75,11 +81,13 @@ Both share the response shape (action first, numbered steps, no preamble). This 
 Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 
 - **Part 0 — Language.** Literal meaning, named implicit steps, one action per step, no social padding, direct disagreement, explicit names and errors, plain questions.
-- **Beauty and correctness.** Correct beyond the happy path; beauty is meaning per unit of the reader's effort.
+- **The two load-bearing rules.** KISS (the simplest thing that works) and DRY (one fact in one place).
+- **Readability, maintainability, and correctness.** All three required; correctness never traded for the other two.
 - **Part 1 — Code that reads.** 11 rules, from the reader's straight path to "the size of the task is the size of the edit".
 - **Part 2 — Comments that earn their place.** 7 rules, including two lines in one voice and the four-question check.
 - **Part 3 — The answer.** 10 rules for the shape of a reply.
 - **Part 4 — Post-mortem.** Green run first, then read your own code as a stranger's; fix what you find, do not describe it.
+- **Before you call it done.** The checklist: readability, maintainability, correctness and delivery.
 
 ## When it yields
 

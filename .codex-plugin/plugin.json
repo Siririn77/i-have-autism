@@ -1,7 +1,7 @@
 {
   "name": "i-have-autism",
-  "version": "0.1.1",
-  "description": "Shape Codex output for an autistic reader: literal meaning, no idioms, every implicit step named, direct disagreement, and code held to beauty and correctness.",
+  "version": "0.2.0",
+  "description": "Shape Codex output for an autistic reader: literal meaning, no idioms, every implicit step named, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality.",
   "author": {
     "name": "Ougi Oshino"
   },
