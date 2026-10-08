@@ -1,0 +1,6 @@
+{
+  "name": "i-have-autism",
+  "version": "0.1.0",
+  "description": "Shape Gemini CLI output for an autistic reader: literal meaning, no idioms, every implicit step named, direct disagreement, and code held to beauty and correctness.",
+  "contextFileName": "GEMINI.md"
+}

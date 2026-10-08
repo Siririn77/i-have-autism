@@ -1,0 +1,16 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "i-have-autism",
+  "description": "Shape output and code for an autistic reader. Literal, explicit, direct, and exacting about the code.",
+  "owner": {
+    "name": "Ougi Oshino"
+  },
+  "plugins": [
+    {
+      "name": "i-have-autism",
+      "description": "Literal language, every implicit step named, no social padding, and code held to beauty and correctness.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

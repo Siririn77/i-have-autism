@@ -1,0 +1,37 @@
+{
+  "name": "i-have-autism",
+  "version": "0.1.0",
+  "description": "Shape Codex output for an autistic reader: literal meaning, no idioms, every implicit step named, direct disagreement, and code held to beauty and correctness.",
+  "author": {
+    "name": "Ougi Oshino"
+  },
+  "license": "MIT",
+  "keywords": [
+    "autism",
+    "literal",
+    "explicit",
+    "directness",
+    "output-style",
+    "clean-code",
+    "productivity",
+    "skills",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "I Have Autism",
+    "shortDescription": "Literal, explicit output for an autistic reader",
+    "longDescription": "Shape Codex responses and code for an autistic reader: say what you mean literally, name every implicit step, drop the social padding, disagree directly, and hold code to beauty and correctness.",
+    "developerName": "Ougi Oshino",
+    "category": "Productivity",
+    "capabilities": [
+      "Instructions"
+    ],
+    "defaultPrompt": [
+      "Use i-have-autism for this task.",
+      "Make this answer literal and explicit.",
+      "Review this response for unstated steps and idioms."
+    ],
+    "brandColor": "#2E7D5B"
+  }
+}
