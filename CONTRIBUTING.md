@@ -62,8 +62,10 @@ fm = re.match(r'^---\n(.*?)\n---\n', src, re.S).group(1)
 print('name ok:', re.search(r'^name:\s*(\S+)', fm, re.M).group(1) == 'i-have-autism')
 "
 
-# no Cyrillic anywhere — the repo is English-only (the skill's own language layer)
-grep -rlP '[\x{0400}-\x{04FF}]' . --exclude-dir=.git && echo 'FOUND: translate it' || echo 'no Cyrillic: ok'
+# no Cyrillic in the repo's own prose — the skill's language layer is English-only
+# (a quoted input artifact under review may keep its source language: see CONTRIBUTING.md)
+grep -rlP '[\x{0400}-\x{04FF}]' . --exclude-dir=.git --exclude='T5_*.md' \
+  && echo 'FOUND: translate it' || echo 'no Cyrillic in repo prose: ok'
 ```
 
 ## Adding a rule to the skill
@@ -91,6 +93,16 @@ Any content change bumps `version` in **five** places, kept identical:
 
 A version line that disagrees across these means a client will load an older rule set than the repository
 shows.
+
+## The repo language
+
+The repository's own prose is **English only**, including the skill — the language layer is written for
+English readers.
+
+**One exception: quoted input artifacts.** A test task may hand an agent non-English source code as *data
+to review* — `evals/language-2026-10-08/T5_*.md` contains a Russian comment because the reviewed function
+had one. That is the artifact under test, not repository prose, and translating it would falsify the
+record of what the agent was actually given. Leave quoted inputs in their source language.
 
 ## License
 
