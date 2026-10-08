@@ -4,7 +4,7 @@ description: 'Shape output and code for an autistic reader: literal meaning, eve
 license: MIT
 metadata:
   author: Ougi Oshino
-  version: "0.2.0"
+  version: "0.2.3"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, neurodivergent"
 ---
 

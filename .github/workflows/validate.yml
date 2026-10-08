@@ -1,0 +1,83 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Skill frontmatter is valid
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, sys
+          t = pathlib.Path('skills/i-have-autism/SKILL.md').read_text(encoding='utf-8')
+          m = re.match(r'^---\n(.*?)\n---\n', t, re.S)
+          assert m, 'SKILL.md must open with YAML frontmatter'
+          fm = m.group(1)
+          name = re.search(r'^name:\s*(\S+)', fm, re.M)
+          assert name and name.group(1) == 'i-have-autism', 'frontmatter name must be i-have-autism'
+          desc = re.search(r'^description:\s*(.+)$', fm, re.M)
+          assert desc and len(desc.group(1)) > 40, 'description must be present and substantive'
+          print('frontmatter ok')
+          PY
+
+      - name: Every manifest parses and versions agree
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, re, sys
+          manifests = ['plugin.json', '.claude-plugin/plugin.json',
+                       '.codex-plugin/plugin.json', 'gemini-extension.json']
+          versions = {}
+          for f in manifests:
+              d = json.loads(pathlib.Path(f).read_text(encoding='utf-8'))
+              versions[f] = d['version']
+          fm = pathlib.Path('skills/i-have-autism/SKILL.md').read_text(encoding='utf-8')
+          versions['SKILL.md'] = re.search(r'version:\s*"([^"]+)"', fm).group(1)
+          uniq = set(versions.values())
+          assert len(uniq) == 1, f'version mismatch across manifests: {versions}'
+          print(f'manifests ok, version {uniq.pop()}')
+          PY
+
+      - name: Links in every markdown file resolve
+        run: |
+          python3 - <<'PY'
+          import re, pathlib, sys
+          root = pathlib.Path('.')
+          bad = []
+          for p in root.rglob('*.md'):
+              if '.git' in p.parts:
+                  continue
+              for m in re.finditer(r'\]\(([^)#]+)', p.read_text(encoding='utf-8')):
+                  tgt = m.group(1)
+                  if tgt.startswith(('http', 'mailto')):
+                      continue
+                  if not (p.parent / tgt).resolve().exists():
+                      bad.append(f'{p}: {tgt}')
+          assert not bad, 'broken relative links:\n' + '\n'.join(bad)
+          print('links ok')
+          PY
+
+      - name: No rename artifacts in prose
+        run: |
+          # a word-boundary rename once produced 'controlled' -> 'without-skillled'
+          ! grep -rn 'skillled' --include='*.md' --include='*.py' --include='*.js' . \
+            && echo 'no rename artifacts'
+
+      - name: JavaScript deliverables still run
+        run: |
+          for f in evals/quality-2026-10-08/*.js; do
+            node --check "$f" || exit 1
+          done
+          echo 'all JS parses'
+
+      - name: Treated arm's own tests pass
+        run: node --test evals/quality-2026-10-08/Q1_with-skill.test.js

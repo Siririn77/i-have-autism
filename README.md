@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+  <a href="actions/workflows/validate.yml"><img src="https://github.com/Siririn77/i-have-autism/actions/workflows/validate.yml/badge.svg" alt="validate"></a>
   <img src="https://img.shields.io/badge/evals-2%20A%2FB%20runs-blue.svg" alt="2 A/B runs">
   <img src="https://img.shields.io/badge/clients-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%20opencode-8b949e.svg" alt="Clients">
 </p>

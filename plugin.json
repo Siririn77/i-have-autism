@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "i-have-autism",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality.",
   "author": {
     "name": "Ougi Oshino"
