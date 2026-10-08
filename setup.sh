@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Подставляет твой GitHub-логин во все места с REPLACE_USERNAME.
+# Подставляет GitHub-логин во все места с REPLACE_USERNAME.
+# В этом репозитории логин уже подставлен, так что скрипт нужен только если
+# ты форкаешь его и хочешь перенаправить ссылки на свой аккаунт.
 # Использование: ./setup.sh <твой-github-логин>
 set -euo pipefail
 
@@ -18,7 +20,7 @@ fi
 # Подставляем во все текстовые файлы, где стоит заглушка
 files=$(grep -rl 'REPLACE_USERNAME' . --exclude-dir=.git 2>/dev/null || true)
 if [ -z "$files" ]; then
-  echo "Заглушек REPLACE_USERNAME не найдено — возможно, уже подставлено."
+  echo "Заглушек REPLACE_USERNAME не найдено — ссылки уже куда-то ведут."
 else
   for f in $files; do
     sed -i "s/REPLACE_USERNAME/${USER}/g" "$f"

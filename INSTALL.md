@@ -29,7 +29,7 @@ claude --plugin-dir /path/to/i-have-autism
 As a personal plugin, permanently — add this repository as a marketplace, then install:
 
 ```bash
-claude plugin marketplace add REPLACE_USERNAME/i-have-autism
+claude plugin marketplace add Siririn77/i-have-autism
 claude plugin install i-have-autism@i-have-autism
 ```
 

@@ -87,7 +87,7 @@ git log --oneline      # 2 коммита
 - **Скрытые папки.** `.claude-plugin`, `.codex-plugin`, `.agents`, `.opencode` — это точки в начале имени.
   При заливке через веб-интерфейс их легко потерять: если файловый менеджер скрывает такие папки, включи
   показ скрытых файлов. Через `git push` они уходят сами.
-- **`REPLACE_USERNAME`.** В трёх файлах (`README.md`, `INSTALL.md`, `.agents/plugins/marketplace.json`)
+- **`Siririn77`.** В трёх файлах (`README.md`, `INSTALL.md`, `.agents/plugins/marketplace.json`)
   стоит заглушка. `setup.sh` меняет её на твой логин. Без этого команды установки в README не сработают.
 - **Лицензия.** MIT, имя автора — `Ougi Oshino`. Если хочешь своё имя или псевдоним — поправь
   `LICENSE` и поле `author` во всех манифестах.

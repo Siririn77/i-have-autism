@@ -17,7 +17,7 @@ Sibling to [i-have-adhd](https://github.com/ayghri/i-have-adhd). Same idea, diff
 Copy and paste into your CLI prompt:
 
 ```text
-Install the i-have-autism skill/plugin from https://github.com/REPLACE_USERNAME/i-have-autism, refer to the repo's AGENTS.md for instructions.
+Install the i-have-autism skill/plugin from https://github.com/Siririn77/i-have-autism, refer to the repo's AGENTS.md for instructions.
 ```
 
 Or see [INSTALL.md](INSTALL.md) for the per-client paths.
