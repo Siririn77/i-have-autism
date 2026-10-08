@@ -93,6 +93,21 @@ Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 
 Explaining in full, destructive actions, a debug spiral, real ambiguity, a rule that fights the task, a rule that fights the harness. And one refusal case: a genuinely harmful request gets the objection **before** the work, in three lines — what, who it hurts, what to do instead — and never a moralizing lecture.
 
+## Evidence
+
+Two controlled A/B runs (same task, same model, one arm with the skill and one without) are stored in
+this repository, with every artifact from both arms and the scoring script:
+
+- **[`evals/AB-report.md`](evals/AB-report.md)** — 10 tasks, 20 agents, language and response shape.
+  Result: the post-mortem gate fired **4 of 4** code tasks in the treated arm, **0 of 4** in the control.
+- **[`evals/quality-2026-10-08/report.md`](evals/quality-2026-10-08/report.md)** — 6 tasks, 12 agents,
+  code quality and style. Result: gate fired **5 of 5** (second independent confirmation), and it caught
+  a total rate-limiter bypass and a silent integer overflow that the control artifacts shipped.
+
+Both directories contain the raw deliverables from both arms, so the claims can be re-checked rather than
+trusted. [`score_quality.py`](evals/quality-2026-10-08/score_quality.py) mechanically counts six
+maintainability facts per file.
+
 ## Manifesto — change this, it is yours now
 
 **This skill is not finished. It is a starting point that works, and it gets better every time someone
