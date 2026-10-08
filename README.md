@@ -93,6 +93,50 @@ Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 
 Explaining in full, destructive actions, a debug spiral, real ambiguity, a rule that fights the task, a rule that fights the harness. And one refusal case: a genuinely harmful request gets the objection **before** the work, in three lines — what, who it hurts, what to do instead — and never a moralizing lecture.
 
+## Manifesto — change this, it is yours now
+
+**This skill is not finished. It is a starting point that works, and it gets better every time someone
+disagrees with it in public.**
+
+You are invited to do all of the following. None of these requires permission, an application, or a
+reason. A disagreement is enough.
+
+- **Open a pull request.** Fix a rule, sharpen a wording, add a rule the skill is missing, delete a rule
+  that costs more than it earns. One change per pull request. Say which rule it changes and why the change
+  makes the reader's effort smaller. If it makes the reader's effort larger, say why it is still right.
+- **Open an issue.** Two kinds are equally welcome: *"this rule is wrong"* and *"this rule is right but I
+  cannot follow it"*. The second kind is more useful — a rule nobody can obey is a rule that is not wired
+  in, and the fix is the package's problem, not yours.
+- **Fork it.** Take it, rewrite it for your own brain, your own team, your own language. You do not owe
+  anyone a pull request back. If your fork turns out better, open a pull request and say so; if it turns
+  out better only for you, that is a legitimate outcome and does not need defending.
+- **Translate it.** The language layer is specific to how a person reads. A good translation is not a
+  literal one — it is the same rules rebuilt for readers of that language.
+- **Add a platform.** If a client cannot read this package, the fix is a new manifest next to the existing
+  ones, not a redesign.
+- **Report a measured failure.** If an A/B run shows a rule subtracting on an axis it claims to improve,
+  that is the most valuable report you can file. It comes with its own evidence and it needs no argument
+  for inclusion.
+- **Say it is wrong, directly.** The skill's own section 0.5 asks for disagreement stated on the first
+  line, not wrapped in a compliment. Hold this repository to that standard. A polite "interesting
+  approach" helps nobody; "this rule fires on reversible decisions and should not" helps everyone.
+
+**What gets merged.** A change is merged when it names the rule it touches, states what it costs, and is
+verifiable — a before/after example, a failing case, or a measured run. It is not merged when it only
+restates a rule that already exists or adds a preference without a boundary.
+
+**What is never merged.** Anything that trades correctness for style. Anything that makes a rule
+unfalsifiable — a rule with no observable consequence cannot be argued with and therefore cannot be
+improved. Anything that turns a rule into a moral judgement about the person following it. The skill
+criticizes the code and the writing; it does not criticize the coder.
+
+**You do not need to be autistic to contribute, and you do not need to be non-autistic to contribute.**
+The rules are written for a reader who pays for every ambiguity. If that is not you, you can still test
+them, measure them, and report where they fail for you — a rule that helps one reader and hurts another is
+a finding, not a problem.
+
+**Fork it. Break it. Tell us how you broke it.**
+
 ## Credit
 
 The response-shape rules (Part 3) are adapted from [i-have-adhd](https://github.com/ayghri/i-have-adhd) by Ayoub G. The language layer is built on the **double empathy problem** (Milton, 2012) and on reviews of communication in autistic adults (de Marchena et al., *Curr Psychiatry Rep*, 2025), which find strengths in structured language tasks and a preference for literal, explicit meaning.
