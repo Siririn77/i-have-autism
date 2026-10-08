@@ -1,6 +1,6 @@
 # Evals — how to read this directory
 
-Two without-skillled A/B runs live here. Every run has two arms, and the **only** difference between them is
+Two controlled A/B runs live here. Every run has two arms, and the **only** difference between them is
 whether the agent was given the skill:
 
 | arm | means | register |

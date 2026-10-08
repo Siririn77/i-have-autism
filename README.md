@@ -1,16 +1,44 @@
 # i-have-autism
 
 <p align="center">
-  <strong>Literal, explicit, direct. And exacting about the code.</strong>
+  <img src="assets/banner.png" alt="i-have-autism — literal, explicit, direct, and exacting about the code" width="820">
+</p>
+
+<p align="center">
+  <strong>Literal, explicit, direct. And exacting about the code.</strong><br>
+  <sub>A coding-agent skill, measured against no-skill in A/B runs. Results in <a href="#evidence">Evidence</a>.</sub>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+  <img src="https://img.shields.io/badge/evals-2%20A%2FB%20runs-blue.svg" alt="2 A/B runs">
+  <img src="https://img.shields.io/badge/clients-Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%20opencode-8b949e.svg" alt="Clients">
 </p>
 
 A skill for your coding agent that says what it means, names what it would otherwise leave implied, and holds the code to **readability, maintainability, and correctness — with no compromise on quality**.
 
 Sibling to [i-have-adhd](https://github.com/ayghri/i-have-adhd). Same idea, different mechanism. That one is about working memory and dopamine. This one is about ambiguity and literalism.
+
+## Contents
+
+- [Why](#why) · [Install](#install) · [Works with](#works-with) · [What it does](#what-it-does)
+- [Before and after](#before-and-after) · [The difference from i-have-adhd](#the-difference-from-i-have-adhd)
+- [The parts](#the-parts) · [When it yields](#when-it-yields) · [Evidence](#evidence)
+- [Manifesto](#manifesto--change-this-it-is-yours-now) · [Credit](#credit)
+
+## Why
+
+A coding agent defaults to a register built for a reader who skims: an analogy to set the scene, a
+softener on the instruction, the actual step implied rather than written. For many readers that is fine.
+For a reader who pays for every ambiguity, it is a tax on every sentence — and the same tax lands on the
+code, where an implied precondition or a silent failure costs an afternoon.
+
+This skill removes the tax. It is **one markdown file**. There is nothing to run, nothing to configure,
+and it costs one line in your prompt.
+
+Nothing about it is subtle, which is the point: it says the true thing first, writes down every step it
+would otherwise skip, states disagreement on the line where it belongs, and refuses to trade correctness
+for style.
 
 ## Install
 
@@ -21,6 +49,23 @@ Install the i-have-autism skill/plugin from https://github.com/Siririn77/i-have-
 ```
 
 Or see [INSTALL.md](INSTALL.md) for the per-client paths.
+
+## Works with
+
+One package, one manifest per client — the open [Agent Plugins](https://agent-plugins.org/) format, plus a
+native manifest for the clients that predate it. Nothing is rewritten per platform.
+
+| client | how it loads |
+|---|---|
+| **Claude Code** | `.claude-plugin/` manifest |
+| **Codex** | `.codex-plugin/` manifest |
+| **Cursor** | `.agents/plugins/` marketplace manifest |
+| **Gemini CLI** | `gemini-extension.json` |
+| **opencode** | `.opencode/command/` — copies the skill into place |
+| **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
+
+If your client cannot read the package, the fix is a new manifest next to the existing ones — open an
+issue and say which client, and it gets added. The skill body itself does not change.
 
 ## What it does
 
@@ -95,9 +140,25 @@ Explaining in full, destructive actions, a debug spiral, real ambiguity, a rule 
 
 ## Evidence
 
-Two without-skillled A/B runs (same task, same model, one arm with the skill and one without) are stored in
-this repository, with every artifact from both arms and the scoring script. **`without-skill` = the arm
-*without* the skill (the model's default register); `with-skill` = the arm *with* it (the skill's register).**
+Two controlled A/B runs (same task, same model, one arm given the skill and one not) are stored in this
+repository, with **every artifact from both arms** and the scoring script.
+
+> **`without-skill`** = the arm **without** the skill — the model's default register, shaped for a general reader.
+> **`with-skill`** = the arm **with** the skill — the skill's register, shaped for a reader who pays for every ambiguity.
+
+Same model in both arms (`deepseek-v4.1-flash`). Nothing else differs. So every difference below is
+caused by one text file.
+
+**Headline results** (all measured, all in `evals/`):
+
+| | without-skill | with-skill |
+|---|---|---|
+| Post-mortem written after the code (run 1, 4 code tasks) | **0 / 4** | **4 / 4** |
+| Post-mortem written after the code (run 2, 5 code tasks) | **0 / 5** | **5 / 5** |
+| Caught a total rate-limiter bypass | no | **yes** |
+| Caught a silent integer overflow | no | **yes** |
+| Malformed input | silent `NaN` | **named error** |
+| `Money` helper, same guarantees | 341 lines | **123 lines** |
 
 - **[`evals/README.md`](evals/README.md)** — how to read the directory: which arm is which, what each
   file is, and where to find the two registers side by side.
