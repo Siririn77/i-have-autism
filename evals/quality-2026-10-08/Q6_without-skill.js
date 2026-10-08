@@ -1,5 +1,5 @@
 /**
- * Q6_control.js — a small `Money` helper for currency amounts.
+ * Q6_without-skill.js — a small `Money` helper for currency amounts.
  *
  * Amounts are stored as an integer number of minor units (cents). All
  * arithmetic is performed on those integers, so `Money` avoids the classic

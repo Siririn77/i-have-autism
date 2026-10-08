@@ -25,7 +25,7 @@ partner and against the original where one existed — not read by eye.
 | Q6 | `Money` helper | correctness (integer cents) | **Tie on behaviour** | **B** — half the size, same guarantees |
 
 **Result: 4 differences in favour of B, 2 ties, 0 losses.** The **post-mortem gate fired again: 5 review
-files from treated arms, 0 from control arms** (task Q5 wrote no code, so the ratio is 5 of the 5 code
+files from with-skill arms, 0 from without-skill arms** (task Q5 wrote no code, so the ratio is 5 of the 5 code
 tasks).
 
 ---
@@ -35,13 +35,13 @@ tasks).
 The skill's Part 4 requires a post-mortem in `reviews/` after the work. This run is the second time the
 gate was measured, and it reproduced:
 
-| task | A (control) | B (treated) |
+| task | A (without-skill) | B (with-skill) |
 |------|-------------|-------------|
-| Q1 rate limiter | none | `reviews/out/Q1_treated.review.md` |
-| Q2 refactor | none | `reviews/out/Q2_treated.review.md` |
-| Q3 units | none | `reviews/out/Q3_treated.review.md` |
-| Q4 parseDuration | none | `reviews/out/Q4_treated.review.md` |
-| Q6 Money | none | `reviews/out/Q6_treated.review.md` |
+| Q1 rate limiter | none | `reviews/out/Q1_with-skill.review.md` |
+| Q2 refactor | none | `reviews/out/Q2_with-skill.review.md` |
+| Q3 units | none | `reviews/out/Q3_with-skill.review.md` |
+| Q4 parseDuration | none | `reviews/out/Q4_with-skill.review.md` |
+| Q6 Money | none | `reviews/out/Q6_with-skill.review.md` |
 | **total** | **0 of 5** | **5 of 5** |
 
 **And this time the gate produced defects that mattered, not just process.** Reading the review files:
@@ -51,10 +51,10 @@ gate was measured, and it reproduced:
   comparison `time > windowStart` is false against `NaN`, so no request was ever counted and the limiter
   silently ceased to limit — a rate limiter that rates nothing, with no error. It fixed it by guarding
   `now()` with `Number.isFinite` and throwing, plus a test over `[NaN, Infinity, '0', null]`. **This is a
-  correctness defect the control arm's artifact did not have — because the control arm never looked.**
+  correctness defect the without-skill arm's artifact did not have — because the without-skill arm never looked.**
 - **Q6 — silent rounding on overflow.** The post-mortem found that `add` passed a sum past the
   safe-integer range into the constructor, where it surfaced as a misleading `TypeError` instead of naming
-  the overflow. Fixed to raise `RangeError` at the operation. **The control arm's `Money` had the same
+  the overflow. Fixed to raise `RangeError` at the operation. **The without-skill arm's `Money` had the same
   latent hole and shipped it.**
 - **Q4 — a docblock on the wrong symbol.** The JSDoc sat above `SECONDS_PER_UNIT` instead of above
   `parseDuration`, so a reader and any tooling saw the contract attached to the wrong declaration. Fixed by
@@ -73,12 +73,12 @@ reproduced it, fixed it, and added the test.
 
 Same spec, both arms. Executed and compared:
 
-| measure | A (control) | B (treated) |
+| measure | A (without-skill) | B (with-skill) |
 |---------|-------------|-------------|
 | lines | 103 | **67** |
 | public surface | `RateLimiter` class, `createRateLimiter`, two exported constants | `createRateLimiter` only |
 | injected clock for testing | no | **yes** (`now` option) |
-| own test file | no | **yes** (`Q1_treated.test.js`) |
+| own test file | no | **yes** (`Q1_with-skill.test.js`) |
 | input validation | defaults only | `requirePositiveInteger` on `limit` and `windowMs` |
 | post-mortem defect found | — | **total bypass on a non-finite clock** |
 
@@ -93,7 +93,7 @@ window without the wall clock.
 
 Same inputs, both arms executed:
 
-| input | A (control) | B (treated) |
+| input | A (without-skill) | B (with-skill) |
 |-------|-------------|-------------|
 | `'1h 30m'` | 5400 | 5400 |
 | `'1d 2h 3m 4s'` | 93784 | 93784 |
@@ -106,17 +106,17 @@ Same inputs, both arms executed:
 Both agree on every valid input, including the unstated `'1H'` (case-insensitive) and `'1h30m'` (no
 space). They differ exactly where the skill's rule 0.6 applies.
 
-**The control returns `NaN`, and `NaN` is worse than `null`.** A `null` return can be caught by a
+**The without-skill returns `NaN`, and `NaN` is worse than `null`.** A `null` return can be caught by a
 single `if (!result)` check at the call site. `NaN` is a **number**, so it passes every type check,
 flows into the next arithmetic untouched, and turns every downstream total into `NaN` — the failure
 appears far from its cause, which is exactly the "silent wrong value" the skill's maintainability pillar
 forbids. It is also invisible to the obvious guard: `result === null` is false, and only
-`Number.isNaN(result)` catches it. The control arm's own note documented the behaviour as
+`Number.isNaN(result)` catches it. The without-skill arm's own note documented the behaviour as
 *"malformed → `NaN`"* — it knew, and shipped it.
 
 B names the failure at the boundary, so the caller cannot mistake a parse failure for a duration.
 
-> **Correction to an earlier reading.** This run's first pass recorded the control's output as `null`,
+> **Correction to an earlier reading.** This run's first pass recorded the without-skill arm's output as `null`,
 > because `JSON.stringify(NaN)` prints `null`. Re-executing and checking `typeof` showed the value is
 > `NaN` (a number). The correction makes the finding **stronger**, not weaker — a silent `NaN` is harder
 > to catch than a `null` — and it is recorded here rather than quietly fixed, because a report that
@@ -162,7 +162,7 @@ and `toSeconds` reading the table. Executed: **identical output** — `UNITS` eq
 = 172800, unknown unit returns the value unchanged.
 
 **A clean tie, and a useful one: it shows both arms recognise a duplicated fact.** The trap I set did not
-discriminate — on this task the skill had nothing to add because the control arm already knows DRY. That
+discriminate — on this task the skill had nothing to add because the without-skill arm already knows DRY. That
 is the "easy task" ceiling the evaluation method warns about, and it is recorded rather than spun.
 
 ---
@@ -171,7 +171,7 @@ is the "easy task" ceiling the evaluation method warns about, and it is recorded
 
 Both store integer cents and refuse to use floats. Executed on the same cases:
 
-| case | A (control) | B (treated) |
+| case | A (without-skill) | B (with-skill) |
 |------|-------------|-------------|
 | `add(100,250)` | 350 | 350 |
 | `multiply(150,3)` | 450 | 450 |
@@ -202,7 +202,7 @@ found the overflow hole (above) that A left in.
 task (Q5) is 2.57× longer, consistent with the first run's finding. **So the cost is concentrated in
 explanatory prose, not in code.**
 
-Extra artifacts B produced that A did not: **5 post-mortem files, 1 test file** (`Q1_treated.test.js`).
+Extra artifacts B produced that A did not: **5 post-mortem files, 1 test file** (`Q1_with-skill.test.js`).
 
 ---
 
@@ -211,12 +211,12 @@ Extra artifacts B produced that A did not: **5 post-mortem files, 1 test file** 
 **The skill improves code quality and style on exactly the axes it claims, and it does not inflate code.**
 
 1. **Maintainability showed up as behaviour, not decoration.** The post-mortem gate caught a total
-   rate-limiter bypass (Q1) and a silent overflow (Q6) — defects the control artifacts shipped.
+   rate-limiter bypass (Q1) and a silent overflow (Q6) — defects the without-skill arm's artifacts shipped.
 2. **Smaller faces, not bigger files.** One factory instead of a class + factory + constants (Q1); 123
    lines instead of 341 for the same guarantees (Q6).
 3. **Explicit failure over silent sentinel** reproduced on a second task (Q4: a silent `NaN` vs a thrown `TypeError`),
    the same axis the first run measured.
-4. **The gate's ratio held**: 5 of 5 code tasks produced a review file; 0 control arms did.
+4. **The gate's ratio held**: 5 of 5 code tasks produced a review file; 0 without-skill arms did.
 
 **What did not differ, honestly:** Q2 and Q3 were ties on behaviour — on a task whose correct answer is
 already known to a good model, the skill adds nothing measurable. That is the ceiling the method predicts,

@@ -1,8 +1,8 @@
-# Post-mortem: out/Q2_treated.js
+# Post-mortem: out/Q2_with-skill.js
 
 ## Green run first
 
-`node --check out/Q2_treated.js` — clean. Differential harness (`scratch/diff_test.js`,
+`node --check out/Q2_with-skill.js` — clean. Differential harness (`scratch/diff_test.js`,
 24 cases comparing the original and the rewrite with `Object.is`): `cases=24 failures=0`.
 
 ## What I checked

@@ -1,6 +1,6 @@
 # `applyDelta.js` — line by line
 
-File: `t6_treated/applyDelta.js` (12 lines, 321 bytes).
+File: `t6_with-skill/applyDelta.js` (12 lines, 321 bytes).
 
 ## Source
 

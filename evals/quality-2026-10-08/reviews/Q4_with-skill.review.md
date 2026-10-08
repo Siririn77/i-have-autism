@@ -1,7 +1,7 @@
 # Post-mortem: parseDuration
 
-Module: `out/Q4_treated.js`. Green run before this look: `node Q4_treated.js` →
-`parseDuration: all checks passed` (exit 0); `node --check Q4_treated.js` → no syntax errors.
+Module: `out/Q4_with-skill.js`. Green run before this look: `node Q4_with-skill.js` →
+`parseDuration: all checks passed` (exit 0); `node --check Q4_with-skill.js` → no syntax errors.
 
 ## What I checked
 

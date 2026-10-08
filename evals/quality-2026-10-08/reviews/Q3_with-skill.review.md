@@ -1,8 +1,8 @@
-# Post-mortem: out/Q3_treated.js
+# Post-mortem: out/Q3_with-skill.js
 
 ## Green run first
 
-Before this read: `node --check out/Q3_treated.js` — clean. ESLint
+Before this read: `node --check out/Q3_with-skill.js` — clean. ESLint
 (`no-undef`, `no-unused-vars`, `no-fallthrough`, ecmaVersion 2022) — exit 0 on both the
 original and the rewrite. Differential harness (`scratch/q3_diff.js`, 330 cases comparing
 the original and the rewrite with `Object.is`): `cases=330 failures=0`; `UNITS` JSON,

@@ -1,7 +1,7 @@
-# T7_control — rewrite note
+# T7_without-skill — rewrite note
 
-Source: `/root/ab-test/t7_control/proc.js`
-Rewrite: `/root/ab-test/out/T7_control.js`
+Source: `/root/ab-test/t7_without-skill/proc.js`
+Rewrite: `/root/ab-test/out/T7_without-skill.js`
 
 ## What changed
 

@@ -1,6 +1,6 @@
 # `applyDelta.js` — line-by-line walkthrough
 
-File: `/root/ab-test/t6_control/applyDelta.js` (12 lines)
+File: `/root/ab-test/t6_without-skill/applyDelta.js` (12 lines)
 
 ## What it does, in one sentence
 It merges a bag of numeric deltas into a running counter object on a `state`

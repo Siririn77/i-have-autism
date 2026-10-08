@@ -1,6 +1,6 @@
-# Post-mortem: out/Q1_treated.js
+# Post-mortem: out/Q1_with-skill.js
 
-Green run before this review: `node --test Q1_treated.test.js` → 7/7 pass, 0 fail; `node --check` on both
+Green run before this review: `node --test Q1_with-skill.test.js` → 7/7 pass, 0 fail; `node --check` on both
 files → clean; ESLint (`eslint/bin/eslint.js`, default config, no lookup) → exit 0, no errors.
 
 ## What I checked

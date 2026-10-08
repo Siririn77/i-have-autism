@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createRateLimiter } = require('./Q1_treated.js');
+const { createRateLimiter } = require('./Q1_with-skill.js');
 
 // Controllable clock: tests advance time by hand, so no real waiting is needed.
 function makeClock(start = 0) {

@@ -1,6 +1,6 @@
-# Post-mortem: out/Q6_treated.js (Money)
+# Post-mortem: out/Q6_with-skill.js (Money)
 
-Green run before this read: `node --check out/Q6_treated.js` clean; assertion
+Green run before this read: `node --check out/Q6_with-skill.js` clean; assertion
 run over the module (`assert` from Node stdlib) — ALL ASSERTIONS PASSED.
 
 ## What I checked

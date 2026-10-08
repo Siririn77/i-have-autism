@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scores a pair of arms (control, treated) on the maintainability axes.
+"""Scores a pair of arms (without-skill, with-skill) on the maintainability axes.
 
 Mechanical, not impressionistic: each check is a countable fact about the file.
 Run from the repo root:  python3 evals/score_quality.py <dir-with-outputs>
@@ -78,7 +78,7 @@ def main():
     out = {}
     for task in ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6']:
         row = {}
-        for arm in ['control', 'treated']:
+        for arm in ['without-skill', 'with-skill']:
             for ext in ('js', 'md'):
                 p = os.path.join(d, f'{task}_{arm}.{ext}')
                 if os.path.exists(p):

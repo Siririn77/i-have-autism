@@ -1,15 +1,15 @@
 # Evals — how to read this directory
 
-Two controlled A/B runs live here. Every run has two arms, and the **only** difference between them is
+Two without-skillled A/B runs live here. Every run has two arms, and the **only** difference between them is
 whether the agent was given the skill:
 
 | arm | means | register |
 |-----|-------|----------|
-| **`control`** | the agent worked **without** the skill | the model's default register — shaped for a general reader |
-| **`treated`** | the agent read `SKILL.md` first and followed it | the register the skill defines — shaped for a reader who pays for every ambiguity |
+| **`without-skill`** | the agent worked **without** the skill | the model's default register — shaped for a general reader |
+| **`with-skill`** | the agent read `SKILL.md` first and followed it | the register the skill defines — shaped for a reader who pays for every ambiguity |
 
-**In plain terms, the question you are asking:** `control` is the **neurotypical-shaped default** — the
-register an LLM produces for an average reader without any instruction. `treated` is the
+**In plain terms, the question you are asking:** `without-skill` is the **neurotypical-shaped default** — the
+register an LLM produces for an average reader without any instruction. `with-skill` is the
 **autistic-shaped register** — literal-first, every implicit step named, no idioms, no social padding,
 disagreement on the first line, and code held to readability, maintainability and correctness.
 
@@ -23,15 +23,16 @@ the experiment. Nothing else differs.
 ### `language-2026-10-08/` — the writing, side by side
 
 18 files: 9 tasks × 2 arms. **This is where you can read the two registers against each other.**
-The clearest pair is `T9_control.md` vs `T9_treated.md` — the same question ("explain a database
+The clearest pair is `T9_without-skill.md` vs `T9_with-skill.md` — the same question ("explain a database
 transaction to a non-expert"):
 
-- **`T9_control.md`** opens with an analogy: *"Imagine you're at an ATM and you transfer $100…"*
-- **`T9_treated.md`** opens with the definition: *"A database transaction is a group of database changes
+- **`T9_without-skill.md`** opens with an analogy: *"Imagine you're at an ATM and you transfer $100…"*
+- **`T9_with-skill.md`** opens with the definition: *"A database transaction is a group of database changes
   treated as one single change: either all of them happen, or none of them happen."*
 
-That is the whole difference in one pair. The control reaches for a scenario the reader must imagine; the
-treated states the fact literally and lets the scenario come later, if at all.
+That is the whole difference in one pair. The **without-skill arm** reaches for a scenario the reader
+must imagine; the **with-skill arm** states the fact literally and lets the scenario come later, if at
+all.
 
 See **[SIDE-BY-SIDE.md](SIDE-BY-SIDE.md)** for three pairs already lined up, with the differences marked.
 
@@ -53,17 +54,17 @@ Full write-up: **[AB-report.md](AB-report.md)**.
 
 ### `quality-2026-10-08/` — the code, judged mechanically
 
-The code-quality run. Here the interesting artifacts are the **post-mortems**, which only the treated arm
-produced (`reviews/`, 5 files, 0 from control):
+The code-quality run. Here the interesting artifacts are the **post-mortems**, which only the with-skill arm
+produced (`reviews/`, 5 files, 0 from without-skill):
 
 | file stem | task | note |
 |-----------|------|------|
-| `Q1_*` | in-memory rate limiter | treated found a total bypass on a non-finite clock |
+| `Q1_*` | in-memory rate limiter | with-skill found a total bypass on a non-finite clock |
 | `Q2_*` | refactor an ugly function, behaviour unchanged | tie on behaviour |
 | `Q3_*` | fix a duplicated-fact table | tie — both fixed it the same way |
-| `Q4_*` | `parseDuration(text)` | control returns a silent `NaN`; treated throws |
-| `Q6_*` | `Money` helper (integer cents) | treated found a silent overflow |
-| `Q5_*` (report only) | explain what makes code maintainable | treated: 43 concrete points vs 16 |
+| `Q4_*` | `parseDuration(text)` | without-skill returns a silent `NaN`; with-skill throws |
+| `Q6_*` | `Money` helper (integer cents) | with-skill found a silent overflow |
+| `Q5_*` (report only) | explain what makes code maintainable | with-skill: 43 concrete points vs 16 |
 
 Full write-up and the scoring script in that directory.
 
@@ -72,20 +73,20 @@ Full write-up and the scoring script in that directory.
 ## Reading a filename
 
 ```
-T9_control.md      T9 = task 9,  control = without the skill
-T9_treated.md      T9 = task 9,  treated = with the skill
-Q1_treated.review.md              the post-mortem the skill requires
+T9_without-skill.md    T9 = task 9,  without-skill = without the skill
+T9_with-skill.md       T9 = task 9,  with-skill    = with the skill
+Q1_with-skill.review.md               the post-mortem the skill requires
 ```
 
-`control` is always the arm **without** the skill. If you remember one thing, remember that.
+`without-skill` is always the arm **without** the skill. If you remember one thing, remember that.
 
 ---
 
-## Why the names are `control` / `treated` and not `neurotypical` / `autistic`
+## Why the names are `without-skill` / `with-skill` and not `neurotypical` / `autistic`
 
 Because the experiment measures **one instruction package**, not human neurotype. The arms differ by a
 skill file, so naming them after people would claim more than the data shows.
 
 What the data does show: the default arm reaches for analogies, softeners and scene-setting, and the
-treated arm does not. That is a difference in **register**, produced by a text file. It is reproducible,
+with-skill arm does not. That is a difference in **register**, produced by a text file. It is reproducible,
 and you can re-run it — that is all it claims.

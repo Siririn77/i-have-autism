@@ -1,6 +1,6 @@
 # Bug and fix: parseConfig
 
-Fixed file: `/root/ab-test/sandbox7_treated/src/parse.js`
+Fixed file: `/root/ab-test/sandbox7_with-skill/src/parse.js`
 
 ## The bug
 

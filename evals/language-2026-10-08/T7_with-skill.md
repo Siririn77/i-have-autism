@@ -1,6 +1,6 @@
 # Rewrite note: proc.js
 
-Rewritten to `/root/ab-test/out/T7_treated.js`. Observable behaviour is unchanged.
+Rewritten to `/root/ab-test/out/T7_with-skill.js`. Observable behaviour is unchanged.
 
 ## What changed (readability only)
 - **Names.** `d`/`o`/`r`/`t`/`a`/`p`/`s`/`c` became `orders`/`sellerId`/`accepted`/`total`/… and each loop item is bound once as `order`.

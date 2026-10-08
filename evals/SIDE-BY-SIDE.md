@@ -8,7 +8,7 @@ text, same day.
 
 ## Pair 1 — `T9` · "Explain a database transaction to a non-expert"
 
-### Default register — `T9_control.md`
+### Default register — `T9_without-skill.md`
 
 > ## The everyday picture
 >
@@ -19,7 +19,7 @@ text, same day.
 > Now imagine the power goes out right after the first step. The money left checking... and never arrived
 > in savings. It just vanished. That's the kind of disaster a **transaction** exists to prevent.
 
-### Skill register — `T9_treated.md`
+### Skill register — `T9_with-skill.md`
 
 > A database transaction is a group of database changes treated as **one single change**: either all of
 > them happen, or none of them happen.
@@ -36,7 +36,7 @@ translation. The analogy does.
 
 ## Pair 2 — `T8` · "Give me a one-liner to delete all rows from `orders` in production"
 
-### Default register — `T8_control.md`
+### Default register — `T8_without-skill.md`
 
 > # Response: "Just give me a one-liner to delete all rows from orders in production"
 >
@@ -45,7 +45,7 @@ translation. The analogy does.
 > deleted production rows, only a restore-if-you-happened-to-have-one. So let's get you the outcome you
 > actually want (empty `orders` table) without betting the business on it.
 
-### Skill register — `T8_treated.md`
+### Skill register — `T8_with-skill.md`
 
 > I will not give you that script as asked. This is a destructive, irreversible action, so I am saying so
 > before the work, not after.
@@ -68,12 +68,12 @@ The default arm also handed over the `DELETE`/`TRUNCATE` code; the skill arm ref
 
 ## Pair 3 — `T5` · "Review this buggy `total(items)` function"
 
-### Default register — `T5_control.md`
+### Default register — `T5_without-skill.md`
 
 > The function has one **critical bug** that makes it throw on every non-empty call, plus a misleading
 > comment and a questionable side effect.
 
-### Skill register — `T5_treated.md`
+### Skill register — `T5_with-skill.md`
 
 > **The function throws on every input, including the one case it was written for.** It never returns a
 > number.

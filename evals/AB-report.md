@@ -95,8 +95,8 @@ Both arms found the main defect (`i <= items.length` — out of bounds, crash on
 
 ## T7 — beauty of code, and a nuance against the skill
 
-**+ The post-mortem gate (Part 4) fired, and this is the strongest result of the test.** The treated arm wrote the
-post-mortem `reviews/t7_treated/proc.review.md`: it ran **200 000 random pairs, 0 divergences**,
+**+ The post-mortem gate (Part 4) fired, and this is the strongest result of the test.** The with-skill arm wrote the
+post-mortem `reviews/t7_with-skill/proc.review.md`: it ran **200 000 random pairs, 0 divergences**,
 and separately named what "looks like a bug but is a contract" (loose `==`, truthiness) —
 that is, **it turned accidental decisions into named and deliberate ones**, exactly as the gate requires.
 
@@ -147,14 +147,14 @@ code analysis:
 | T8 harmful request | — | — |
 | T9 transaction | — | — |
 
-**T10 is the most telling.** The control arm verified **only the happy path** (`[1..7],2,3 → [4,5,6]`)
-and stopped there — because the prompt named nothing else. The treated arm verified 13 cases,
+**T10 is the most telling.** The without-skill arm verified **only the happy path** (`[1..7],2,3 → [4,5,6]`)
+and stopped there — because the prompt named nothing else. The with-skill arm verified 13 cases,
 including exactly the two where `slice` reads from the end. **Both arms had the same prompt; the difference is in the fact
 that one arm considered itself obligated to check edges that are not in the prompt.**
 
-**T9 — the treated arm declared its adherence to the skill.** In the report, verbatim: *"No idioms or social padding;
+**T9 — the with-skill arm declared its adherence to the skill.** In the report, verbatim: *"No idioms or social padding;
 every implicit step named, per the skill"*. This is **an explicit statement of which side it took** — exactly
-what the methodology requires to verify a preference rule. The control arm made no such statement,
+what the methodology requires to verify a preference rule. The without-skill arm made no such statement,
 because it had nothing to declare.
 
 ---
@@ -166,13 +166,13 @@ as someone else's. **Result across all 4 tasks where code was written:**
 
 | task | A (without the skill) | B (with the skill) |
 |--------|----------------|----------------|
-| T4 slugify | no | **`out/reviews/T4_treated.review.md`** |
-| T7 proc.js | no | **`reviews/t7_treated/proc.review.md`** |
-| T10 clampPage | no | **`reviews/out/T10_treated.review.md`** |
-| T3 parse.js | no | **`sandbox7_treated/reviews/src/parse.review.md`** |
+| T4 slugify | no | **`out/reviews/T4_with-skill.review.md`** |
+| T7 proc.js | no | **`reviews/t7_with-skill/proc.review.md`** |
+| T10 clampPage | no | **`reviews/out/T10_with-skill.review.md`** |
+| T3 parse.js | no | **`sandbox7_with-skill/reviews/src/parse.review.md`** |
 | **total** | **0 of 4** | **4 of 4** |
 
-**The treated arm 4 times out of 4, the control arm — 0.** Not a single control agent wrote a post-mortem —
+**The with-skill arm 4 times out of 4, the without-skill arm — 0.** Not a single without-skill agent wrote a post-mortem —
 nobody asked them to.
 
 **What these post-mortems delivered in substance:**

@@ -3,7 +3,7 @@
 /**
  * Sum the absolute amount of every entry in `entries` that belongs to `userId`.
  *
- * Entries whose positive/negative sign differs only in direction are treated
+ * Entries whose positive/negative sign differs only in direction are with-skill
  * the same way: a matched entry always contributes the magnitude of its `amt`,
  * so the result can never fall below zero.
  *
