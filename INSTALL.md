@@ -11,10 +11,11 @@ Client-specific manifests are included in the tree for the clients that want the
 | Client | Manifest |
 | --- | --- |
 | Agent Plugins (standard) | `plugin.json` |
-| Claude Code | `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` |
+| Claude Code | `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `hooks/hooks.json` |
 | Codex | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json` |
 | Gemini CLI | `gemini-extension.json`, `GEMINI.md` |
-| opencode | `.opencode/command/i-have-autism.md` (command) |
+| opencode | `.opencode/plugins/i-have-autism.mjs` (plugin) + `.opencode/command/i-have-autism.md` (command) |
+| Pi / OMP | `package.json` (`pi.extensions`, `omp.extensions`), `extensions/i-have-autism.ts` |
 
 ---
 
@@ -57,19 +58,70 @@ Both read Agent Plugins. Add the plugin through the client's plugin settings.
 
 ## opencode
 
-**opencode does not read Agent Plugins.** Its "plugin" is a JavaScript module wired to events — a skill
-package is the wrong format. opencode *does* read skills, from several locations. Copy the skill itself:
+opencode does not read Agent Plugins. It reads **two** things this repository ships:
 
-```bash
-mkdir -p ~/.config/opencode/skills
-cp -r skills/i-have-autism ~/.config/opencode/skills/
-```
+1. **A server plugin** — `.opencode/plugins/i-have-autism.mjs`. Copy the whole `.opencode/plugins/`
+   directory into your opencode config directory:
+
+   ```bash
+   mkdir -p ~/.config/opencode/plugins
+   cp .opencode/plugins/i-have-autism.mjs .opencode/plugins/i-have-autism.js ~/.config/opencode/plugins/
+   ```
+
+   The plugin registers the skill (so `/skill:i-have-autism` exists), registers the `/i-have-autism`
+   command, and installs the always-on system-prompt hook. It works under both runtime APIs: V1 through
+   `experimental.chat.system.transform`, V2 through the session `context` hook.
+2. **The skill itself** — opencode also scans plain skill directories. Copying it is enough if you do not
+   want the plugin:
+
+   ```bash
+   mkdir -p ~/.config/opencode/skills
+   cp -r skills/i-have-autism ~/.config/opencode/skills/
+   ```
 
 opencode finds `~/.config/opencode/skills/i-have-autism/SKILL.md` and loads it on demand. Project-scoped
 alternative: `.opencode/skills/`. It also reads `~/.claude/skills/` and `~/.agents/skills/`.
 
-The bundled `.opencode/command/i-have-autism.md` adds a `/i-have-autism` command that switches the rules on
-for the session.
+---
+
+## Always on — the rules inside the system prompt
+
+Off by default. The switch is a flag file; creating it turns injection on, deleting it turns injection off.
+
+| client | flag file |
+| --- | --- |
+| Claude Code, Codex | `$CLAUDE_CONFIG_DIR/.i-have-autism-always` (default `~/.claude/.i-have-autism-always`) |
+| opencode | `$XDG_CONFIG_HOME/opencode/.i-have-autism-always` (default `~/.config/opencode/.i-have-autism-always`) |
+| Pi / OMP | `~/.pi/.i-have-autism-always`, or `"alwaysOn": true` in `~/.pi/i-have-autism.json`, or the `--autism` flag for one session |
+
+```bash
+touch ~/.claude/.i-have-autism-always          # Claude Code, Codex
+touch ~/.config/opencode/.i-have-autism-always # opencode
+```
+
+What injection does per client:
+
+- **Claude Code / Codex** — `hooks/hooks.json` fires `hooks/always-on.mjs` on `SessionStart` (startup,
+  resume, clear, compact) and prints the ruleset; the client adds the output to the session context, so it
+  is re-sent after compaction.
+- **opencode** — the plugin pushes a `{type: "text"}` part into the system array on every request. Nothing
+  is added to the visible transcript.
+- **Pi / OMP** — the extension sends a hidden message (`display: false`) at `session_start` and re-sends it
+  after `session_compact`. A `AUTISM ON` status marker appears unless `hideStatus` is set.
+
+To turn it off inside a session, say **"stop autism mode"** or **"normal mode"**. To turn it off for good,
+delete the flag file.
+
+## Tests
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+26 tests. They cover what the injection actually does: silent without the flag, identical injected text
+across the Node, sh and PowerShell hooks, byte-identical output from both opencode APIs, frontmatter
+stripping (including trailing whitespace and an unclosed fence), skill and command registration, and the Pi
+manifest.
 
 ## Gemini CLI
 
@@ -78,8 +130,31 @@ skill into the extension's skills path.
 
 ## Hermes Agent
 
-Reads Agent Plugins. See the Hermes plugin documentation, or install the skill directly into the profile's
-skills directory.
+Hermes reads **Agent Skills**, not Agent Plugins: its plugins are Python packages with `plugin.yaml` and a
+`register(ctx)` entry point, so the manifests here do not load as a Hermes plugin. Install the skill into the
+profile's skills directory:
+
+```bash
+cp -r skills/i-have-autism ~/.hermes/profiles/<profile>/skills/
+```
+
+For the always-on path, this repository ships a native Hermes plugin in [`hermes/`](hermes/):
+
+```bash
+cp -r hermes ~/.hermes/profiles/<profile>/plugins/i-have-autism
+hermes plugins enable i-have-autism
+```
+
+It registers one **system-prompt section** through `ctx.register_system_prompt_section` — the documented
+cache-safe channel. Hermes deliberately routes ordinary plugin context into the user message, never the
+system prompt, because a changed system prompt invalidates the cached prefix. The section is rendered once
+per session, placed `after_memory`, and recovered from the persisted prompt after a restart. Its body is
+`hermes/rules.md`: a condensed 3,800-character ruleset, because sections are capped at 4,000 characters.
+The full 648-line version stays in `skills/i-have-autism/SKILL.md` and is read on demand.
+
+Taking effect: `hermes plugins enable` reloads plugins immediately but defers prompt sections to the next
+session. `hermes plugins doctor i-have-autism` validates import and registration; the section appears in the
+prompt as `## Plugin Context: i-have-autism.rules`.
 
 ## Any other client
 

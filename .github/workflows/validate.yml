@@ -103,5 +103,8 @@ jobs:
           done
           echo 'all JS parses'
 
+      - name: Plugin and hook tests pass
+        run: python3 -m unittest discover -s tests -v
+
       - name: Treated arm's own tests pass
         run: node --test evals/quality-2026-10-08/Q1_with-skill.test.js

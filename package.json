@@ -1,0 +1,16 @@
+{
+  "name": "i-have-autism",
+  "version": "0.3.0",
+  "description": "Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality.",
+  "license": "MIT",
+  "homepage": "https://github.com/Siririn77/i-have-autism",
+  "private": true,
+  "keywords": ["pi-package"],
+  "omp": {
+    "extensions": ["./extensions/i-have-autism.ts"]
+  },
+  "pi": {
+    "extensions": ["./extensions/i-have-autism.ts"],
+    "skills": ["./skills"]
+  }
+}

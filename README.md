@@ -22,7 +22,7 @@ Sibling to [i-have-adhd](https://github.com/ayghri/i-have-adhd). Same idea, diff
 
 ## Contents
 
-- [Why](#why) · [Install](#install) · [Works with](#works-with) · [Cursor: the hybrid setup](#cursor-the-hybrid-setup)
+- [Why](#why) · [Install](#install) · [Works with](#works-with) · [Always on](#always-on-the-rules-in-the-system-prompt) · [Cursor: the hybrid setup](#cursor-the-hybrid-setup)
 - [What it does](#what-it-does) · [Before and after](#before-and-after) · [The difference from i-have-adhd](#the-difference-from-i-have-adhd)
 - [The parts](#the-parts) · [When it yields](#when-it-yields) · [Evidence](#evidence)
 - [Manifesto](#manifesto--change-this-it-is-yours-now) · [Credit](#credit)
@@ -34,8 +34,10 @@ softener on the instruction, the actual step implied rather than written. For ma
 For a reader who pays for every ambiguity, it is a tax on every sentence — and the same tax lands on the
 code, where an implied precondition or a silent failure costs an afternoon.
 
-This skill removes the tax. It is **one markdown file**. There is nothing to run, nothing to configure,
-and it costs one line in your prompt.
+This skill removes the tax. The rules are **one markdown file** — nothing to run, nothing to configure, and it
+costs one line in your prompt. The plugin around it adds one optional thing: an always-on path that injects
+that same file into the system prompt of the client you use, so the rules are live from the first token
+instead of after you remember to ask for them.
 
 Nothing about it is subtle, which is the point: it says the true thing first, writes down every step it
 would otherwise skip, states disagreement on the line where it belongs, and refuses to trade correctness
@@ -62,11 +64,36 @@ native manifest for the clients that predate it. Nothing is rewritten per platfo
 | **Codex** | `.codex-plugin/` manifest |
 | **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
 | **Gemini CLI** | `gemini-extension.json` |
-| **opencode** | `.opencode/command/` — copies the skill into place |
+| **opencode** | `.opencode/plugins/` — a server plugin that registers the skill, the `/i-have-autism` command, and the always-on system-prompt hook |
 | **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
 
 If your client cannot read the package, the fix is a new manifest next to the existing ones — open an
 issue and say which client, and it gets added. The skill body itself does not change.
+
+## Always on: the rules in the system prompt
+
+By default the skill is read when you invoke it. The always-on path makes it part of the **system prompt**
+from the first token, without spending a user turn and without appearing in the transcript.
+
+It is off until you create a flag file. The file is the whole switch — delete it and the injection stops.
+
+| client | mechanism | opt-in flag |
+|---|---|---|
+| **Claude Code**, **Codex** | `hooks/hooks.json` → `hooks/always-on.mjs` on `SessionStart` (startup, resume, clear, compact) | `$CLAUDE_CONFIG_DIR/.i-have-autism-always` (default `~/.claude/.i-have-autism-always`) |
+| **opencode V2** | `.opencode/plugins/i-have-autism.mjs` → `ctx.session.hook('context')` pushes a text part into `event.system` | `$XDG_CONFIG_HOME/opencode/.i-have-autism-always` (default `~/.config/opencode/…`) |
+| **opencode V1** | same file → `experimental.chat.system.transform` appends to `output.system` | same flag |
+| **Pi / OMP** | `extensions/i-have-autism.ts` → `pi.sendMessage` with `display: false` on `session_start`, re-sent after `session_compact` | `--autism` flag, `alwaysOn: true` in `i-have-autism.json`, or `~/.pi/.i-have-autism-always` |
+
+Two properties are deliberate:
+
+1. **The hook never fails a session.** Every path exits 0 on error, and a missing skill file or an unreadable
+   flag leaves the session exactly as it would have been.
+2. **The frontmatter is stripped before injection.** The model receives the ruleset, not the YAML block that
+   describes it to a skill loader. An unterminated fence is treated as content, not as frontmatter.
+
+Verified by `tests/test_always_on_hooks.py` (silent without the flag, identical output across the Node, sh and
+PowerShell hooks) and `tests/test_opencode_plugin.py` (both opencode APIs produce byte-identical injected
+text). Run them with `python3 -m unittest discover -s tests`.
 
 ## Cursor: the hybrid setup
 

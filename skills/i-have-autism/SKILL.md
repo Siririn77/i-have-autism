@@ -2,9 +2,10 @@
 name: i-have-autism
 description: 'Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until "stop autism mode".'
 license: MIT
+disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.2.3"
+  version: "0.3.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, neurodivergent"
 ---
 
