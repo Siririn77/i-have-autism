@@ -47,6 +47,17 @@ cp -r skills/i-have-autism ~/.cursor/skills/
 
 Or point Cursor at the plugin via **Customize → Plugins**.
 
+The always-on path is a rule file, because Cursor has no runtime hook:
+
+```bash
+bash cursor/install.sh /path/to/project --always   # four rules + the always-on ruleset
+bash cursor/install.sh /path/to/project --remove   # take back everything this script installed
+```
+
+Global: paste the body of `cursor/always-on/i-have-autism.mdc` into **Settings → Rules → User Rules**.
+That rule is generated from `hermes/rules.md` by `cursor/build_always_on.py`; `--check` fails when the
+committed copy is stale. See [`cursor/README.md`](cursor/README.md).
+
 ## Codex (ChatGPT)
 
 Reads Agent Plugins. Add the repository as a plugin source per Codex's plugin settings, or copy the skill
@@ -93,6 +104,7 @@ Off by default. The switch is a flag file; creating it turns injection on, delet
 | Claude Code, Codex | `$CLAUDE_CONFIG_DIR/.i-have-autism-always` (default `~/.claude/.i-have-autism-always`) |
 | opencode | `$XDG_CONFIG_HOME/opencode/.i-have-autism-always` (default `~/.config/opencode/.i-have-autism-always`) |
 | Pi / OMP | `~/.pi/.i-have-autism-always`, or `"alwaysOn": true` in `~/.pi/i-have-autism.json`, or the `--autism` flag for one session |
+| Cursor | the file `cursor/always-on/i-have-autism.mdc` installed in the project's `.cursor/rules/`, or its body pasted into User Rules |
 
 ```bash
 touch ~/.claude/.i-have-autism-always          # Claude Code, Codex
@@ -107,7 +119,10 @@ What injection does per client:
 - **opencode** — the plugin pushes a `{type: "text"}` part into the system array on every request. Nothing
   is added to the visible transcript.
 - **Pi / OMP** — the extension sends a hidden message (`display: false`) at `session_start` and re-sends it
-  after `session_compact`. A `AUTISM ON` status marker appears unless `hideStatus` is set.
+  after `session_compact`. An `AUTISM ON` status marker appears unless `hideStatus` is set.
+- **Cursor** — there is no hook to read a flag at runtime, so the switch is the rule file itself: with
+  `alwaysApply: true` it is attached to every Agent/Chat request; `--remove` deletes it. Rules do not reach
+  Cursor Tab.
 
 To turn it off inside a session, say **"stop autism mode"** or **"normal mode"**. To turn it off for good,
 delete the flag file.

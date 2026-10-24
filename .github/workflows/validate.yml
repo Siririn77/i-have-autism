@@ -103,6 +103,9 @@ jobs:
           done
           echo 'all JS parses'
 
+      - name: Generated Cursor rule matches its source
+        run: python3 cursor/build_always_on.py --check
+
       - name: Plugin and hook tests pass
         run: python3 -m unittest discover -s tests -v
 

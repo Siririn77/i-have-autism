@@ -36,6 +36,41 @@ Then open **Customize → Rules** in Cursor to confirm they loaded.
 
 Three files apply always; the fourth is manual so it does not lecture you while you are just working.
 
+## Always on: the whole ruleset in one rule
+
+Three of the files above apply always, but they are a **port** of the language and code layers. The complete
+condensed ruleset lives in one more file, and it is generated rather than written:
+
+```
+hermes/rules.md                 ← the single source (the same text Hermes injects)
+cursor/build_always_on.py       ← writes the rule
+cursor/always-on/i-have-autism.mdc
+```
+
+`cursor/always-on/i-have-autism.mdc` has `alwaysApply: true`, so Cursor feeds it to **every** Agent/Chat
+request, exactly like the hook does on the other clients. Unlike them it cannot be switched off at runtime,
+because Cursor has no hook to read a flag file — so the switch is whether the file is installed:
+
+```bash
+bash cursor/install.sh /path/to/project --always   # add it
+bash cursor/install.sh /path/to/project --remove   # take everything back out
+bash cursor/install.sh /path/to/project            # the four rules, without it
+```
+
+Global instead of per project: open **Cursor Settings → Rules → User Rules** and paste the body of
+`cursor/always-on/i-have-autism.mdc`. Cursor stores user rules in settings, not in a file, so no path is
+offered here — inventing one would be a lie.
+
+Do not edit the generated rule by hand. Change `hermes/rules.md`, then run:
+
+```bash
+python3 cursor/build_always_on.py           # rewrite
+python3 cursor/build_always_on.py --check   # fail if the committed rule is stale (CI runs this)
+```
+
+The check exists because two hand-maintained copies of one ruleset drift, and the stale one is always the
+one the model happens to read.
+
 ## The honest limitation
 
 **These rules do not affect Cursor Tab** (the grey ghost text). Per Cursor's own documentation, rules

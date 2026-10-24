@@ -62,7 +62,7 @@ native manifest for the clients that predate it. Nothing is rewritten per platfo
 |---|---|
 | **Claude Code** | `.claude-plugin/` manifest |
 | **Codex** | `.codex-plugin/` manifest |
-| **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
+| **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules **and** the always-on rule — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
 | **Gemini CLI** | `gemini-extension.json` |
 | **opencode** | `.opencode/plugins/` — a server plugin that registers the skill, the `/i-have-autism` command, and the always-on system-prompt hook |
 | **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
@@ -83,6 +83,8 @@ It is off until you create a flag file. The file is the whole switch — delete 
 | **opencode V2** | `.opencode/plugins/i-have-autism.mjs` → `ctx.session.hook('context')` pushes a text part into `event.system` | `$XDG_CONFIG_HOME/opencode/.i-have-autism-always` (default `~/.config/opencode/…`) |
 | **opencode V1** | same file → `experimental.chat.system.transform` appends to `output.system` | same flag |
 | **Pi / OMP** | `extensions/i-have-autism.ts` → `pi.sendMessage` with `display: false` on `session_start`, re-sent after `session_compact` | `--autism` flag, `alwaysOn: true` in `i-have-autism.json`, or `~/.pi/.i-have-autism-always` |
+| **Cursor** | `cursor/always-on/i-have-autism.mdc` (`alwaysApply: true`) — Cursor has no hook, so the file's presence is the switch | `bash cursor/install.sh <project> --always`; global: paste into Settings → Rules → User Rules |
+| **Hermes** | `hermes/` — `ctx.register_system_prompt_section("i-have-autism.rules")`, a cache-safe section rendered once per session | `hermes plugins enable i-have-autism` |
 
 Two properties are deliberate:
 
@@ -91,9 +93,10 @@ Two properties are deliberate:
 2. **The frontmatter is stripped before injection.** The model receives the ruleset, not the YAML block that
    describes it to a skill loader. An unterminated fence is treated as content, not as frontmatter.
 
-Verified by `tests/test_always_on_hooks.py` (silent without the flag, identical output across the Node, sh and
-PowerShell hooks) and `tests/test_opencode_plugin.py` (both opencode APIs produce byte-identical injected
-text). Run them with `python3 -m unittest discover -s tests`.
+Verified by 40 tests in `tests/`: silent without the flag, identical output across the Node, sh and
+PowerShell hooks, byte-identical injection from both opencode APIs, the generated Cursor rule matching its
+single source, installer scope and removal, the Hermes section fitting the 4,000-character cap, and skill
+and command registration. Run them with `python3 -m unittest discover -s tests`.
 
 ## Cursor: the hybrid setup
 
