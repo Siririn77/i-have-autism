@@ -64,7 +64,7 @@ native manifest for the clients that predate it. Nothing is rewritten per platfo
 | **Codex** | `.codex-plugin/` manifest |
 | **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules **and** the always-on rule — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
 | **Gemini CLI** | `gemini-extension.json` |
-| **opencode** | `.opencode/plugins/` — a server plugin that registers the skill, the `/i-have-autism` command, and the always-on system-prompt hook |
+| **opencode** | a server plugin that registers the skill, the `/i-have-autism` command, and the always-on system-prompt hook; also shipped as a self-contained package in `dist/opencode-plugin/` (`bash opencode/install.sh`) |
 | **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
 
 If your client cannot read the package, the fix is a new manifest next to the existing ones — open an
