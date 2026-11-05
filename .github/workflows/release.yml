@@ -1,0 +1,39 @@
+name: release
+
+# Creates the GitHub release from the notes file committed with the tag.
+# Runs on a tag push because a fine-grained token without Contents: write
+# cannot create a release through the API from outside.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the notes for this tag
+        id: notes
+        run: |
+          file="release-notes/${GITHUB_REF_NAME}.md"
+          if [ ! -f "$file" ]; then
+            echo "missing $file: commit the release notes before the tag" >&2
+            exit 1
+          fi
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          head -1 "$file" | sed 's/^# //' > /tmp/title.txt
+          echo "title=$(cat /tmp/title.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "${{ steps.notes.outputs.title }}" \
+            --notes-file "${{ steps.notes.outputs.file }}" \
+            --latest
