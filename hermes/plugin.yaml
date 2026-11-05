@@ -1,4 +1,4 @@
 name: i-have-autism
-version: "0.3.1"
+version: "0.4.0"
 description: "Puts the i-have-autism ruleset into the system prompt as a cache-safe section: literal meaning, every implicit step named, no social padding, direct disagreement, and code held to readability and correctness."
 author: Ougi Oshino

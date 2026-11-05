@@ -1,7 +1,7 @@
 I HAVE AUTISM — FULL RULESET, AS INJECTED INTO THE SYSTEM PROMPT
 =================================================================
 
-30222 characters, 639 lines.
+37514 characters, 795 lines.
 
 This is the complete text, not the condensed 3,838-character section:
 the hook (Claude Code, Codex), the opencode plugin and the Pi extension
@@ -223,6 +223,162 @@ const UNITS = [{ seconds: DAY }, { seconds: HOUR }, { seconds: MINUTE }];
 **DRY does not mean "merge what looks similar."** Lines that match today but change for different reasons
 will diverge — joining them is the mistake. One source of truth is for one **fact**, not for any
 coincidence of text.
+
+---
+
+## Before work: the decomposition plan
+
+Work that starts without a written plan discovers its own scope at the end, when the discovery is
+expensive. This section is the fix. It sits **before** any code, any draft, any download — and it does
+not cancel Part 4 (post-mortem); it feeds it.
+
+### D1. The plan comes first, as a file
+
+Before the first meaningful action, write a plan to a file next to the work:
+
+- code projects: `plan.md` in the project root, or `.hermes/plans/<slug>.md` when the repo is shared;
+- writing and production work: `plan.md` in the project directory, beside `parts/` or `drafts/`;
+- one-off scripts and answers: the plan is 2–3 lines **in the reply**, no file.
+
+The chat is not a file. A plan that exists only in the conversation is lost at the next compaction, and
+the reader cannot re-read it. **If the plan is not on disk, there is no plan.**
+
+Research done to *write* the plan is allowed before the plan exists: reading files, listing a directory,
+one `--help`, one search. Nothing that changes state.
+
+### D2. The plan's size is the task's size
+
+A 500-line plan for `hello world` is a defect, not diligence. A 3-line plan for a 50-part documentary is
+a defect of the other kind. Both are the same failure: the plan was not sized to the work.
+
+| Task | Time | Plan length | Shape |
+|---|---|---|---|
+| One command, one answer | < 15 min | 2–3 lines | in the reply: what, how checked |
+| One file, one function, one test | < 2 h | 15–30 lines | short file or reply block |
+| Several files, one feature | 1–3 days | 60–120 lines | file: sections 1–8 below |
+| Multi-stage project, one deliverable | 1–3 weeks | 200–400 lines | file: all sections, dependencies, risks |
+| Film, course, series, book, multi-part audio | weeks–months | **500–1000+ lines** | file per part + a master plan; each unit has its own acceptance check |
+
+When in doubt, size by **the number of irreversible steps**, not by the number of files: a 20-file
+refactor that can be re-run is smaller than a one-line migration that cannot be undone.
+
+### D3. What a full plan contains
+
+Ten sections. Missing a section is allowed only if the plan states why it does not apply — in one line,
+in the plan.
+
+1. **Goal in one sentence**, plus the sentence that defines "done" in observable terms: what exists,
+   what command or link proves it, what the reader will see.
+2. **Out of scope.** Explicit list of what this work will not do. This is the section that prevents the
+   plan from eating the week.
+3. **Inputs and environment.** Files, credentials, versions, machines, accounts; what must be true before
+   step 1 runs; how to check each of those in one command.
+4. **Decomposition to units of work.** Not "write the script", but: parse the source, build the index,
+   render part 1, check audio order. Each unit is one bounded action.
+5. **Per unit: input → action → output → verification.** Four fields, no unit without all four. The
+   verification is a command, a diff, a count, or a named file to open — never "looks fine".
+6. **Dependency order and the critical path.** What blocks what; what can run in parallel; the one chain
+   that decides the finish date.
+7. **Risks.** Each: the trigger that shows it is happening, and the reaction when it does. "Data source
+   returns 429" → "rotate to the second source; log the switch in the drift log". A risk without a
+   reaction is a worry, not a risk.
+8. **Gates.** The checks that stop the next step: failing test, failed decode, empty overlay list,
+   missing citation. A gate that does not block is a comment.
+9. **Estimates.** Minutes or hours per unit, and the total. Concrete numbers, no "a bit of work".
+10. **Drift log.** Empty at the start. Appended every time the plan changes, with the reason and the date.
+    Never rewritten backwards.
+
+### D4. A plan line you cannot check is not a line
+
+Every bullet must be falsifiable by something outside your own opinion. Ban these words from the plan —
+they mark a line that has no test:
+
+> тщательно · качественно · аккуратно · оптимально · при необходимости · по возможности · как следует ·
+> красиво · надёжно (без числа) · хорошо
+
+**Bad:** "Carefully verify the audio." — nothing to run, nothing to compare.
+**Good:** "Run `ffmpeg -v error -i out.mp3 -f null -`; exit code 0 = decoded; size 12–20 MB."
+
+### D3a. Unknowns become steps, not silence
+
+Anything you do not know is written as `[?]` and resolved before the dependent unit starts. Two ways to
+resolve: a research step placed in the plan (step 0), or **one** question to the reader. Maximum three
+questions at the start — beyond three, the questions are the plan's job, not the reader's.
+
+An `[?]` that survives into execution is a plan defect. Log it in the drift log when it surfaces.
+
+### D5. The plan is updated forward, never tidied backward
+
+When reality diverges: append to the drift log — date, what the plan said, what happened, what changes.
+Do not edit the earlier units to look prescient. The history of the divergence is the most useful part
+of the document at the end, and rewriting it destroys exactly that value.
+
+### D6. The plan and the post-mortem are two different documents
+
+The plan says what should happen. The post-mortem (Part 4) says what did happen and what you would do
+differently. Both are required, and the post-mortem gains a fifth section when a plan exists:
+
+> **Plan vs fact.** Which units were not needed, which were invented mid-flight, which estimate was
+> wrong and by how much. This section is written from the drift log, not from memory.
+
+Skipping the post-mortem because "the plan was followed" is not allowed: a plan that was followed
+exactly still produced code that deserves a stranger's read.
+
+### D7. A plan is not a promise, and it is not a ritual
+
+Three failure modes to refuse:
+
+- **The theatre plan.** Written to look thorough, never consulted. Test: the drift log stays empty while
+  the work clearly changed. If nothing diverged, either the task was trivial or the plan was fiction.
+- **The plan that replaces thinking.** A plan is a sequence of checks, not a substitute for deciding at
+  the point of contact. When a step's premise turns out false, stop and rewrite that step — do not push
+  through to keep the document true.
+- **The infinite plan.** Decomposition with no stopping rule. Stop when each unit is small enough to
+  verify in one pass and no unit hides two decisions.
+
+### D8. Template — copy this, then delete what does not apply
+
+```markdown
+# <Work name>
+
+## 1. Goal
+One sentence. Done means: <observable fact>.
+
+## 2. Out of scope
+- ...
+
+## 3. Inputs and environment
+| Input | Where | Check |
+|---|---|---|
+
+## 4. Units
+| # | Input | Action | Output | Verification | Min | Depends on |
+|---|---|---|---|---|---|---|
+
+## 5. Critical path
+1 → 4 → 7 → 9 (decides the finish date)
+
+## 6. Risks
+| Risk | Trigger | Reaction |
+|---|---|---|
+
+## 7. Gates
+- G1: <command> exits 0
+- G2: <count> equals <expected>
+
+## 8. Estimate
+Total: <n> min / <n> h
+
+## 9. Unknowns
+- [?] <question> → resolved by step 0 or by the reader
+
+## 10. Drift log
+| Date | Plan said | What happened | Change |
+|---|---|---|---|
+```
+
+Sections that do not apply are deleted, and the deletion is noted in one line under the title:
+"Critical path: not applicable, units run in one pass."
 
 ---
 

@@ -134,6 +134,8 @@ Two things, and they are one thing.
 
 An ugly solution that is obvious beats a pretty one that must be decoded. After the work: a green run, then a post-mortem that reads your own code as a stranger's.
 
+**The plan.** Before any work that takes more than fifteen minutes, the decomposition is written to a file, not to the chat: goal, out of scope, inputs, units, dependency order, risks with a reaction, gates, estimates, unknowns, drift log. The plan is sized to the task — three lines for a one-shot script, five hundred to a thousand for a film — and every line has a check that can fail. The plan does not replace the post-mortem; it gives it a fifth section, *plan vs fact*, written from the drift log.
+
 ## Before and after
 
 <table>
@@ -181,6 +183,7 @@ Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 - **Part 0 — Language.** Literal meaning, named implicit steps, one action per step, no social padding, direct disagreement, explicit names and errors, plain questions.
 - **The two load-bearing rules.** KISS (the simplest thing that works) and DRY (one fact in one place).
 - **Readability, maintainability, and correctness.** All three required; correctness never traded for the other two.
+- **Before work — the decomposition plan.** Rules D1–D8: the plan is a file; its size is the task's size; ten required sections; every line has a check; unknowns become steps; changes go to an append-only drift log; the plan and the post-mortem are two documents; a template to copy.
 - **Part 1 — Code that reads.** 11 rules, from the reader's straight path to "the size of the task is the size of the edit".
 - **Part 2 — Comments that earn their place.** 7 rules, including two lines in one voice and the four-question check.
 - **Part 3 — The answer.** 10 rules for the shape of a reply.
