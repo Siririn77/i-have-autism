@@ -1,12 +1,12 @@
 ---
 name: i-have-autism
-description: 'Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, a written decomposition plan sized to the task before any work, and code held to readability, maintainability, and correctness with no compromise on quality. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until "stop autism mode".'
+description: 'Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, an association graph and a written decomposition plan sized to the task before any work, and code held to readability, maintainability, and correctness with no compromise on quality. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until "stop autism mode".'
 license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.4.0"
-  tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, neurodivergent"
+  version: "0.5.0"
+  tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
 # I Have Autism
@@ -258,6 +258,122 @@ a defect of the other kind. Both are the same failure: the plan was not sized to
 When in doubt, size by **the number of irreversible steps**, not by the number of files: a 20-file
 refactor that can be re-run is smaller than a one-line migration that cannot be undone.
 
+### D2a. The graph comes before the plan
+
+The plan is a sequence. The graph is the space the sequence is chosen from: you cannot order units you
+have not found. So the graph is built first, and the plan is read off it. This applies to every task —
+the difference is only how big the graph gets (see the budget below; for a one-liner it is three nodes
+drawn in the reply).
+
+**Without a graph the plan has two standard failures:** it invents units as it goes (the scope grows
+silently), and it misses whole regions (a theatre of the war, a subsystem, a quarter of the data).
+
+#### The root questions come first
+
+A graph grown from nouns is an encyclopedia. A graph grown from **questions** is an argument.
+
+- `Япония`, `Китай`, `Коралловое море` are **nodes** — and every one of them sits on one axis, "theatre".
+- `Почему японский флот с превосходством потерял четыре авианосца за один день?` is a **root question**.
+
+Write **one to five root questions** before the first node. The work exists to answer them; a node that
+answers nothing is cut, however interesting. The "why should I care" of the whole work is the question
+that survives being asked five times.
+
+#### Node fields — all four, or it is not a node
+
+| field | what goes in it |
+|---|---|
+| **what** | one line: a claim or a noun phrase, not a sentence |
+| **why it matters** | the reader's stake in one sentence — the "почему должно быть не всё равно" |
+| **anchor** | the source, archive, file, or command that proves it exists |
+| **when / where** | date, place, version; facts without coordinates drift |
+
+**No anchor, no node.** An unanchored node goes into a separate *hypotheses* list and never into the graph,
+because a graph of guesses produces a plan of guesses.
+
+#### Edges are typed — four types, no others
+
+| edge | meaning | why it earns its place |
+|---|---|---|
+| **causes** A → B | A produced B | the only edge that builds a narrative spine |
+| **contrasts** A ≠ B | two answers to the same question | prevents a list from pretending to be an argument |
+| **repeats** A ≈ B | the same pattern elsewhere in space or time | turns one case into a claim about the world |
+| **contradicts** A ⊥ B | sources disagree | becomes a **fact gate** in the plan, never a smoothed average |
+
+An untyped edge ("related to") is decoration: it cannot be checked and cannot be cut. If two nodes are
+connected but no type fits, the connection is not yet understood — write the question that would
+reveal it, and leave the edge out.
+
+#### Axes
+
+Group the nodes by axis. For a history work: theatres · period · people · technology · production ·
+memory. For a code project: entry points · data · failure modes · contracts · deployment. For a lecture
+series: claims · evidence · objections · examples.
+
+Every node lands on an axis. A node that lands on none is either cut or **creates a new axis** — and a
+new axis is a signal that the frame is too narrow: stop and widen the frame, do not grow the graph.
+
+#### The stop rule
+
+Stop adding nodes when all three hold:
+
+1. every root question has **at least three** answering nodes (one answer is an opinion, three is a case);
+2. every axis has **at least three** nodes (an axis with one node is a paragraph, not an axis);
+3. the next node you would add needs an axis that does not exist.
+
+Rule 3 is the important one: it converts "the topic is huge" into "the frame was wrong", which is a
+decision, not an endless night of associations.
+
+#### Budget — the graph is sized like the plan
+
+| task | nodes | shape |
+|---|---|---|
+| one-liner, one file | **3–5** | inline in the reply: goal → step → check |
+| feature, 1–3 days | 15–30 | `graph.md`, one axis list |
+| project, 1–3 weeks | 40–80 | `graph.md` + node table |
+| film, course, book | **40–60 per part**, 10–20 in the master graph | one graph per part, plus the spine that connects them |
+
+**One node ≈ one unit of work.** A forty-minute episode with sixty nodes gives a sixty-beat structure at
+about a minute per beat. Five hundred nodes on paper is cheaper to draw than four hundred are to throw
+away — so the budget is a decision, not a limitation.
+
+#### The file
+
+`graph.md` next to `plan.md`. Two blocks:
+
+1. a Mermaid graph — renders in GitHub, GitLab, Obsidian and any Markdown viewer, so the reader opens the
+   picture without extra tooling;
+2. a table of nodes: `id | what | why it matters | anchor | when`, and a table of edges: `from | type | to`.
+
+```mermaid
+graph LR
+  Q1{{"Почему Япония потеряла Мидуэй?"}}
+  Q1 --> N1["код JN-25 взломан"]
+  Q1 --> N2["три авианосца сгорели за пять минут"]
+  N1 -- causes --> N2
+  N3["превосходство в силах"] -- contrasts --> N2
+```
+
+#### Conversion: the graph is the spine of the plan
+
+Every unit in the plan names the node id it serves.
+
+- a **node with no unit** → an explicit out-of-scope decision, written in the plan's section 2;
+- a **unit with no node** → scope creep; cut it or add the node with its anchor first;
+- a **`contradicts` edge** → a fact gate: the unit cannot pass until the disagreement is named on air or
+  in the text.
+
+This is the check that keeps the graph from becoming a picture beside an unrelated plan.
+
+#### Failure modes
+
+- **The hairball.** Two hundred nodes, no axes, unreadable. Fix: axes and the stop rule.
+- **The encyclopedia.** Nodes by noun, no root questions. Coverage without a claim; the reader learns
+  facts and remembers nothing.
+- **The decoration.** A beautiful graph, a plan written without opening it. Test: no unit cites a node id.
+- **The graph for everything, badly.** A diagram where a sentence was needed. A one-liner gets three
+  nodes in the reply — no file, no Mermaid, no ceremony.
+
 ### D3. What a full plan contains
 
 Ten sections. Missing a section is allowed only if the plan states why it does not apply — in one line,
@@ -269,7 +385,7 @@ in the plan.
    plan from eating the week.
 3. **Inputs and environment.** Files, credentials, versions, machines, accounts; what must be true before
    step 1 runs; how to check each of those in one command.
-4. **Decomposition to units of work.** Not "write the script", but: parse the source, build the index,
+4. **Decomposition to units of work**, read off the graph (D2a): each unit names the node id it serves. Not "write the script", but: parse the source, build the index,
    render part 1, check audio order. Each unit is one bounded action.
 5. **Per unit: input → action → output → verification.** Four fields, no unit without all four. The
    verification is a command, a diff, a count, or a named file to open — never "looks fine".

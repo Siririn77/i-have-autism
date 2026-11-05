@@ -1,16 +1,17 @@
+Вот простой скрипт на Python:
+
 ```python
-# hello.py
-print("Hello, World!")
+print("hello world")
 ```
 
-Запуск:
+Сохраните его в файл, например `hello.py`, и запустите:
 
 ```bash
 python hello.py
 ```
 
-Ожидаемый вывод:
+Вывод:
 
-```
-Hello, World!
+```text
+hello world
 ```

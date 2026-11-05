@@ -1,45 +1,43 @@
+Файл `seconds_to_hm.py`, ниже — функция целиком.
+
+**Граф (4 узла):**
+
+1. **Что:** выходные единицы — только часы и минуты. **Почему:** формат задан как «1ч 20м», секунд в нём нет. **Якорь:** `divmod(total_seconds, 3600)`. **Когда:** всегда.
+2. **Что:** секунды отбрасываются, а не округляются. **Почему:** 90 с при округлении дали бы «2м» — это ложь о входе. **Якорь:** `rest // 60`. **Когда:** всегда.
+3. **Что:** отрицательное и не-int отвергаются до арифметики. **Почему:** `divmod(-90, 3600)` даёт `(-1, 3510)` → «-1ч 58м», бессмыслица. **Якорь:** два `raise`. **Когда:** на входе.
+4. **Что:** при нуле часов часть «0ч» не печатается. **Почему:** «40м» читается, «0ч 40м» — шум. **Якорь:** `if hours:`. **Когда:** `total_seconds < 3600`.
+
 ```python
-def format_seconds(seconds: int) -> str:
-    """Переводит секунды в строку вида «1ч 20м».
+def seconds_to_hm(total_seconds: int) -> str:
+    """Секунды -> «1ч 20м». Нецелые и отрицательные значения — ошибка."""
+    # Проверки до арифметики: divmod на отрицательном числе даёт верные
+    # по модулю часы и мусорные минуты, чинить это после форматирования поздно.
+    if isinstance(total_seconds, bool) or not isinstance(total_seconds, int):
+        raise TypeError(
+            f"total_seconds: ожидался int, получен {type(total_seconds).__name__}"
+        )
+    if total_seconds < 0:
+        raise ValueError(f"total_seconds: ожидалось >= 0, получено {total_seconds}")
 
-    seconds: целое число, не меньше нуля.
-
-    0…59     -> «45с»
-    60…3599  -> «2м 30с»; «2м», если секунды нулевые
-    от 3600  -> «1ч 20м»; «1ч», если минуты нулевые,
-                остаток секунд отбрасывается
-    """
-    if seconds < 0:
-        raise ValueError(f"seconds: ожидалось >= 0, получено {seconds}")
-
-    hours, rest = divmod(seconds, 3600)
-    minutes, secs = divmod(rest, 60)
+    hours, rest = divmod(total_seconds, 3600)
+    # Секунды отбрасываем: формат «1ч 20м» их не показывает,
+    # округление вверх соврало бы о длительности.
+    minutes = rest // 60
 
     if hours:
-        # Нулевые минуты не печатаем: «1ч» читается, «1ч 0м» — нет.
-        return f"{hours}ч {minutes}м" if minutes else f"{hours}ч"
-
-    if minutes:
-        # Секунды сохраняем только ниже часа: на масштабе часов они уже шум.
-        return f"{minutes}м {secs}с" if secs else f"{minutes}м"
-
-    return f"{secs}с"
+        return f"{hours}ч {minutes}м"
+    return f"{minutes}м"
 ```
 
-В задании не было трёх правил, я выбрал их сам. Проверь по порядку, первое — самое неожиданное:
-1. `format_seconds(3661) == "1ч 1м"` — 1 секунда потеряна. Если терять нельзя, формат нужен другой.
-2. `format_seconds(3600) == "1ч"` — нулевые минуты не печатаются.
-3. `format_seconds(-5)` — `ValueError: seconds: ожидалось >= 0, получено -5`.
-
-Проверка:
+**Проверка:**
 
 ```python
-assert format_seconds(0) == "0с"
-assert format_seconds(45) == "45с"
-assert format_seconds(60) == "1м"
-assert format_seconds(90) == "1м 30с"
-assert format_seconds(3600) == "1ч"
-assert format_seconds(4800) == "1ч 20м"
+assert seconds_to_hm(0) == "0м"
+assert seconds_to_hm(90) == "1м"
+assert seconds_to_hm(4800) == "1ч 20м"
+assert seconds_to_hm(3600) == "1ч 0м"
 ```
 
-Скопируй блок `assert` под функцию и запусти файл: шесть строк пройдут без вывода, любая ошибка назовёт вход.
+Запуск: `python -c "from seconds_to_hm import seconds_to_hm; print(seconds_to_hm(4800))"` → `1ч 20м`.
+
+**Что осталось за рамками:** `total_seconds=3599.9` (float) не принимается — сигнатура объявляет `int`. Если нужны доли секунды, это отдельное решение о том, что печатать в остатке.

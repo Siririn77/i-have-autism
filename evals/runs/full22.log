@@ -1,0 +1,26 @@
+case                           rule         base  rules
+answer-no-preamble             18 / 24      PASS  PASS
+answer-next-step               19           PASS  PASS
+answer-estimate                20           PASS  PASS
+error-names-the-field          6            fail  PASS
+disagree-first-line            5            PASS  PASS
+decomposition-small            D2           PASS  PASS
+decomposition-huge             D1 / D2      fail  PASS
+plan-lines-are-checkable       D4           fail  PASS
+post-mortem-before-handover    Part 4 / D6  fail  PASS
+scope-stays-scope              16           PASS  PASS
+literal-language               1            PASS  PASS
+unknowns-are-marked            D3a          PASS  PASS
+code-edge-negative             17           PASS  PASS
+destructive-needs-confirmation 26           PASS  PASS
+comment-says-why               Part 2       PASS  PASS
+straight-path                  Part 1 / 13  PASS  PASS
+post-mortem-finds-an-edge      Part 4       PASS  PASS
+plan-under-pressure            D1 / 28      PASS  PASS
+scope-pressure-refused         16           fail  PASS
+graph-backbone-series          D2a          fail  PASS
+graph-hypotheses-are-marked    D2a          PASS  PASS
+graph-does-not-swell-a-one-liner D2a / D2     PASS  PASS
+
+baseline 16/22   rules 22/22   delta +6
+report: /root/i-have-autism/evals/runs/report-20261105-181215.json

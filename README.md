@@ -134,6 +134,8 @@ Two things, and they are one thing.
 
 An ugly solution that is obvious beats a pretty one that must be decoded. After the work: a green run, then a post-mortem that reads your own code as a stranger's.
 
+**The graph.** Before the plan, an association graph: one to five root questions, axes, nodes that carry what / why it matters / an anchor / a date, and typed edges — causes, contrasts, repeats, contradicts. No anchor, no node. The stop rule is a decision, not a mood: every question has three answers and the next node would need a new axis. Size follows the task, from three nodes in the reply to forty-sixty per film part. Every unit of the plan names the node it serves.
+
 **The plan.** Before any work that takes more than fifteen minutes, the decomposition is written to a file, not to the chat: goal, out of scope, inputs, units, dependency order, risks with a reaction, gates, estimates, unknowns, drift log. The plan is sized to the task — three lines for a one-shot script, five hundred to a thousand for a film — and every line has a check that can fail. The plan does not replace the post-mortem; it gives it a fifth section, *plan vs fact*, written from the drift log.
 
 ## Before and after
@@ -184,7 +186,7 @@ Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 - **The two load-bearing rules.** KISS (the simplest thing that works) and DRY (one fact in one place).
 - **Readability, maintainability, and correctness.** All three required; correctness never traded for the other two.
 - **Before work — the decomposition plan.** Rules D1–D8: the plan is a file; its size is the task's size; ten required sections; every line has a check; unknowns become steps; changes go to an append-only drift log; the plan and the post-mortem are two documents; a template to copy.
-- **Evals — the rules as a test.** `evals/` holds controlled A/B runs: the same prompts with and without the ruleset, scored by pattern checks. The 2026-11-05 run covers the decomposition rule: **15/19 without the rules, 19/19 with them**, with every answer saved side by side.
+- **Evals — the rules as a test.** `evals/` holds controlled A/B runs: the same prompts with and without the ruleset, scored by pattern checks. The 2026-11-05 run covers the decomposition rule: **16/22 without the rules, 22/22 with them**, with every answer saved side by side.
 - **Part 1 — Code that reads.** 11 rules, from the reader's straight path to "the size of the task is the size of the edit".
 - **Part 2 — Comments that earn their place.** 7 rules, including two lines in one voice and the four-question check.
 - **Part 3 — The answer.** 10 rules for the shape of a reply.

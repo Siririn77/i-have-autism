@@ -1,6 +1,6 @@
-На Debian есть два основных способа.
+# Установка NumPy на Debian
 
-### 1. Через системный пакет (рекомендуется для большинства случаев)
+## Способ 1: из репозитория Debian (проще всего)
 
 ```bash
 sudo apt update
@@ -13,21 +13,19 @@ sudo apt install python3-numpy
 python3 -c "import numpy; print(numpy.__version__)"
 ```
 
-Это установит NumPy для системного Python 3. Версия может быть немного старше, чем в PyPI, зато всё ставится через пакетный менеджер Debian.
+Плюсы: ставится системный пакет, автоматически подтягиваются зависимости (BLAS/LAPACK), обновляется вместе с системой. Минус — версия может быть старше актуальной (в Debian 12 — NumPy 1.24, в Debian 13 — уже 2.x).
 
----
+Пакет ставится для системного `python3`. Если у вас несколько версий Python, посмотрите `apt search python3-numpy`.
 
-### 2. Через pip в виртуальном окружении (если нужна свежая версия)
+## Способ 2: через pip в виртуальном окружении (рекомендуется для проектов)
 
-В Debian 12+ системный pip защищён от установки пакетов глобально, поэтому лучше использовать venv:
+Начиная с Debian 12 действует PEP 668: `pip install` в системный Python блокируется ошибкой `externally-managed-environment`. Поэтому создаём venv:
 
 ```bash
-sudo apt update
 sudo apt install python3-venv python3-pip
 
-python3 -m venv ~/.venvs/numpy
-source ~/.venvs/numpy/bin/activate
-
+python3 -m venv .venv
+source .venv/bin/activate
 pip install --upgrade pip
 pip install numpy
 ```
@@ -35,15 +33,51 @@ pip install numpy
 Проверка:
 
 ```bash
-python3 -c "import numpy; print(numpy.__version__)"
+python -c "import numpy; print(numpy.__version__)"
 ```
 
-Выйти из окружения:
+Выход из окружения — `deactivate`. Так вы получите свежую версию и не сломаете системные пакеты.
+
+Нужна конкретная версия:
 
 ```bash
-deactivate
+pip install "numpy==2.1.3"
 ```
 
----
+## Способ 3: uv / conda (если нужен менеджер окружений)
 
-Если при `pip install numpy` без venv появляется ошибка вида `externally-managed-environment`, не используйте `--break-system-packages` без необходимости — лучше создать виртуальное окружение или установить `python3-numpy` через `apt`.
+```bash
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv && source .venv/bin/activate
+uv pip install numpy
+```
+
+Или Miniforge/conda:
+
+```bash
+conda create -n sci python=3.12 numpy
+conda activate sci
+```
+
+## Чего делать не стоит
+
+```bash
+pip install --break-system-packages numpy   # ломает системный Python
+```
+
+Это обходит защиту PEP 668 и может конфликтовать с пакетами apt. Используйте venv.
+
+## Если нужна сборка из исходников
+
+Обычно не требуется — для всех популярных платформ есть готовые wheel. Но если pip не нашёл wheel:
+
+```bash
+sudo apt install build-essential gfortran python3-dev libopenblas-dev
+```
+
+## Итог
+
+- Нужен NumPy «для системы/скриптов» → `sudo apt install python3-numpy`.
+- Пишете проект → venv + `pip install numpy`.
+- Хотите свежую версию и изоляцию → venv/uv/conda.

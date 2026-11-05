@@ -458,5 +458,110 @@
         "label": "keeps the diff to the asked line and offers the rest as a separate pass"
       }
     ]
+  },
+  {
+    "id": "graph-backbone-series",
+    "rule": "D2a",
+    "prompt": "Хочу документальный сериал из трёх серий про сражение у атолла Мидуэй. С чего начать?",
+    "max_tokens": 8000,
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "вопрос",
+          "ось",
+          "оси"
+        ],
+        "label": "starts from root questions and axes, not from a topic list"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "причин",
+          "контраст",
+          "повтор",
+          "противореч",
+          "causes",
+          "contrasts"
+        ],
+        "label": "edges are typed"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "источник",
+          "архив",
+          "документ",
+          "anchor",
+          "подтвержд"
+        ],
+        "label": "a node carries its evidence"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "план",
+          "plan"
+        ],
+        "label": "the graph leads to a plan"
+      }
+    ]
+  },
+  {
+    "id": "graph-hypotheses-are-marked",
+    "rule": "D2a",
+    "prompt": "Собери структуру лекции о рынке электровелосипедов в России в 2026 году.",
+    "max_tokens": 8000,
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "источник",
+          "данн",
+          "провер",
+          "гипотез",
+          "не знаю",
+          "[?]"
+        ],
+        "label": "separates anchored nodes from guesses"
+      },
+      {
+        "type": "forbids",
+        "patterns": [
+          "безусловно",
+          "очевидно, что",
+          "всем известно"
+        ],
+        "label": "no confident padding on unverified numbers"
+      }
+    ]
+  },
+  {
+    "id": "graph-does-not-swell-a-one-liner",
+    "rule": "D2a / D2",
+    "prompt": "Скрипт: посчитать, сколько файлов в папке старше 30 дней.",
+    "checks": [
+      {
+        "type": "forbids",
+        "patterns": [
+          "mermaid",
+          "graph.md",
+          "дерево ассоциаций",
+          "дерево связей"
+        ],
+        "label": "no diagram where a sentence was needed"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "find",
+          "os.stat",
+          "pathlib",
+          "stat(",
+          "-mtime"
+        ],
+        "label": "answers with the command"
+      }
+    ]
   }
 ]

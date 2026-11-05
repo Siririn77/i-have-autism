@@ -1,49 +1,32 @@
+**Установить пакетом Debian (рекомендую):**
 ```
-sudo apt install python3-numpy
+sudo apt update && sudo apt install -y python3-numpy
+python3 -c "import numpy; print(numpy.__version__)"
 ```
+Проверка: вторая команда печатает версию, например `1.24.2`. Если печатает `ModuleNotFoundError` — пакет не встал, смотри вывод apt.
 
-Это основной путь. Ниже два варианта и их цена.
+**Граф решения (4 узла):**
 
-**План (2 строки):** вариант A — системный пакет через apt, работает без настройки. Вариант B — venv + pip, нужен, если версия из репозитория старая.
+1. **Какой Python используется** — от этого зависит способ. Важно: в Debian 12+ системный Python помечен как externally managed (PEP 668), поэтому `pip install numpy` в систему падает с `error: externally-managed-environment`. Якорь: `ls /usr/lib/python3*/EXTERNALLY-MANAGED`. Когда: до любой установки.
+2. **Пакет apt `python3-numpy`** — ставится в системный Python, ничего не ломает, версия старее текущей с PyPI. Якорь: `dpkg -l python3-numpy`. Когда: нужен numpy без изоляции окружения.
+3. **Виртуальное окружение + pip** — изоляция, свежая версия. Якорь: `.venv/lib/python3*/site-packages/numpy`. Когда: нужна конкретная версия или свой проект.
+4. **Сборка из исходников** — нужна на старых архитектурах и когда для вашей версии Python нет готового wheel. Якорь: сообщение `error: subprocess-exited-with-error` без `gcc`. Когда: pip не нашёл wheel.
 
----
-
-## Вариант A: системный пакет (рекомендую)
-
-1. `sudo apt update`
-2. `sudo apt install python3-numpy`
-3. Проверка: `python3 -c "import numpy; print(numpy.__version__)"`
-
-Ожидаемый результат шага 3: печатается номер версии, например `1.24.2`.
-
-- Плюс: пакет обновляется через `apt`, конфликтов с системным Python нет.
-- Минус: версия — та, что в репозитории Debian. На Debian 12 (bookworm) это 1.24.2. Проверить точно: `apt-cache policy python3-numpy`.
-- Ограничение: пакет ставится только для системного `python3`. Если вы вызываете `python3.11` из другой установки, `import numpy` в ней не найдётся — имя модуля разрешается по путям конкретного интерпретатора.
-- Время: 1–2 минуты.
-
-## Вариант B: venv + pip (если нужна свежая версия)
-
-Предпосылка: модуль `venv` в Debian вынесен в отдельный пакет, без него шаг 2 падает с `No module named venv`.
-
-1. `sudo apt install python3-venv`
-2. `python3 -m venv ~/venv-numpy`
-3. `~/venv-numpy/bin/pip install numpy`
-4. Проверка: `~/venv-numpy/bin/python -c "import numpy; print(numpy.__version__)"`
-
-- Плюс: любая версия numpy, изоляция от системного Python.
-- Минус: окружение надо активировать (`source ~/venv-numpy/bin/activate`) в каждой новой оболочке, иначе `import numpy` не сработает.
-- Время: 2–3 минуты плюс скачивание.
-
-## Чего не делать
-
-`pip install numpy` в системный Python на Debian 12 падает с ошибкой:
-
+**Способ 2 — venv (свежая версия):**
 ```
-error: externally-managed-environment
+sudo apt install -y python3-venv
+python3 -m venv .venv
+. .venv/bin/activate
+pip install numpy
+python -c "import numpy; print(numpy.__version__)"
 ```
 
-Причина: файл `/usr/lib/python3.11/EXTERNALLY-MANAGED` запрещает pip менять системные пакеты. Обход `--break-system-packages` работает, но ломает пакеты, которыми управляет apt, — не применяйте, пока не готовы чинить систему вручную.
+**Способ 3 — только если pip не нашёл wheel** (сборка займёт 5–20 минут):
+```
+sudo apt install -y build-essential python3-dev
+pip install numpy
+```
 
----
+План: (1) выбрать способ по узлу 1, (2) выполнить команды, (3) проверить импортом. Способ 1 занимает около 1 минуты, способ 2 — около 2 минут.
 
-**Следующее действие:** выполните `python3 -c "import numpy; print(numpy.__version__)"`. Если печатает версию — установка закончена. Если пишет `ModuleNotFoundError` — сообщите вывод `which python3`.
+Следующее действие: выполните `python3 -c "import sys; print(sys.version)"` и пришлите вывод — по нему скажу, какой способ подходит.

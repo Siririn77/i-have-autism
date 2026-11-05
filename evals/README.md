@@ -52,6 +52,19 @@ Task index for this run:
 
 Full write-up: **[AB-report.md](AB-report.md)**.
 
+### The graph cases (added with D2a)
+
+The association-graph rule earns its place on exactly one case and is a guard on the other two:
+
+| case | without | with | what it shows |
+|---|---|---|---|
+| `graph-backbone-series` | 0/3 | 3/3 | a three-part series about Midway gets root questions, axes, typed edges, a node budget and a plan that cites node ids |
+| `graph-hypotheses-are-marked` | 3/3 | 3/3 | the model already separates sourced facts from guesses |
+| `graph-does-not-swell-a-one-liner` | 3/3 | 3/3 | a one-liner still gets a command, not a diagram — the guard against "graph for everything" |
+
+That last row is the answer to the obvious objection to the rule: a graph for every task is only safe
+because the same rule forbids a file and a diagram where a sentence was enough.
+
 ### `quality-2026-10-08/` — the code, judged mechanically
 
 The code-quality run. Here the interesting artifacts are the **post-mortems**, which only the with-skill arm
@@ -70,11 +83,11 @@ Full write-up and the scoring script in that directory.
 
 ### `decomposition-2026-11-05/` — the rules as an executable test
 
-The third run, and the first one that is a **suite instead of a pair of transcripts**. 19 prompts, each
+The third run, and the first one that is a **suite instead of a pair of transcripts**. 22 prompts, each
 probed with `--repeat 3`, each scored by pattern checks rather than by a judge model. `run_evals.py`
 replayed them with and without `hermes/rules.md` — the 3881-character text clients actually inject.
 
-**Result: without the rules 15/19, with the rules 19/19** (the first 13 cases alone: 10/13 against 13/13). The gap is concentrated, not spread:
+**Result: without the rules 16/22, with the rules 22/22** (the first 13 cases alone: 10/13 against 13/13). The gap is concentrated, not spread:
 
 | case | without | with | what it shows |
 |---|---|---|---|
