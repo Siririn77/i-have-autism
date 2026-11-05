@@ -1,0 +1,58 @@
+{
+  "when": "2026-11-05T13:32:32+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "rules_chars": 3894,
+  "repeat": 3,
+  "total": 1,
+  "baseline_score": 1,
+  "rules_score": 1,
+  "errors": 0,
+  "rows": [
+    {
+      "id": "straight-path",
+      "rule": "Part 1 / 13",
+      "baseline": true,
+      "baseline_rate": "3/3",
+      "baseline_failures": [],
+      "baseline_answer": "Читаемее всего — использовать «guard clauses» (ранние возвраты):\n\n```python\ndef check(user):\n    if not user:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nТак основная логика остаётся на последней строке, а все исключающие случаи обрабатываются сразу.\n\nЕсли нужен более короткий вариант:\n\n```python\ndef check(user):\n    return bool(user and user.active and user.age >= 18)\n```\n\nНо для читаемости я бы выбрал первый вариант с ранними возвратами.",
+      "baseline_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "Читаемее всего — использовать «guard clauses» (ранние возвраты):\n\n```python\ndef check(user):\n    if not user:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nТак основная логика остаётся на последней строке, а все исключающие случаи обрабатываются сразу.\n\nЕсли нужен более короткий вариант:\n\n```python\ndef check(user):\n    return bool(user and user.active and user.age >= 18)\n```\n\nНо для читаемости я бы выбрал первый вариант с ранними возвратами."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "Вариант с ранними возвратами — проще читать и сохраняет исходное поведение:\n\n```python\ndef check(user):\n    if not user or not user.active:\n        return False\n\n    return user.age >= 18\n```\n\nПочему так лучше:\n\n- убрана вложенность `if` внутри `if`;\n- явно видно, что при отсутствии пользователя или неактивном аккаунте возвращается `False`;\n- основная проверка возраста остаётся в конце.\n\nЭквивалентный короткий вариант:\n\n```python\ndef check(user):\n    return bool(user and user.active and user.age >= 18)\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "Вариант с guard clauses — самый читаемый и сохраняет исходную логику:\n\n```python\ndef check(user):\n    if not user:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nИли короче:\n\n```python\ndef check(user):\n    return bool(user and user.active and user.age >= 18)\n```\n\nПервый вариант лучше для читаемости: он явно показывает проверки по порядку и использует ранние выходы. Второй — компактный, но чуть менее наглядный."
+        }
+      ],
+      "rules": true,
+      "rules_rate": "3/3",
+      "rules_failures": [],
+      "rules_answer": "```python\ndef check(user):\n    if user is None:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nWhat changed:\n1. Four nested branches collapsed to three guards plus one return. Each guard is one condition on one line; no nesting.\n2. `if user.age >= 18: return True else: return False` became `return user.age >= 18` — the comparison already produces the boolean; the branch added nothing.\n3. `if user:` became `if user is None:`. This is the one behaviour change and it is deliberate — see below.\n\nBehaviour change, stated plainly: the original tested truthiness, the refactor tests identity against `None`. If `user` is a plain object or a class without `__bool__`/`__len__`, both versions agree. If `user` is a mapping, a list, or a class defining `__bool__` or `__len__`, a falsy-but-present `user` now passes the first guard and the function reads `user.active` instead of returning `False`. If that case is reachable, put `if not user:` back; the rest of the refactor is unaffected.\n\nDefects not fixed, as asked:\n- `user.age` raises `TypeError` if `age` is `None`. Cause: no guard for a missing age; fix: decide whether a missing age means `False` or an error, then write that guard.\n- `check` does not say what it checks. Name: `is_active_adult` — renamed only if you ask.\n\nTest that the refactor holds:\n\n```python\nclass U:\n    def __init__(self, active, age):\n        self.active, self.age = active, age\n\nassert check(None) is False\nassert check(U(False, 30)) is False\nassert check(U(True, 17)) is False\nassert check(U(True, 18)) is True\n```",
+      "rules_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```python\ndef check(user):\n    if user is None:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nWhat changed:\n1. Four nested branches collapsed to three guards plus one return. Each guard is one condition on one line; no nesting.\n2. `if user.age >= 18: return True else: return False` became `return user.age >= 18` — the comparison already produces the boolean; the branch added nothing.\n3. `if user:` became `if user is None:`. This is the one behaviour change and it is deliberate — see below.\n\nBehaviour change, stated plainly: the original tested truthiness, the refactor tests identity against `None`. If `user` is a plain object or a class without `__bool__`/`__len__`, both versions agree. If `user` is a mapping, a list, or a class defining `__bool__` or `__len__`, a falsy-but-present `user` now passes the first guard and the function reads `user.active` instead of returning `False`. If that case is reachable, put `if not user:` back; the rest of the refactor is unaffected.\n\nDefects not fixed, as asked:\n- `user.age` raises `TypeError` if `age` is `None`. Cause: no guard for a missing age; fix: decide whether a missing age means `False` or an error, then write that guard.\n- `check` does not say what it checks. Name: `is_active_adult` — renamed only if you ask.\n\nTest that the refactor holds:\n\n```python\nclass U:\n    def __init__(self, active, age):\n        self.active, self.age = active, age\n\nassert check(None) is False\nassert check(U(False, 30)) is False\nassert check(U(True, 17)) is False\nassert check(U(True, 18)) is True\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "План (2 строки):\n1. Вход — `user`; три проверки в исходном порядке; выход — `True`/`False`; проверка — таблица случаев ниже.\n2. Поведение не меняю: truthiness `user`, truthiness `user.active`, `user.age >= 18`.\n\n```python\ndef check(user):\n    if not user:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nЧто теперь работает и как проверить:\n\n```python\nfrom types import SimpleNamespace as U\n\ncases = [\n    (None, False),                      # user ложный\n    (U(active=True, age=18), True),     # граница включительно\n    (U(active=True, age=17), False),\n    (U(active=False, age=30), False),   # active ложный\n    (U(active=True, age=18.0), True),\n]\nfor user, expected in cases:\n    assert check(user) is expected, f\"{user}: ждали {expected}, получили {check(user)}\"\nprint(\"ok\")\n```\n\nЗапуск: `python check_test.py`. Время: 5 минут.\n\nЧто изменилось: три уровня вложенности заменены на три выхода, каждый `return False` называет свою причину; чтение сверху вниз, без `else` после `return`.\n\nЧто не менялось:\n- Имя `check` не говорит, что проверяется: существование, активность, возраст. Имя не трогал — не входило в задачу.\n- `user.age = None` даёт `TypeError`, объект без `.active` — `AttributeError`. Это было до рефакторинга, не исправлял.\n- Если `age` — не `int`/`float`, а объект со своим `__ge__`, результат может быть не `bool`. Старый код в этом случае возвращал литерал `True`/`False`. Если такой объект возможен — оберните: `return bool(user.age >= 18)`.\n\nВход в `bool(...)` не нужен, потому что в Python `and` здесь не используется: каждый `return` возвращает либо литерал, либо результат `>=`."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```python\ndef check(user):\n    if not user:\n        return False\n    if not user.active:\n        return False\n    return user.age >= 18\n```\n\nЧто теперь работает: три уровня вложенности → два стража и один возврат в конце, чтение сверху вниз без возврата к внешнему `if`. Проверить: `check(None) is False`, `check(inactive_user) is False`, `check(active_user_age_17) is False`, `check(active_user_age_18) is True`.\n\n`not user` сохранён намеренно вместо `user is None`: исходник проверял истинность, и объект с `__bool__`, возвращающим False, обязан по-прежнему давать False.\n\nНайденный рядом дефект, не исправлен: имя `check` не говорит, что проверяется; переименование меняет публичный интерфейс, поэтому вне задачи.\n\nКрай, который задача не называла, не исправлен: `user.age = None` даёт `TypeError` на `>=`, а не `False`.\n\nСледующее действие: подтверди, нужно ли переименовать `check` в `is_adult_active_user`."
+        }
+      ]
+    }
+  ]
+}

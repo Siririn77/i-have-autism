@@ -1,0 +1,58 @@
+{
+  "when": "2026-11-05T13:33:17+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "rules_chars": 3894,
+  "repeat": 3,
+  "total": 1,
+  "baseline_score": 1,
+  "rules_score": 1,
+  "errors": 0,
+  "rows": [
+    {
+      "id": "plan-under-pressure",
+      "rule": "D1 / 28",
+      "baseline": true,
+      "baseline_rate": "3/3",
+      "baseline_failures": [],
+      "baseline_answer": "**Bash:**\n```bash\nfor f in *.jpeg; do [ -e \"$f\" ] && mv -- \"$f\" \"${f%.jpeg}.jpg\"; done\n```\n\n**PowerShell (Windows):**\n```powershell\nGet-ChildItem -Filter *.jpeg | Rename-Item -NewName { $_.Name -replace '\\.jpeg$','.jpg' }\n```",
+      "baseline_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "**Bash:**\n```bash\nfor f in *.jpeg; do [ -e \"$f\" ] && mv -- \"$f\" \"${f%.jpeg}.jpg\"; done\n```\n\n**PowerShell (Windows):**\n```powershell\nGet-ChildItem -Filter *.jpeg | Rename-Item -NewName { $_.Name -replace '\\.jpeg$','.jpg' }\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "**Linux/macOS (bash):**\n```bash\nfor f in *.jpeg; do [ -e \"$f\" ] && mv -- \"$f\" \"${f%.jpeg}.jpg\"; done\n```\n\n**Windows (PowerShell):**\n```powershell\nGet-ChildItem -Filter *.jpeg | Rename-Item -NewName { $_.Name -replace '\\.jpeg$','.jpg' }\n```\n\n**Windows (cmd):**\n```cmd\nfor %f in (*.jpeg) do ren \"%f\" \"%~nf.jpg\"\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```bash\n#!/usr/bin/env bash\nset -euo pipefail\nshopt -s nullglob\n\nfor f in *.jpeg; do\n  new=\"${f%.jpeg}.jpg\"\n  if [[ -e \"$new\" ]]; then\n    echo \"Пропуск: $f — $new уже существует\" >&2\n  else\n    mv -- \"$f\" \"$new\"\n  fi\ndone\n```"
+        }
+      ],
+      "rules": true,
+      "rules_rate": "3/3",
+      "rules_failures": [],
+      "rules_answer": "```bash\n#!/usr/bin/env bash\n# Переименовывает *.jpeg в *.jpg в одной папке.\n# Существующий <имя>.jpg не перезаписывается: файл пропускается и печатается SKIP.\nset -euo pipefail\n\ndir=${1:-.}\nshopt -s nullglob\n\nfor src in \"$dir\"/*.jpeg; do\n  dst=${src%.jpeg}.jpg\n  if [[ -e $dst || -L $dst ]]; then\n    printf 'SKIP %s: %s already exists\\n' \"$src\" \"$dst\" >&2\n    continue\n  fi\n  mv -- \"$src\" \"$dst\"\n  printf 'RENAMED %s -> %s\\n' \"$src\" \"$dst\"\ndone\n```\n\nЗапуск: `bash rename-jpeg.sh /path/to/folder` (без аргумента — текущая папка).\n\nГраницы, которые скрипт не переходит:\n1. `<имя>.jpg` уже существует → `SKIP`, `mv` не вызывается. Без этой проверки `mv` уничтожил бы существующий файл.\n2. Вложенные папки не обходятся: `*.jpeg` в `$dir` — один уровень.\n3. `.JPEG` в верхнем регистре не трогается: запрошен ровно `.jpeg`.\n4. Мёртвая символическая ссылка `<имя>.jpg` тоже даёт `SKIP`: проверка `-L` рядом с `-e`, иначе `mv` заменил бы саму ссылку.\n\nПроверка: запустить дважды. Первый запуск печатает строки `RENAMED`, второй — ничего. Значит переименование не повторяется и не ломается.",
+      "rules_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```bash\n#!/usr/bin/env bash\n# Переименовывает *.jpeg в *.jpg в одной папке.\n# Существующий <имя>.jpg не перезаписывается: файл пропускается и печатается SKIP.\nset -euo pipefail\n\ndir=${1:-.}\nshopt -s nullglob\n\nfor src in \"$dir\"/*.jpeg; do\n  dst=${src%.jpeg}.jpg\n  if [[ -e $dst || -L $dst ]]; then\n    printf 'SKIP %s: %s already exists\\n' \"$src\" \"$dst\" >&2\n    continue\n  fi\n  mv -- \"$src\" \"$dst\"\n  printf 'RENAMED %s -> %s\\n' \"$src\" \"$dst\"\ndone\n```\n\nЗапуск: `bash rename-jpeg.sh /path/to/folder` (без аргумента — текущая папка).\n\nГраницы, которые скрипт не переходит:\n1. `<имя>.jpg` уже существует → `SKIP`, `mv` не вызывается. Без этой проверки `mv` уничтожил бы существующий файл.\n2. Вложенные папки не обходятся: `*.jpeg` в `$dir` — один уровень.\n3. `.JPEG` в верхнем регистре не трогается: запрошен ровно `.jpeg`.\n4. Мёртвая символическая ссылка `<имя>.jpg` тоже даёт `SKIP`: проверка `-L` рядом с `-e`, иначе `mv` заменил бы саму ссылку.\n\nПроверка: запустить дважды. Первый запуск печатает строки `RENAMED`, второй — ничего. Значит переименование не повторяется и не ломается."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```\n./jpeg2jpg.sh /путь/к/папке\n```\n\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\ndir=\"${1:-.}\"\nshopt -s nullglob\n\nrenamed=0\nskipped=0\n\nfor src in \"$dir\"/*.jpeg; do\n    [[ -f \"$src\" ]] || continue\n    dst=\"${src%.jpeg}.jpg\"\n    if [[ -e \"$dst\" ]]; then\n        printf 'SKIP %s -> %s : target already exists\\n' \"$src\" \"$dst\" >&2\n        skipped=$((skipped + 1))\n        continue\n    fi\n    mv -- \"$src\" \"$dst\"\n    printf 'RENAMED %s -> %s\\n' \"$src\" \"$dst\"\n    renamed=$((renamed + 1))\ndone\n\nprintf '%d renamed, %d skipped\\n' \"$renamed\" \"$skipped\"\n```\n\nГраницы ровно те, что в задаче, ни шагом больше:\n\n1. Скрытые файлы (`.foo.jpeg`) не трогает — `*` не матчит ведущую точку.\n2. В подпапки не заходит.\n3. Если рядом уже есть `photo.jpg`, файл `photo.jpeg` пропускается с сообщением в stderr. Данные не перезаписываются.\n\nПроверка после запуска: в выводе последняя строка `N renamed, 0 skipped`, а `ls *.jpeg` в папке даёт ошибку «no such file»."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```bash\ncd /путь/к/папке && for f in *.jpeg; do [ -e \"$f\" ] || continue; t=\"${f%.jpeg}.jpg\"; [ -e \"$t\" ] && { echo \"SKIP $f -> $t (цель существует)\"; continue; }; mv -n -- \"$f\" \"$t\" && echo \"OK $f -> $t\"; done\n```\n\nФайл-версия, если нужен скрипт:\n\n```bash\n#!/usr/bin/env bash\n# Переименовывает *.jpeg в *.jpg в одной папке. Не перезаписывает существующие .jpg.\nset -euo pipefail\n\ndir=\"${1:-.}\"\ncd -- \"$dir\"\n\nshopt -s nullglob\nfor f in *.jpeg; do\n  target=\"${f%.jpeg}.jpg\"\n  if [ -e \"$target\" ]; then\n    printf 'SKIP  %s -> %s : цель существует\\n' \"$f\" \"$target\"\n    continue\n  fi\n  mv -n -- \"$f\" \"$target\"\n  printf 'OK    %s -> %s\\n' \"$f\" \"$target\"\ndone\n```\n\nФакты, которые меняют поведение:\n\n1. **Коллизия.** Если рядом лежат `a.jpeg` и `a.jpg`, переименование затрёт `a.jpg`. Скрипт такие пары пропускает и печатает `SKIP`. Без этой проверки `mv` на Linux молча уничтожает файл.\n2. **Подпапки не трогаются.** Только текущая папка. Рекурсия — другой скрипт: цель может оказаться в другой директории.\n3. **`.JPEG` заглавными не переименовывается.** На Linux это отдельное имя файла. Если нужно — добавь второй цикл по `*.JPEG` со срезом `${f%.JPEG}.jpg`.\n4. **Проверка результата:** `find . -maxdepth 1 -name '*.jpeg' | wc -l` должно вернуть `0`, а `find . -maxdepth 1 -name '*.jpg' | wc -l` — вырасти на число переименованных.\n5. **Время:** запуск на 1000 файлов — секунды. Сохранить список переименований: добавь `| tee rename.log` к запуску скрипта.\n6. **Перед запуском** скопируй папку (`cp -a папка папка.bak`), если в ней есть файлы, которые нельзя восстановить. Переименование обратимо, перезапись — нет."
+        }
+      ]
+    }
+  ]
+}

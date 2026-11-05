@@ -1,15 +1,16 @@
 ```python
-print("hello world")
+# hello.py
+print("Hello, World!")
 ```
 
-Сохрани код в файл, например `hello.py`, и запусти:
+Запуск:
 
 ```bash
 python hello.py
 ```
 
-В консоли появится:
+Ожидаемый вывод:
 
-```text
-hello world
+```
+Hello, World!
 ```

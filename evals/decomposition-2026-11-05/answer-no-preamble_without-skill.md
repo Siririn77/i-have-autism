@@ -1,6 +1,6 @@
-# Установка NumPy на Debian
+На Debian есть два основных способа.
 
-## Способ 1: через apt (рекомендуется для системного Python)
+### 1. Через системный пакет (рекомендуется для большинства случаев)
 
 ```bash
 sudo apt update
@@ -8,47 +8,42 @@ sudo apt install python3-numpy
 ```
 
 Проверка:
+
 ```bash
 python3 -c "import numpy; print(numpy.__version__)"
 ```
 
-Плюс: не ломает системный Python, обновляется вместе с системой. Минус: версия может быть старше, чем на PyPI.
+Это установит NumPy для системного Python 3. Версия может быть немного старше, чем в PyPI, зато всё ставится через пакетный менеджер Debian.
 
-## Способ 2: через pip в виртуальном окружении (современный способ)
+---
 
-Начиная с Debian 12 (bookworm) системный Python защищён механизмом **PEP 668** — `pip install` в систему выдаст ошибку `externally-managed-environment`. Поэтому используйте venv:
+### 2. Через pip в виртуальном окружении (если нужна свежая версия)
+
+В Debian 12+ системный pip защищён от установки пакетов глобально, поэтому лучше использовать venv:
 
 ```bash
+sudo apt update
 sudo apt install python3-venv python3-pip
-python3 -m venv ~/venv
-source ~/venv/bin/activate
+
+python3 -m venv ~/.venvs/numpy
+source ~/.venvs/numpy/bin/activate
+
 pip install --upgrade pip
 pip install numpy
 ```
 
-Выход из окружения: `deactivate`.
-
-## Способ 3: pip с флагом (если очень нужно в системный Python)
+Проверка:
 
 ```bash
-pip install numpy --break-system-packages
+python3 -c "import numpy; print(numpy.__version__)"
 ```
 
-⚠️ Не рекомендуется — может конфликтовать с пакетами из apt.
-
-## Способ 4: через conda/miniforge (для научных задач)
+Выйти из окружения:
 
 ```bash
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-bash Miniforge3-Linux-x86_64.sh
-conda install numpy
+deactivate
 ```
-
-Удобно, если нужны последние версии NumPy, SciPy, pandas и т.д. без возни с зависимостями.
 
 ---
 
-**Что выбрать:**
-- Просто нужно `import numpy` в скриптах → `apt install python3-numpy`.
-- Нужна свежая версия или несколько проектов с разными версиями → venv + pip.
-- Активная научная работа → conda/miniforge.
+Если при `pip install numpy` без venv появляется ошибка вида `externally-managed-environment`, не используйте `--break-system-packages` без необходимости — лучше создать виртуальное окружение или установить `python3-numpy` через `apt`.
