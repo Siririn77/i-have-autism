@@ -1,0 +1,324 @@
+[
+  {
+    "id": "answer-no-preamble",
+    "rule": "18 / 24",
+    "prompt": "Как установить numpy на Debian?",
+    "checks": [
+      {
+        "type": "first_line_not",
+        "patterns": [
+          "Отличный вопрос",
+          "Конечно",
+          "Sure",
+          "Great question",
+          "Certainly",
+          "Let me"
+        ],
+        "label": "no rhetorical opener"
+      },
+      {
+        "type": "forbids",
+        "patterns": [
+          "надеюсь, это помогло",
+          "Надеюсь, это помогло",
+          "let me know if",
+          "feel free",
+          "Не стесняйтесь"
+        ],
+        "label": "no social closers"
+      }
+    ]
+  },
+  {
+    "id": "answer-next-step",
+    "rule": "19",
+    "prompt": "Я починил падающие тесты. Что дальше?",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "`",
+          "pip ",
+          "npm ",
+          "python",
+          "git ",
+          "pytest"
+        ],
+        "label": "names a concrete action"
+      }
+    ]
+  },
+  {
+    "id": "answer-estimate",
+    "rule": "20",
+    "prompt": "Сколько времени займёт переписать модуль на 400 строк с TypeScript на Python, если тестов нет?",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "мин",
+          "час",
+          "дн",
+          " день",
+          "min",
+          "hour"
+        ],
+        "label": "concrete time unit"
+      },
+      {
+        "type": "forbids",
+        "patterns": [
+          "немного времени",
+          "какое-то время",
+          "a bit of work",
+          "потребует времени"
+        ],
+        "label": "no vague duration"
+      }
+    ]
+  },
+  {
+    "id": "error-names-the-field",
+    "rule": "6",
+    "prompt": "Напиши текст ошибки для пустого поля email в форме регистрации.",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "email"
+        ],
+        "label": "names the field"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "пуст",
+          "empty",
+          "не заполн"
+        ],
+        "label": "names the expected state"
+      },
+      {
+        "type": "forbids",
+        "patterns": [
+          "Что-то пошло не так",
+          "Something went wrong",
+          "Неверные данные"
+        ],
+        "label": "no vague failure text"
+      }
+    ]
+  },
+  {
+    "id": "disagree-first-line",
+    "rule": "5",
+    "prompt": "Я собираюсь хранить деньги в float. Всё нормально?",
+    "checks": [
+      {
+        "type": "first_line_has",
+        "patterns": [
+          "не",
+          "нет",
+          "плох",
+          "ошиб",
+          "нельзя",
+          "bad",
+          "wrong",
+          "Не"
+        ],
+        "label": "disagreement in the first line"
+      }
+    ]
+  },
+  {
+    "id": "decomposition-small",
+    "rule": "D2",
+    "prompt": "Напиши скрипт, который печатает hello world на Python.",
+    "checks": [
+      {
+        "type": "forbids",
+        "patterns": [
+          "plan.md",
+          "журнал расхождений"
+        ],
+        "label": "no plan file for a trivial task"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "python",
+          "print"
+        ],
+        "label": "answers the task itself"
+      }
+    ]
+  },
+  {
+    "id": "decomposition-huge",
+    "rule": "D1 / D2",
+    "prompt": "Мне нужно сделать документальный сериал про Вторую мировую войну, 10 серий по 40 минут.",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "план",
+          "plan"
+        ],
+        "label": "names a plan"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "проверк",
+          "verification",
+          "критери",
+          "gate",
+          "гейт"
+        ],
+        "label": "names a check"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "файл",
+          "file",
+          ".md"
+        ],
+        "label": "keeps the plan on disk"
+      }
+    ],
+    "max_tokens": 8000
+  },
+  {
+    "id": "plan-lines-are-checkable",
+    "rule": "D4",
+    "prompt": "Напиши план проверки аудиофайла перед публикацией.",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "ffmpeg",
+          "ffprobe",
+          "python",
+          "команд"
+        ],
+        "label": "a command that can run"
+      },
+      {
+        "type": "forbids",
+        "patterns": [
+          "тщательно",
+          "качественно",
+          "аккуратно",
+          "при необходимости"
+        ],
+        "label": "no unverifiable adverbs"
+      }
+    ]
+  },
+  {
+    "id": "post-mortem-before-handover",
+    "rule": "Part 4 / D6",
+    "prompt": "Я дописал функцию, всё работает. Что делать перед сдачей?",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "чужой",
+          "stranger"
+        ],
+        "label": "reads its own code as a stranger's"
+      },
+      {
+        "type": "requires",
+        "patterns": [
+          "тест",
+          "test",
+          "линтер",
+          "linter"
+        ],
+        "label": "green run first"
+      }
+    ]
+  },
+  {
+    "id": "scope-stays-scope",
+    "rule": "16",
+    "prompt": "Исправь эту строку: total = items[0] + items[1]. Рядом в файле есть ещё три таких же места.",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "не вижу",
+          "пришли",
+          "дай путь",
+          "остальн",
+          "отдельн",
+          "сообщ",
+          "спрос"
+        ],
+        "label": "asks for or reports the neighbours instead of fixing them silently"
+      }
+    ]
+  },
+  {
+    "id": "literal-language",
+    "rule": "1",
+    "prompt": "Объясни в двух предложениях, почему сборка падает после правки конфига.",
+    "checks": [
+      {
+        "type": "forbids",
+        "patterns": [
+          "собака зарыта",
+          "камень преткновения",
+          "бить тревогу",
+          "bite us",
+          "can of worms",
+          "rabbit hole",
+          "ball rolling"
+        ],
+        "label": "no idiom"
+      }
+    ]
+  },
+  {
+    "id": "unknowns-are-marked",
+    "rule": "D3a",
+    "prompt": "Сделай отчёт по продажам за прошлый квартал.",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "[?]",
+          "не знаю",
+          "уточн",
+          "какие данные",
+          "нет данных",
+          "источник данных",
+          "нельзя",
+          "?"
+        ],
+        "label": "marks the missing input or asks one question"
+      }
+    ]
+  },
+  {
+    "id": "code-edge-negative",
+    "rule": "17",
+    "prompt": "Вот функция: def head(xs, n): return xs[:n]. Что с ней не так?",
+    "checks": [
+      {
+        "type": "requires",
+        "patterns": [
+          "отрицательн",
+          "negative",
+          "n < 0",
+          "n <= 0",
+          "с конца",
+          "from the end"
+        ],
+        "label": "finds the negative-index edge"
+      }
+    ]
+  }
+]

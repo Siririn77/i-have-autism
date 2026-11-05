@@ -1,6 +1,6 @@
 # Evals — how to read this directory
 
-Two controlled A/B runs live here. Every run has two arms, and the **only** difference between them is
+Three controlled A/B runs live here. Every run has two arms, and the **only** difference between them is
 whether the agent was given the skill:
 
 | arm | means | register |
@@ -67,6 +67,28 @@ produced (`reviews/`, 5 files, 0 from without-skill):
 | `Q5_*` (report only) | explain what makes code maintainable | with-skill: 43 concrete points vs 16 |
 
 Full write-up and the scoring script in that directory.
+
+### `decomposition-2026-11-05/` — the rules as an executable test
+
+The third run, and the first one that is a **suite instead of a pair of transcripts**. 13 prompts, each
+probed with `--repeat 3`, each scored by pattern checks rather than by a judge model. `run_evals.py`
+replayed them with and without `hermes/rules.md` — the 3881-character text clients actually inject.
+
+**Result: without the rules 10/13, with the rules 13/13.** The gap is concentrated, not spread:
+
+| case | without | with | what it shows |
+|---|---|---|---|
+| `decomposition-huge` | 0/3 | 2/3 | a ten-part series gets a plan on disk, units and gates — instead of a table of contents |
+| `plan-lines-are-checkable` | 0/3 | 3/3 | the plan names runnable commands and avoids "тщательно" / "при необходимости" |
+| `post-mortem-before-handover` | 1/3 | 3/3 | the answer ends in reading its own diff as a stranger's, not in a checklist |
+
+Three cases land at 2/3 **with** the rules and 3/3 without: `disagree-first-line`, `scope-stays-scope`,
+`unknowns-are-marked`. Those are the places where a form rule is skipped while the substance holds —
+worth sharpening the rule, not hiding the number.
+
+`SCORE.md` has the full table; each case has `_without-rules.md` and `_with-rules.md` side by side, so
+the difference is readable without trusting the score. Two traps this suite already hit — a token budget
+too small reads as a failed rule, and one sample is noise — are documented in `decomposition-2026-11-05/SCORE.md`.
 
 ---
 
