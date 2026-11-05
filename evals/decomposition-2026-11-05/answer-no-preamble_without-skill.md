@@ -1,45 +1,54 @@
-## Способ 1: из репозиториев Debian (проще всего)
+# Установка NumPy на Debian
+
+## Способ 1: через apt (рекомендуется для системного Python)
 
 ```bash
 sudo apt update
 sudo apt install python3-numpy
 ```
 
-Это самый надёжный вариант для системного Python — пакет уже собран и протестирован для вашего дистрибутива. Версия будет не самой свежей (например, в Debian 12 — 1.24), но стабильной.
-
 Проверка:
-
 ```bash
 python3 -c "import numpy; print(numpy.__version__)"
 ```
 
-## Способ 2: через pip в виртуальном окружении (если нужна свежая версия)
+Плюс: не ломает системный Python, обновляется вместе с системой. Минус: версия может быть старше, чем на PyPI.
 
-Начиная с Debian 12 системный pip блокирует установку в систему (PEP 668, ошибка `externally-managed-environment`), поэтому правильный путь — venv:
+## Способ 2: через pip в виртуальном окружении (современный способ)
+
+Начиная с Debian 12 (bookworm) системный Python защищён механизмом **PEP 668** — `pip install` в систему выдаст ошибку `externally-managed-environment`. Поэтому используйте venv:
 
 ```bash
 sudo apt install python3-venv python3-pip
-python3 -m venv ~/venv-numpy
-source ~/venv-numpy/bin/activate
+python3 -m venv ~/venv
+source ~/venv/bin/activate
 pip install --upgrade pip
 pip install numpy
 ```
 
-Дальше работаете в этом окружении: `source ~/venv-numpy/bin/activate`.
+Выход из окружения: `deactivate`.
 
-## Способ 3: системный pip с обходом защиты (не рекомендуется)
-
-Если очень нужно поставить именно в систему:
+## Способ 3: pip с флагом (если очень нужно в системный Python)
 
 ```bash
-pip install numpy --user --break-system-packages
+pip install numpy --break-system-packages
 ```
 
-Но это может конфликтовать с пакетами apt, поэтому лучше так не делать.
+⚠️ Не рекомендуется — может конфликтовать с пакетами из apt.
 
-## Замечания
+## Способ 4: через conda/miniforge (для научных задач)
 
-- **Для научного стека целиком** удобно ставить через apt: `sudo apt install python3-numpy python3-scipy python3-matplotlib python3-pandas`.
-- **Если нужен numpy новее, чем в репозитории**, используйте venv + pip (способ 2) — это чистый и безопасный вариант.
-- **Debian 11 (bullseye)** — numpy 1.19, **Debian 12 (bookworm)** — 1.24, **Debian 13 (trixie)** — новее. Для старых версий numpy может не хватать свежих колёс (wheels), так что при старом Python лучше собрать из исходников или взять системный пакет.
-- **Conda** — альтернатива, если нужна изоляция без venv: `miniconda` + `conda install numpy`.
+```bash
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+bash Miniforge3-Linux-x86_64.sh
+conda install numpy
+```
+
+Удобно, если нужны последние версии NumPy, SciPy, pandas и т.д. без возни с зависимостями.
+
+---
+
+**Что выбрать:**
+- Просто нужно `import numpy` в скриптах → `apt install python3-numpy`.
+- Нужна свежая версия или несколько проектов с разными версиями → venv + pip.
+- Активная научная работа → conda/miniforge.

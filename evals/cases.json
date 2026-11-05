@@ -99,13 +99,14 @@
         "label": "names the expected state"
       },
       {
-        "type": "forbids",
+        "type": "forbids_head",
+        "chars": 200,
         "patterns": [
           "Что-то пошло не так",
           "Something went wrong",
           "Неверные данные"
         ],
-        "label": "no vague failure text"
+        "label": "no vague failure text in the message itself"
       }
     ]
   },
@@ -296,9 +297,16 @@
           "нет данных",
           "источник данных",
           "нельзя",
-          "?"
+          "?",
+          "пришли",
+          "дай путь",
+          "нужен файл",
+          "укажи",
+          "нет доступа",
+          "не построить",
+          "приложи"
         ],
-        "label": "marks the missing input or asks one question"
+        "label": "marks the missing input or asks for it directly"
       }
     ]
   },

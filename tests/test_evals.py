@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CASES = ROOT / "evals" / "cases.json"
 RUNNER = ROOT / "evals" / "run_evals.py"
-CHECK_TYPES = {"requires", "forbids", "first_line_has", "first_line_not"}
+CHECK_TYPES = {"requires", "forbids", "forbids_head", "first_line_has", "first_line_not"}
 
 
 class EvalCasesTest(unittest.TestCase):
@@ -33,6 +33,12 @@ class EvalCasesTest(unittest.TestCase):
                 self.assertIn(check["type"], CHECK_TYPES, f"{case['id']} has {check['type']}")
                 self.assertTrue(check.get("patterns"), f"{case['id']} has an empty pattern list")
                 self.assertTrue(check.get("label"), f"{case['id']} has an unlabeled check")
+
+    def test_forbids_head_declares_its_window(self):
+        for case in self.cases:
+            for check in case["checks"]:
+                if check["type"] == "forbids_head":
+                    self.assertGreater(check.get("chars", 200), 0)
 
     def test_runner_is_importable_source(self):
         source = RUNNER.read_text(encoding="utf-8")

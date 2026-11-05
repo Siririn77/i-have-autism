@@ -1,7 +1,15 @@
 ```python
-print("Hello, World!")
+print("hello world")
 ```
 
-Как запустить:
-1. Сохрани код в файл, например `hello.py`.
-2. Выполни в терминале: `python hello.py` (или `python3 hello.py` в Linux/macOS).
+Сохрани код в файл, например `hello.py`, и запусти:
+
+```bash
+python hello.py
+```
+
+В консоли появится:
+
+```text
+hello world
+```

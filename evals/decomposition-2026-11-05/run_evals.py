@@ -26,6 +26,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES = ROOT / "evals" / "cases.json"
+OUT_DIR = ROOT / "evals" / "runs"
 RULES = ROOT / "hermes" / "rules.md"
 BASELINE_PROMPT = "You are a helpful assistant. Answer the user's request."
 
@@ -93,6 +94,9 @@ def check(answer: str, rule: dict) -> tuple[bool, list[str]]:
             hit = not any(p.lower() in lowered for p in patterns)
         elif kind == "first_line_not":
             hit = not any(p.lower() in first_line.lower() for p in patterns)
+        elif kind == "forbids_head":
+            limit = item.get("chars", 200)
+            hit = not any(p.lower() in answer[:limit].lower() for p in patterns)
         elif kind == "first_line_has":
             hit = any(p.lower() in first_160.lower() for p in patterns)
         else:
@@ -148,6 +152,9 @@ def main() -> int:
             row[f"{arm}_rate"] = f"{wins}/{args.repeat}"
             row[f"{arm}_failures"] = samples[0]["failures"]
             row[f"{arm}_answer"] = samples[0]["answer"]
+            row[f"{arm}_samples"] = [
+                {"passed": s["passed"], "failures": s["failures"], "answer": s["answer"]} for s in samples
+            ]
         rows.append(row)
 
     base_score = sum(r["baseline"] for r in rows)
@@ -176,7 +183,9 @@ def main() -> int:
         "errors": errors,
         "rows": rows,
     }
-    out = ROOT / "evals" / f"report-{datetime.now(timezone.utc):%Y%m%d-%H%M}.json"
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc)
+    out = OUT_DIR / f"report-{stamp:%Y%m%d-%H%M%S}.json"
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"report: {out}")
 

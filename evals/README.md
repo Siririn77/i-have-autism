@@ -74,7 +74,7 @@ The third run, and the first one that is a **suite instead of a pair of transcri
 probed with `--repeat 3`, each scored by pattern checks rather than by a judge model. `run_evals.py`
 replayed them with and without `hermes/rules.md` — the 3881-character text clients actually inject.
 
-**Result: without the rules 10/13, with the rules 13/13.** The gap is concentrated, not spread:
+**Result: without the rules 10/13, with the rules 13/13** (after sharpening; the pre-sharpening run was 12/13). The gap is concentrated, not spread:
 
 | case | without | with | what it shows |
 |---|---|---|---|
@@ -82,9 +82,16 @@ replayed them with and without `hermes/rules.md` — the 3881-character text cli
 | `plan-lines-are-checkable` | 0/3 | 3/3 | the plan names runnable commands and avoids "тщательно" / "при необходимости" |
 | `post-mortem-before-handover` | 1/3 | 3/3 | the answer ends in reading its own diff as a stranger's, not in a checklist |
 
-Three cases land at 2/3 **with** the rules and 3/3 without: `disagree-first-line`, `scope-stays-scope`,
-`unknowns-are-marked`. Those are the places where a form rule is skipped while the substance holds —
-worth sharpening the rule, not hiding the number.
+Three cases first landed at 2/3 **with** the rules and 3/3 without: `disagree-first-line`,
+`scope-stays-scope`, `unknowns-are-marked`. The rules were sharpened instead of the number being hidden:
+a verdict now has to precede the code sample, a one-shot script gets its two or three plan lines in the
+reply with no file, and a missing input is requested in one direct sentence. Two of the three moved to
+3/3; `scope-stays-scope` is still 2/3 in one sample — the model sometimes fixes the neighbouring defect
+silently and believes the task is done. That is the next rule to sharpen, not a number to explain away.
+
+Two cases also turned out to measure wording instead of behaviour — `unknowns-are-marked` looked for the
+literal `[?]` while the model asked for the file in plain words. The check was rewritten to accept any
+direct request, and both arms went to 3/3: the case is now a regression guard, not a gap.
 
 `SCORE.md` has the full table; each case has `_without-rules.md` and `_with-rules.md` side by side, so
 the difference is readable without trusting the score. Two traps this suite already hit — a token budget

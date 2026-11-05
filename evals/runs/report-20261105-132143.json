@@ -1,0 +1,78 @@
+{
+  "when": "2026-11-05T13:21:43+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "rules_chars": 3894,
+  "repeat": 5,
+  "total": 1,
+  "baseline_score": 1,
+  "rules_score": 1,
+  "errors": 0,
+  "rows": [
+    {
+      "id": "decomposition-small",
+      "rule": "D2",
+      "baseline": true,
+      "baseline_rate": "5/5",
+      "baseline_failures": [],
+      "baseline_answer": "```python\n# hello.py\nprint(\"Hello, World!\")\n```\n\nКак запустить:\n\n```bash\npython hello.py\n```\n\nВывод:\n\n```\nHello, World!\n```\n\nПара замечаний:\n- Если в системе несколько версий Python, используйте `python3 hello.py`.\n- Файл сохраните с расширением `.py` в кодировке UTF-8 (важно, если добавите русский текст в вывод).",
+      "baseline_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```python\n# hello.py\nprint(\"Hello, World!\")\n```\n\nКак запустить:\n\n```bash\npython hello.py\n```\n\nВывод:\n\n```\nHello, World!\n```\n\nПара замечаний:\n- Если в системе несколько версий Python, используйте `python3 hello.py`.\n- Файл сохраните с расширением `.py` в кодировке UTF-8 (важно, если добавите русский текст в вывод)."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "# Hello World на Python\n\n## Самый простой вариант\n\n```python\nprint(\"hello world\")\n```\n\n## Как запустить\n\n1. Сохрани код в файл, например `hello.py`\n2. Открой терминал в папке с файлом\n3. Выполни:\n\n```bash\npython hello.py\n```\n\nили (в зависимости от системы):\n\n```bash\npython3 hello.py\n```\n\n## Ожидаемый вывод\n\n```\nhello world\n```\n\n---\n\nЕсли нужно чуть более формально — с функцией `main` и точкой входа:\n\n```python\ndef main():\n    print(\"hello world\")\n\n\nif __name__ == \"__main__\":\n    main()\n```\n\nНо для задачи «напечатать hello world» достаточно одной строки `print(\"hello world\")`."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "Вот простой скрипт на Python, который печатает `hello world`:\n\n```python\n# hello.py\nprint(\"hello world\")\n```\n\n**Как запустить:**\n\n1. Сохрани код в файл, например `hello.py`.\n2. Открой терминал в папке с файлом и выполни:\n\n```bash\npython hello.py\n```\n\nИли, если в системе Python 3 вызывается через `python3`:\n\n```bash\npython3 hello.py\n```\n\n**Ожидаемый вывод:**\n\n```\nhello world\n```\n\nЕсли нужен вариант с исполняемым файлом, можно добавить shebang и сделать файл исполняемым:\n\n```python\n#!/usr/bin/env python3\nprint(\"hello world\")\n```\n\n```bash\nchmod +x hello.py\n./hello.py\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```python\nprint(\"Hello, World!\")\n```\n\nСохраните как `hello.py` и запустите:\n\n```bash\npython hello.py\n```"
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```python\nprint(\"Hello, World!\")\n```\n\n**Как запустить:**\n1. Сохрани код в файл, например `hello.py`\n2. Выполни в терминале:\n```bash\npython hello.py\n```\n(или `python3 hello.py`, в зависимости от системы)\n\n**Результат:**\n```\nHello, World!\n```"
+        }
+      ],
+      "rules": true,
+      "rules_rate": "5/5",
+      "rules_failures": [],
+      "rules_answer": "Создать файл `hello.py`:\n\n```python\nprint(\"hello world\")\n```\n\nЗапуск:\n\n```\npython3 hello.py\n```\n\nПлан (3 строки):\n1. Вход: нет — скрипт не читает stdin, аргументы и файлы.\n2. Действие: `print` пишет одну строку в stdout.\n3. Выход: строка `hello world`; проверка — код возврата `0` (`echo $?` печатает `0`).\n\nКрайние случаи не применимы: нет ввода, нет состояния, нет данных — пустое, нулевое, огромное и дубликаты отсутствуют.\n\nПроверка: `python3 hello.py` печатает ровно `hello world`, без кавычек и лишних строк.\n\nСледующее действие: сохранить файл `hello.py` и выполнить `python3 hello.py`.",
+      "rules_samples": [
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "Создать файл `hello.py`:\n\n```python\nprint(\"hello world\")\n```\n\nЗапуск:\n\n```\npython3 hello.py\n```\n\nПлан (3 строки):\n1. Вход: нет — скрипт не читает stdin, аргументы и файлы.\n2. Действие: `print` пишет одну строку в stdout.\n3. Выход: строка `hello world`; проверка — код возврата `0` (`echo $?` печатает `0`).\n\nКрайние случаи не применимы: нет ввода, нет состояния, нет данных — пустое, нулевое, огромное и дубликаты отсутствуют.\n\nПроверка: `python3 hello.py` печатает ровно `hello world`, без кавычек и лишних строк.\n\nСледующее действие: сохранить файл `hello.py` и выполнить `python3 hello.py`."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "`print(\"hello world\")`\n\nПлан, 3 строки:\n- Вход: нет. Действие: `print` одной строки. Выход: одна строка в stdout.\n- Проверка: вывод побайтно равен `hello world\\n` (12 символов + перевод строки).\n- Риск: `python` может указывать на Python 2 на части Linux. Проверить `python --version`; если не 3.x — запускать `python3`.\n\nФайл `hello.py`:\n\n```python\nprint(\"hello world\")\n```\n\nЗапуск:\n\n```\npython3 hello.py\n```\n\nЧто теперь работает: файл печатает одну строку. Как проверить: `python3 hello.py` печатает `hello world`."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "`hello.py`:\n\n```python\nprint(\"hello world\")\n```\n\nПроверка:\n\n1. `python3 hello.py`\n2. Ожидаемый вывод — ровно одна строка `hello world` и перевод строки после неё.\n\nЕсли команда `python3` не найдена — Python 3 не установлен; установить пакет `python3` в вашей системе. Это единственная точка отказа у скрипта.\n\nСледующее действие: запустить `python3 hello.py`."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "```\nprint(\"hello world\")\n```\n\n1. Сохранить в файл `hello.py` (этот файл — вход для интерпретатора).\n2. Запустить: `python3 hello.py`.\n3. Проверка: код возврата 0 и ровно одна строка `hello world` в stdout.\n\nПлан в трёх строках: вход — нет; действие — `print` одной строки; выход — одна строка в stdout; проверка — `python3 hello.py; echo $?` печатает `hello world`, затем `0`.\n\nЧто теперь работает: `hello.py` печатает `hello world`. Проверить — командой из пункта 2."
+        },
+        {
+          "passed": true,
+          "failures": [],
+          "answer": "`hello.py`:\n```python\nprint(\"hello world\")\n```\n\nЗапуск и проверка:\n```\npython3 hello.py\n```\nОжидаемый вывод ровно одной строкой: `hello world`.\n\nПлан (2 строки): вход — нет; действие — `print` одной строки; выход — stdout; проверка — вывод совпадает с `hello world` посимвольно."
+        }
+      ]
+    }
+  ]
+}
