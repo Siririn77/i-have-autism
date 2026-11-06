@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.7.0"
+  version: "0.8.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
