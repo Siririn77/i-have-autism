@@ -57,11 +57,26 @@ number can always be traced back to the text that produced it.
 ## Reading the report
 
 ```
-case                 none         graph        aggressive
+case                 none         graph        ultra
 rate_limiter         3/3          3/3          3/3
 ```
 
 - `rate` — how many of three samples passed every test;
 - `partial` — mean fraction of individual tests passed;
-- `graphed` / `matrix` / `register` — whether the arm actually produced the artefact it was told to
-  produce. An arm that was told to graph and did not graph is not a graph arm, whatever the score says.
+- `graphed` / `kpi` / `kpi_bars` — whether the arm actually produced the artefact it was told to
+  produce, and how many bars it wrote. An arm told to graph and not graphing is not a graph arm,
+  whatever the score says.
+
+## Three ways this stand lied before it measured anything
+
+Each of these read as a model failure and was mine:
+
+1. a graph drawn in a ```text fence was extracted as code — the language became a condition;
+2. once an answer carried both a solution and the tests that prove it, the last fence was the test
+   suite — the extractor now skips blocks that import unittest or define `test_`;
+3. a fence with no language held the plan in prose, and prose was imported as the solution — a
+   candidate must now parse with `ast.parse`. No parseable block means no code, and the report says so.
+
+A fourth, not a bug: an answer cut by the output budget produces a syntax error at the cut. The
+report carries `truncated`, and a truncated sample is not evidence about the rule until the budget
+covers the work the rule demands.
