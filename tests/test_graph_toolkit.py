@@ -33,6 +33,7 @@ check_graph = load_module("check_graph")
 graph_stats = load_module("graph_stats")
 graph_to_plan = load_module("graph_to_plan")
 graph_diff = load_module("graph_diff")
+graph_expand = load_module("graph_expand")
 
 
 class ParseTest(unittest.TestCase):
@@ -226,6 +227,64 @@ class AggressiveModeTest(unittest.TestCase):
         self.assertIn("реестр", text)
         self.assertIn("последствия для третьих стран", text)
         self.assertIn("Матрица покрытия", text)
+
+
+class ExpansionTest(unittest.TestCase):
+    def setUp(self):
+        self.graph = graph_lib.load(FIXTURE)
+        self.skeleton = graph_expand.skeleton(self.graph)
+
+    def test_skeleton_has_a_section_for_every_node_edge_and_axis(self):
+        sections = graph_expand.parse_expansion(self.skeleton)
+        for node_id, node in self.graph.nodes.items():
+            self.assertIn(f"{node_id} «{node.label}»", sections)
+        self.assertIn("Ось «причины»", sections)
+        self.assertIn("Ребро N1 -causes-> N2", sections)
+
+    def test_answers_edges_need_no_mechanism(self):
+        sections = graph_expand.parse_expansion(self.skeleton)
+        self.assertNotIn("Ребро Q1 -answers-> N1", sections)
+
+    def test_empty_skeleton_is_not_an_expansion(self):
+        problems = graph_expand.check(self.graph, self.skeleton)
+        self.assertGreater(len(problems), 20)
+        self.assertTrue(any("не заполнено" in p for p in problems), problems)
+
+    def test_filled_expansion_passes(self):
+        expected = graph_expand.expected_sections(self.graph)
+        parts = []
+        for title, fields in expected.items():
+            parts.append(f"## {title}")
+            for field in fields:
+                parts.append(f"- {field}: конкретное содержание этого поля")
+            parts.append("")
+        self.assertEqual(graph_expand.check(self.graph, "\n".join(parts)), [])
+
+    def test_missing_node_section_is_named(self):
+        expected = graph_expand.expected_sections(self.graph)
+        parts = []
+        for title, fields in expected.items():
+            if title.startswith("N3 "):
+                continue
+            parts.append(f"## {title}")
+            for field in fields:
+                parts.append(f"- {field}: содержание")
+            parts.append("")
+        problems = graph_expand.check(self.graph, "\n".join(parts))
+        self.assertTrue(any("N3" in p and "нет расшифровки" in p for p in problems), problems)
+
+    def test_section_that_the_graph_does_not_have_is_a_defect(self):
+        expected = graph_expand.expected_sections(self.graph)
+        parts = []
+        for title, fields in expected.items():
+            parts.append(f"## {title}")
+            for field in fields:
+                parts.append(f"- {field}: содержание")
+            parts.append("")
+        parts.append("## N99 «Выдуманный узел»")
+        parts.append("- входит: ничего")
+        problems = graph_expand.check(self.graph, "\n".join(parts))
+        self.assertTrue(any("N99" in p for p in problems), problems)
 
 if __name__ == "__main__":
     unittest.main()

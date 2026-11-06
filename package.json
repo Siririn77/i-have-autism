@@ -1,6 +1,6 @@
 {
   "name": "i-have-autism",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, and code held to readability, maintainability, and correctness with no compromise on quality.",
   "license": "MIT",
   "homepage": "https://github.com/Siririn77/i-have-autism",

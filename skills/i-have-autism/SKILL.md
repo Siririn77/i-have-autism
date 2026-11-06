@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.8.0"
+  version: "0.9.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
@@ -430,6 +430,40 @@ The cost is real: a matrix of five axes and five stages is twenty-five cells, ea
 or a written refusal. Aggressive mode is two to three times the graph work of normal mode, and it is worth
 it exactly where **omission is the risk** — a series, a course, a book, a reference work. For a one-off
 article it is pure ceremony, and the rule says so instead of pretending otherwise.
+
+### D2c. Ultra mode — the graph written out in full
+
+Aggressive mode guarantees that nothing disappears. Ultra mode answers a different question: **what is
+inside each node** — the composition, not the connection.
+
+`graph_expand.py` turns a graph into a companion file, one section per node, with five fields:
+
+| field | what it answers |
+|---|---|
+| `входит` | what this node is made of — the list of parts, not a summary |
+| `чем доказано` | what evidence carries it: documents, statistics, testimony, which kind |
+| `что из этого следует` | what follows for the argument of the work |
+| `чем показано` | what the viewer or reader actually sees: map, chart, document, scene |
+| `что исключает` | what this node deliberately leaves out, and where that lives instead |
+
+Plus one line per edge — `механизм` — because "causes" is a claim and a claim needs a mechanism; and two
+lines per axis — what it covers and what it does not.
+
+```
+python3 scripts/graph_expand.py --new graph.md -o graph-expanded.md
+python3 scripts/graph_expand.py --check graph.md graph-expanded.md
+```
+
+The checker fails on a missing section, an empty field, a `TODO`, or a section the graph does not have.
+It keys on node id, so renaming a label does not invalidate the expansion — but the label must still match.
+
+**What this mode is for.** A graph answers "is the topic covered". The expansion answers "does each node
+have enough inside it to become a part". Running it before drafting is the cheapest way to discover that
+a node was a heading with nothing behind it: five fields with nothing to write is a very clear signal.
+
+**What it costs.** It is the most expensive of the three modes: the text is several times the graph. Run it
+on the nodes of the part being written, not on a master graph of fifty nodes, unless the master graph is
+the deliverable.
 
 #### Failure modes
 
