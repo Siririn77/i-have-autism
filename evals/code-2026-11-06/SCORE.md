@@ -11,11 +11,16 @@ Model: deepseek-v4.1-flash:1017 · 3 samples per arm · tests executed, not matc
 | csv_line | 3/3 | 3/3 | 3/3 |
 | merge_intervals | 3/3 | 3/3 | 2/3 |
 | rate_limiter | 3/3 | 3/3 | 3/3 |
-| **cases passed** | **5/5** | **5/5** | **4/5** |
+| **cases passed, все 3 пробы** | **5/5** | **5/5** | **4/5** |
+| cases passed, большая часть проб | 5/5 | 5/5 | 5/5 |
 | mean fraction of tests | 1.00 | 1.00 | 0.93 |
 | graph produced | 0/5 | 4/5 | 0/5 |
 | matrix produced | 0/5 | 0/5 | 0/5 |
 | register produced | 0/5 | 0/5 | 0/5 |
+
+Две строки намеренно различаются: строгая считает случай пройденным только если все три пробы зелёные,
+мягкая — если большинство. Для `merge_intervals × aggressive` это 2 из 3, то есть мягко пройдено, строго нет.
+Раннер печатает мягкую; в таблице выше ведущая строка — строгая.
 
 ## What it says
 
