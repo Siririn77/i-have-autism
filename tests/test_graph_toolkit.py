@@ -1,10 +1,9 @@
-"""The graph toolkit: parsing, checking, stats, plan compilation, diff, scaffolding.
+"""The graph toolkit: parsing, checking, stats, plan compilation, diff, expansion, clouds.
 
 The scripts are the contract — a rule that cannot be checked is a wish. Each test here fails when a
 script silently stops noticing something.
 """
 import importlib.util
-import json
 import subprocess
 import sys
 import tempfile
@@ -15,6 +14,8 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "skills" / "i-have-autism" / "scripts"
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "graph-mini.md"
 AGGRESSIVE = Path(__file__).resolve().parent / "fixtures" / "graph-aggressive.md"
+
+sys.path.insert(0, str(SCRIPTS))
 
 
 def load_module(name: str):
@@ -27,13 +28,39 @@ def load_module(name: str):
     return module
 
 
-sys.path.insert(0, str(SCRIPTS))
 graph_lib = load_module("graph_lib")
 check_graph = load_module("check_graph")
 graph_stats = load_module("graph_stats")
 graph_to_plan = load_module("graph_to_plan")
 graph_diff = load_module("graph_diff")
 graph_expand = load_module("graph_expand")
+cloud_lib = load_module("cloud_lib")
+
+
+def _cloud() -> list[str]:
+    return [
+        "### Облако",
+        "- ядро: первое",
+        "| элемент | связь | с чем |",
+        "|---|---|---|",
+        "| первое | включает | второе |",
+        "| второе | вызывает | третье |",
+        "",
+    ]
+
+
+def _filled_expansion(graph, skip: tuple[str, ...] = ()) -> str:
+    parts = []
+    for title, fields in graph_expand.expected_sections(graph).items():
+        if any(title.startswith(prefix) for prefix in skip):
+            continue
+        parts.append(f"## {title}")
+        if title.startswith("N"):
+            parts.extend(_cloud())
+        for field in fields:
+            parts.append(f"- {field}: содержание")
+        parts.append("")
+    return "\n".join(parts)
 
 
 class ParseTest(unittest.TestCase):
@@ -71,9 +98,8 @@ class CheckTest(unittest.TestCase):
         self.assertEqual(check_graph.check(self.graph), [])
 
     def test_empty_anchor_is_a_defect(self):
-        self.graph.nodes["N3"] = self.graph.nodes["N3"].__class__(
-            **{**self.graph.nodes["N3"].__dict__, "anchor": ""}
-        )
+        node = self.graph.nodes["N3"]
+        self.graph.nodes["N3"] = node.__class__(**{**node.__dict__, "anchor": ""})
         problems = check_graph.check(self.graph)
         self.assertTrue(any("подтверждено" in p for p in problems), problems)
 
@@ -104,6 +130,11 @@ class CheckTest(unittest.TestCase):
         problems = check_graph.check(self.graph)
         self.assertTrue(any("related" in p for p in problems), problems)
 
+    def test_drawing_that_disagrees_with_the_table_is_a_defect(self):
+        self.graph.mermaid_edges = [("N1", "causes", "N9")]
+        problems = check_graph.check(self.graph)
+        self.assertTrue(any("не нарисовано" in p or "нет в таблице" in p for p in problems), problems)
+
 
 class StatsTest(unittest.TestCase):
     def test_report_counts_answers_and_axes(self):
@@ -128,8 +159,7 @@ class PlanCompileTest(unittest.TestCase):
         self.assertIn("Журнал расхождений", text)
 
     def test_plan_marks_placeholders_so_they_cannot_be_mistaken_for_work(self):
-        text = graph_to_plan.build(graph_lib.load(FIXTURE), 40)
-        self.assertIn("TODO", text)
+        self.assertIn("TODO", graph_to_plan.build(graph_lib.load(FIXTURE), 40))
 
 
 class DiffTest(unittest.TestCase):
@@ -149,9 +179,7 @@ class DiffTest(unittest.TestCase):
 class CliTest(unittest.TestCase):
     def test_check_cli_exits_zero_on_a_clean_graph(self):
         completed = subprocess.run(
-            [sys.executable, str(SCRIPTS / "check_graph.py"), str(FIXTURE)],
-            capture_output=True,
-            text=True,
+            [sys.executable, str(SCRIPTS / "check_graph.py"), str(FIXTURE)], capture_output=True, text=True
         )
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
@@ -161,9 +189,7 @@ class CliTest(unittest.TestCase):
             handle.write(broken)
             path = handle.name
         completed = subprocess.run(
-            [sys.executable, str(SCRIPTS / "check_graph.py"), path],
-            capture_output=True,
-            text=True,
+            [sys.executable, str(SCRIPTS / "check_graph.py"), path], capture_output=True, text=True
         )
         self.assertEqual(completed.returncode, 1)
         self.assertIn("related", completed.stdout)
@@ -177,9 +203,7 @@ class CliTest(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(completed.returncode, 0, completed.stderr)
-            parsed = graph_lib.load(target)
-            self.assertEqual(len(parsed.questions), 5)
-
+            self.assertEqual(len(graph_lib.load(target).questions), 5)
 
 
 class AggressiveModeTest(unittest.TestCase):
@@ -193,8 +217,7 @@ class AggressiveModeTest(unittest.TestCase):
         self.assertTrue(graph_lib.is_aggressive(self.graph))
 
     def test_aggressive_fixture_is_clean(self):
-        problems = check_graph.check(self.graph) + check_graph.check_aggressive(self.graph)
-        self.assertEqual(problems, [])
+        self.assertEqual(check_graph.check(self.graph) + check_graph.check_aggressive(self.graph), [])
 
     def test_node_outside_units_and_register_is_a_defect(self):
         self.graph.mapping = [("1", "начало", ["N1", "N2", "N3"])]
@@ -245,46 +268,71 @@ class ExpansionTest(unittest.TestCase):
         sections = graph_expand.parse_expansion(self.skeleton)
         self.assertNotIn("Ребро Q1 -answers-> N1", sections)
 
+    def test_composition_is_no_longer_a_flat_field(self):
+        self.assertNotIn("входит", graph_expand.NODE_FIELDS)
+
     def test_empty_skeleton_is_not_an_expansion(self):
         problems = graph_expand.check(self.graph, self.skeleton)
         self.assertGreater(len(problems), 20)
         self.assertTrue(any("не заполнено" in p for p in problems), problems)
 
     def test_filled_expansion_passes(self):
-        expected = graph_expand.expected_sections(self.graph)
-        parts = []
-        for title, fields in expected.items():
-            parts.append(f"## {title}")
-            for field in fields:
-                parts.append(f"- {field}: конкретное содержание этого поля")
-            parts.append("")
-        self.assertEqual(graph_expand.check(self.graph, "\n".join(parts)), [])
+        self.assertEqual(graph_expand.check(self.graph, _filled_expansion(self.graph)), [])
 
     def test_missing_node_section_is_named(self):
-        expected = graph_expand.expected_sections(self.graph)
-        parts = []
-        for title, fields in expected.items():
-            if title.startswith("N3 "):
-                continue
-            parts.append(f"## {title}")
-            for field in fields:
-                parts.append(f"- {field}: содержание")
-            parts.append("")
-        problems = graph_expand.check(self.graph, "\n".join(parts))
+        problems = graph_expand.check(self.graph, _filled_expansion(self.graph, skip=("N3 ",)))
         self.assertTrue(any("N3" in p and "нет расшифровки" in p for p in problems), problems)
 
     def test_section_that_the_graph_does_not_have_is_a_defect(self):
-        expected = graph_expand.expected_sections(self.graph)
-        parts = []
-        for title, fields in expected.items():
-            parts.append(f"## {title}")
-            for field in fields:
-                parts.append(f"- {field}: содержание")
-            parts.append("")
-        parts.append("## N99 «Выдуманный узел»")
-        parts.append("- входит: ничего")
-        problems = graph_expand.check(self.graph, "\n".join(parts))
+        text = _filled_expansion(self.graph) + "\n## N99 «Выдуманный узел»\n- чем доказано: ничего\n"
+        problems = graph_expand.check(self.graph, text)
         self.assertTrue(any("N99" in p for p in problems), problems)
+
+
+class CloudTest(unittest.TestCase):
+    def test_cloud_parses_core_elements_and_edges(self):
+        cloud = cloud_lib.parse(
+            "- ядро: A\n| элемент | связь | с чем |\n|---|---|---|\n| A | включает | B |\n| B | вызывает | C |"
+        )
+        self.assertEqual(cloud.core, "A")
+        self.assertEqual(cloud.elements, ["A", "B", "C"])
+        self.assertEqual(cloud.edges[1], ("B", "вызывает", "C"))
+
+    def test_cloud_needs_a_core(self):
+        cloud = cloud_lib.parse("| A | включает | B |\n| B | включает | C |")
+        self.assertTrue(any("ядро" in p for p in cloud_lib.check(cloud)))
+
+    def test_two_elements_are_a_note_not_a_cloud(self):
+        cloud = cloud_lib.parse("- ядро: A\n| A | включает | B |")
+        self.assertTrue(any("записка" in p for p in cloud_lib.check(cloud)))
+
+    def test_unknown_relation_is_named(self):
+        cloud = cloud_lib.parse("- ядро: A\n| A | связан с | B |\n| B | включает | C |")
+        self.assertTrue(any("не из списка" in p for p in cloud_lib.check(cloud)))
+
+    def test_self_edge_is_a_defect(self):
+        cloud = cloud_lib.parse("- ядро: A\n| A | включает | A |\n| A | включает | B |\n| B | включает | C |")
+        self.assertTrue(any("сам с собой" in p for p in cloud_lib.check(cloud)))
+
+    def test_island_is_a_defect(self):
+        cloud = cloud_lib.parse("- ядро: A\n| A | включает | B |\n| B | включает | C |\n| D | включает | E |")
+        self.assertTrue(any("остров" in p for p in cloud_lib.check(cloud)))
+
+    def test_too_many_elements_is_a_defect(self):
+        rows = "\n".join(f"| A | включает | e{i} |" for i in range(10))
+        cloud = cloud_lib.parse("- ядро: A\n" + rows)
+        self.assertTrue(any("пределе" in p for p in cloud_lib.check(cloud)))
+
+    def test_stats_count_relations(self):
+        cloud = cloud_lib.parse("- ядро: A\n| A | включает | B |\n| B | вызывает | C |")
+        self.assertEqual(cloud_lib.stats(cloud)["relations"], {"включает": 1, "вызывает": 1})
+
+    def test_node_without_a_cloud_fails_the_expansion(self):
+        graph = graph_lib.load(FIXTURE)
+        text = _filled_expansion(graph).replace("### Облако", "### Не облако")
+        problems = graph_expand.check(graph, text)
+        self.assertTrue(any("ядро" in p or "ни одной связи" in p for p in problems), problems)
+
 
 if __name__ == "__main__":
     unittest.main()

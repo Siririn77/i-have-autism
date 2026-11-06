@@ -1,7 +1,7 @@
 I HAVE AUTISM — FULL RULESET, AS INJECTED INTO THE SYSTEM PROMPT
 =================================================================
 
-51694 characters, 1052 lines.
+53137 characters, 1093 lines.
 
 This is the complete text, not the condensed 3,838-character section:
 the hook (Claude Code, Codex), the opencode plugin and the Pi extension
@@ -439,39 +439,80 @@ or a written refusal. Aggressive mode is two to three times the graph work of no
 it exactly where **omission is the risk** — a series, a course, a book, a reference work. For a one-off
 article it is pure ceremony, and the rule says so instead of pretending otherwise.
 
-### D2c. Ultra mode — the graph written out in full
+### D2c. Ultra mode — the graph written out in full, and the cloud inside each node
 
 Aggressive mode guarantees that nothing disappears. Ultra mode answers a different question: **what is
-inside each node** — the composition, not the connection.
+inside each node.** The connection is not the answer; the composition is.
 
-`graph_expand.py` turns a graph into a companion file, one section per node, with five fields:
+`graph_expand.py` turns a graph into a companion file, one section per node:
+
+```
+## N14 «Холокост»
+### Облако
+- ядро: правовая дискриминация
+| элемент | связь | с чем |
+|---|---|---|
+| правовая дискриминация | предшествует | изоляция |
+| изоляция | предшествует | гетто |
+| гетто | предшествует | массовые расстрелы |
+| сопротивление и спасение | противопоставлен | логистика уничтожения |
+- чем доказано: ...
+- что из этого следует: ...
+- чем показано: ...
+- что исключает: ...
+```
+
+#### The cloud: composition as a small graph
+
+The composition is not a bullet list. It is a **cloud** — a graph small enough to draw in a table, where
+the edge carries the meaning and nothing else:
+
+| verb | what it says |
+|---|---|
+| `включает` | part inside a whole |
+| `предшествует` | order, not cause |
+| `вызывает` | cause, not mere adjacency |
+| `усиливает` | same effect, stronger |
+| `противопоставлен` | two principles in conflict |
+| `цена` | what it is paid with |
+| `пример` | an instance of a general claim |
+| `доказательство` | what carries the claim |
+
+Eight verbs. A ninth would mean the cloud is being used for something it is not for. The list is closed on
+purpose: an edge whose label is a sentence is prose with an arrow drawn next to it.
+
+`cloud_lib.py` checks five things: a core exists; three to nine elements (two is a note, ten is a diagram
+nobody reads); every edge uses a known verb; no self-edge and no duplicate edge; and every element is
+reachable from the core — one cloud is one connected piece, islands are where the thinking stopped.
+
+#### The four remaining fields
 
 | field | what it answers |
 |---|---|
-| `входит` | what this node is made of — the list of parts, not a summary |
-| `чем доказано` | what evidence carries it: documents, statistics, testimony, which kind |
+| `чем доказано` | what carries the node: documents, statistics, testimony — which kind |
 | `что из этого следует` | what follows for the argument of the work |
-| `чем показано` | what the viewer or reader actually sees: map, chart, document, scene |
-| `что исключает` | what this node deliberately leaves out, and where that lives instead |
+| `чем показано` | what the reader or viewer actually sees: map, chart, document, scene |
+| `что исключает` | what the node deliberately leaves out, and where that lives instead |
 
-Plus one line per edge — `механизм` — because "causes" is a claim and a claim needs a mechanism; and two
-lines per axis — what it covers and what it does not.
+Plus one line per edge — `механизм` — because "causes" is a claim, and a claim without a mechanism is a
+label. Plus two lines per axis. `answers` edges are structural and need no mechanism.
+
+#### Commands and what they catch
 
 ```
 python3 scripts/graph_expand.py --new graph.md -o graph-expanded.md
 python3 scripts/graph_expand.py --check graph.md graph-expanded.md
 ```
 
-The checker fails on a missing section, an empty field, a `TODO`, or a section the graph does not have.
-It keys on node id, so renaming a label does not invalidate the expansion — but the label must still match.
+Exit 1 on a missing section, an empty field, a `TODO`, a section the graph does not have, or a cloud that
+breaks one of the five rules. Sections are matched by node id, so a renamed label does not orphan the text.
 
-**What this mode is for.** A graph answers "is the topic covered". The expansion answers "does each node
-have enough inside it to become a part". Running it before drafting is the cheapest way to discover that
-a node was a heading with nothing behind it: five fields with nothing to write is a very clear signal.
+**What this mode is for.** A graph answers "is the topic covered". The expansion answers "is there enough
+inside each node to become a part". Five fields with nothing to write is a very clear signal that a node
+was a heading with nothing behind it.
 
-**What it costs.** It is the most expensive of the three modes: the text is several times the graph. Run it
-on the nodes of the part being written, not on a master graph of fifty nodes, unless the master graph is
-the deliverable.
+**What it costs.** The most expensive of the three modes: several times the graph. Run it on the nodes of
+the part being written, not on a fifty-node master graph, unless the master graph is the deliverable.
 
 #### Failure modes
 

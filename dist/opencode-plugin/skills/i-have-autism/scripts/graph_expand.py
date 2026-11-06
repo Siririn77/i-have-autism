@@ -16,9 +16,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from cloud_lib import check as check_cloud, parse as parse_cloud  # noqa: E402
 from graph_lib import Graph, load  # noqa: E402
 
-NODE_FIELDS = ("входит", "чем доказано", "что из этого следует", "чем показано", "что исключает")
+NODE_FIELDS = ("чем доказано", "что из этого следует", "чем показано", "что исключает")
 AXIS_FIELDS = ("что покрывает", "чего в ней нет")
 STRUCTURAL_EDGES = ("answers",)
 SECTION = re.compile(r"^##\s+(N\d+\s+«.+?»|Ось «.+?»|Ребро .+?)\s*$", re.MULTILINE)
@@ -35,6 +36,12 @@ def skeleton(graph: Graph) -> str:
     lines.append("")
     for node_id, node in graph.nodes.items():
         lines.append(f"## {node_id} «{node.label}»")
+        lines.append("### Облако")
+        lines.append("- ядро: TODO")
+        lines.append("| элемент | связь | с чем |")
+        lines.append("|---|---|---|")
+        lines.append("| TODO | включает | TODO |")
+        lines.append("")
         for field in NODE_FIELDS:
             lines.append(f"- {field}: TODO")
         lines.append("")
@@ -64,6 +71,23 @@ def parse_expansion(text: str, graph: Graph | None = None) -> dict[str, dict[str
     return sections
 
 
+def cloud_blocks(text: str) -> dict[str, str]:
+    """Section title -> the text between `### Облако` and the next heading inside that section."""
+    blocks: dict[str, str] = {}
+    matches = list(SECTION.finditer(text))
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        body = text[match.end() : end]
+        start = body.find("### Облако")
+        if start < 0:
+            blocks[match.group(1).strip()] = ""
+            continue
+        tail = body[start + len("### Облако") :]
+        stop = tail.find("\n#")
+        blocks[match.group(1).strip()] = tail if stop < 0 else tail[:stop]
+    return blocks
+
+
 def expected_sections(graph: Graph) -> dict[str, tuple[str, ...]]:
     expected: dict[str, tuple[str, ...]] = {}
     for node_id, node in graph.nodes.items():
@@ -81,6 +105,7 @@ def check(graph: Graph, expansion_text: str) -> list[str]:
     """Every expected section exists, carries its fields, and none of them is empty or TODO."""
     problems: list[str] = []
     sections = parse_expansion(expansion_text)
+    clouds = cloud_blocks(expansion_text)
     for title, fields in expected_sections(graph).items():
         if title not in sections:
             problems.append(f"{title}: нет расшифровки")
@@ -91,6 +116,10 @@ def check(graph: Graph, expansion_text: str) -> list[str]:
                 problems.append(f"{title}: поле «{field}» пустое")
             elif value.strip().lower().startswith("todo"):
                 problems.append(f"{title}: поле «{field}» не заполнено")
+        if title.startswith("N"):
+            cloud = parse_cloud(clouds.get(title, ""))
+            for problem in check_cloud(cloud):
+                problems.append(f"{title}: {problem}")
     for title in sections:
         if title not in expected_sections(graph):
             problems.append(f"{title}: расшифровка есть, а в графе такого нет")

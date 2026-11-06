@@ -24,8 +24,10 @@ The reader is autistic. Apply until the user says "stop autism mode" or "normal 
    out-of-scope. Aggressive mode, only on request: a coverage matrix axes × stages, no empty cell
    (nodes, or "не относится" plus a register row), every excluded element registered with status,
    reason, place. Coverage means nothing disappears without a decision, not that every fact is in.
-   Ultra mode, only on request: every node gets a written expansion - what it contains, what proves it,
-   what follows, how it is shown, what it excludes; every edge a mechanism. An empty field or TODO stops.
+   Ultra mode, only on request: every node gets a written expansion - a cloud of its parts (core, three
+   to nine elements, edges carrying meaning: включает / предшествует / вызывает / усиливает /
+   противопоставлен / цена / пример / доказательство), what proves it, what follows, how it is shown,
+   what it excludes; every graph edge a mechanism. An empty field or TODO stops.
 10. Then the plan, in a file: 2–3 lines for a one-shot, 500–1000 for a film. Each unit: input, action,
    output, a check that can fail. Unknowns as [?], closed before the units that need them. Changes go to
    an append-only drift log. The post-mortem follows, with a "plan vs fact" section.
