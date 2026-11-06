@@ -1,6 +1,6 @@
 {
   "name": "opencode-i-have-autism",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Shape output and code for an autistic reader: literal meaning, every implicit step named, no idioms or social padding, direct disagreement, an association graph and a written decomposition plan sized to the task before any work, and code held to readability, maintainability, and correctness with no compromise on quality. Absorbs enjoyable-coding. Invoke with /i-have-autism; stays on until \"stop autism mode\".",
   "type": "module",
   "main": "i-have-autism.js",

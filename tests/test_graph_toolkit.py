@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "skills" / "i-have-autism" / "scripts"
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "graph-mini.md"
+AGGRESSIVE = Path(__file__).resolve().parent / "fixtures" / "graph-aggressive.md"
 
 
 def load_module(name: str):
@@ -178,6 +179,53 @@ class CliTest(unittest.TestCase):
             parsed = graph_lib.load(target)
             self.assertEqual(len(parsed.questions), 5)
 
+
+
+class AggressiveModeTest(unittest.TestCase):
+    def setUp(self):
+        self.graph = graph_lib.load(AGGRESSIVE)
+
+    def test_matrix_and_register_are_parsed(self):
+        self.assertEqual(self.graph.stages, ["часть 1", "часть 2"])
+        self.assertEqual(len(self.graph.matrix), 2)
+        self.assertEqual(len(self.graph.out_of_scope), 1)
+        self.assertTrue(graph_lib.is_aggressive(self.graph))
+
+    def test_aggressive_fixture_is_clean(self):
+        problems = check_graph.check(self.graph) + check_graph.check_aggressive(self.graph)
+        self.assertEqual(problems, [])
+
+    def test_node_outside_units_and_register_is_a_defect(self):
+        self.graph.mapping = [("1", "начало", ["N1", "N2", "N3"])]
+        problems = check_graph.check_aggressive(self.graph)
+        self.assertTrue(any("молчание запрещено" in p for p in problems), problems)
+
+    def test_empty_matrix_cell_is_a_hole(self):
+        self.graph.matrix[0] = ("причины", ["N1, N2", ""])
+        problems = check_graph.check_aggressive(self.graph)
+        self.assertTrue(any("дыра в покрытии" in p for p in problems), problems)
+
+    def test_refusal_needs_a_register_entry(self):
+        self.graph.matrix[0] = ("причины", ["N1, N2", "не относится"])
+        problems = check_graph.check_aggressive(self.graph)
+        self.assertTrue(any("отказ без записи" in p for p in problems), problems)
+
+    def test_refusal_with_entry_is_accepted(self):
+        self.graph.matrix[0] = ("причины", ["N1, N2", "не относится"])
+        self.graph.out_of_scope.append(("причины × часть 2", "не относится", "ось закрыта в части 1", "—"))
+        problems = check_graph.check_aggressive(self.graph)
+        self.assertFalse(any("причины × часть 2" in p for p in problems), problems)
+
+    def test_register_status_must_be_known(self):
+        self.graph.out_of_scope[0] = ("последствия", "потом как-нибудь", "нет времени", "никуда")
+        problems = check_graph.check_aggressive(self.graph)
+        self.assertTrue(any("не из" in p for p in problems), problems)
+
+    def test_plan_carries_the_register_and_the_matrix(self):
+        text = graph_to_plan.build(self.graph, 40)
+        self.assertIn("реестр", text)
+        self.assertIn("последствия для третьих стран", text)
+        self.assertIn("Матрица покрытия", text)
 
 if __name__ == "__main__":
     unittest.main()

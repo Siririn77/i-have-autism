@@ -61,6 +61,14 @@ def build(graph: Graph, minutes: int) -> str:
     else:
         lines.append("- Все узлы графа распределены по единицам.")
     lines.append("")
+    if graph.out_of_scope:
+        lines.append("")
+        lines.append("### Что не входит — и где это будет (реестр)")
+        lines.append("| элемент | статус | почему | где |")
+        lines.append("|---|---|---|---|")
+        for element, status, why, place in graph.out_of_scope:
+            lines.append(f"| {element} | {status} | {why} | {place} |")
+    lines.append("")
     lines.append("## 3. Входы и окружение")
     lines.append("| вход | где | проверка |")
     lines.append("|---|---|---|")
@@ -100,6 +108,14 @@ def build(graph: Graph, minutes: int) -> str:
     lines.append("## 8. Неизвестные")
     lines.append("- [?] TODO: что ещё не выяснено и как это закрыть.")
     lines.append("")
+    if graph.matrix:
+        lines.append("## Матрица покрытия")
+        header = "| ось | " + " | ".join(graph.stages) + " |"
+        lines.append(header)
+        lines.append("|" + "---|" * (len(graph.stages) + 1))
+        for axis, cells in graph.matrix:
+            lines.append("| " + axis + " | " + " | ".join(cells) + " |")
+        lines.append("")
     lines.append("## 9. Журнал расхождений")
     lines.append("| дата | план говорил | что случилось | что меняем |")
     lines.append("|---|---|---|---|")

@@ -21,7 +21,10 @@ The reader is autistic. Apply until the user says "stop autism mode" or "normal 
    Nodes answer root questions, each with what / why it matters / anchor / when. No anchor, no node.
    Edges typed: causes, contrasts, repeats, contradicts. Stop when every question has three answers and
    a new node would need a new axis. Every plan unit names its node; a node without a unit is a stated
-   out-of-scope.
+   out-of-scope. Aggressive mode, only on request: a coverage matrix axes × stages with no empty cell
+   (a cell either names nodes or says "не относится" and carries a register row), and every excluded
+   element in a register with status, reason and place. Absolute coverage means nothing disappears
+   without a written decision, not that every fact is in the graph.
 10. Then the plan, in a file: 2–3 lines for a one-shot, 500–1000 for a film. Each unit: input, action,
    output, a check that can fail. Unknowns as [?], closed before the units that need them. Changes go to
    an append-only drift log. The post-mortem follows, with a "plan vs fact" section.

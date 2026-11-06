@@ -23,7 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from graph_lib import EDGE_TYPES, Graph, ParseError, load  # noqa: E402
+from graph_lib import EDGE_TYPES, REGISTER_STATUSES, Graph, ParseError, is_aggressive, load  # noqa: E402
 
 MIN_ANSWERS = 3
 MIN_AXIS_NODES = 3
@@ -57,6 +57,75 @@ def find_cause_cycle(graph: Graph) -> list[str]:
             if found:
                 return found
     return []
+
+
+def check_aggressive(graph: Graph) -> list[str]:
+    """Absolute coverage: every element of the topic is either a node in a unit, or a register entry
+    with a status, a reason and a place. Nothing disappears into silence."""
+    problems: list[str] = []
+    mapped: set[str] = set()
+    for _, _, node_ids in graph.mapping:
+        mapped.update(node_ids)
+
+    registered = {entry[0]: entry for entry in graph.out_of_scope}
+    for node_id, node in graph.nodes.items():
+        if node_id not in mapped and node.label not in registered and node.what not in registered:
+            problems.append(
+                f"{node_id} «{node.label}»: нет ни в единице плана, ни в реестре «Вне рамок» — "
+                "в агрессивном режиме молчание запрещено"
+            )
+
+    for element, status, why, place in graph.out_of_scope:
+        if not why.strip():
+            problems.append(f"реестр «{element}»: нет причины — отказ без причины это забывание")
+        if not place.strip():
+            problems.append(f"реестр «{element}»: не указано, где это будет")
+        if status.lower() not in REGISTER_STATUSES:
+            problems.append(
+                f"реестр «{element}»: статус «{status}» не из {', '.join(REGISTER_STATUSES)}"
+            )
+        if status.lower() == "в работе" and not any(
+            node.label == element or node.what == element for node in graph.nodes.values()
+        ):
+            problems.append(f"реестр «{element}»: статус «в работе», но узла в графе нет")
+
+    if not graph.stages:
+        problems.append("нет матрицы покрытия: в агрессивном режиме оси × этапы обязательны")
+    else:
+        register_names = {element for element, _, _, _ in graph.out_of_scope}
+        seen: set[str] = set()
+        covered = 0
+        refused = 0
+        holes = 0
+        for axis, cells in graph.matrix:
+            if len(cells) != len(graph.stages):
+                problems.append(f"матрица, ось «{axis}»: {len(cells)} клеток при {len(graph.stages)} этапах")
+                continue
+            for stage, cell in zip(graph.stages, cells):
+                text = cell.strip()
+                if text.lower().startswith("не относится"):
+                    refused += 1
+                    if f"{axis} × {stage}" not in register_names:
+                        problems.append(
+                            f"матрица, «{axis}» × «{stage}»: отказ без записи в реестре «{axis} × {stage}»"
+                        )
+                    continue
+                ids = [part.strip() for part in text.replace(";", ",").split(",") if part.strip().startswith("N")]
+                if not ids:
+                    holes += 1
+                    problems.append(f"матрица, «{axis}» × «{stage}»: пустая клетка — дыра в покрытии")
+                    continue
+                covered += 1
+                for node_id in ids:
+                    if node_id not in graph.nodes:
+                        problems.append(f"матрица, «{axis}» × «{stage}»: узла {node_id} нет в графе")
+                    seen.add(node_id)
+        for node_id in graph.nodes:
+            if node_id not in seen:
+                problems.append(f"{node_id}: не попал ни в одну клетку матрицы")
+        for axis in sorted(set(graph.axes()) - {axis for axis, _ in graph.matrix}):
+            problems.append(f"матрица: оси «{axis}» нет в матрице")
+    return problems
 
 
 def check(graph: Graph) -> list[str]:
@@ -152,11 +221,26 @@ def main(argv: list[str]) -> int:
         print(f"РАЗБОР НЕ ПРОШЁЛ: {error}")
         return 1
 
+    aggressive = "--aggressive" in argv or is_aggressive(graph)
     problems = check(graph)
+    if aggressive:
+        problems += check_aggressive(graph)
+        covered = refused = 0
+        for _, cells in graph.matrix:
+            for cell in cells:
+                text = cell.strip()
+                if text.lower().startswith("не относится"):
+                    refused += 1
+                elif any(part.strip().startswith("N") for part in text.replace(";", ",").split(",")):
+                    covered += 1
+        if not quiet:
+            total = len(graph.stages) * len(graph.axes())
+            print(f"матрица: покрыто {covered}, объяснено отказом {refused}, из {total} клеток")
     if not quiet:
         print(
             f"узлов {len(graph.nodes)}, вопросов {len(graph.questions)}, рёбер {len(graph.edges)}, "
-            f"осей {len(graph.axes())}, противоречий {len(graph.contradictions())}"
+            f"осей {len(graph.axes())}, противоречий {len(graph.contradictions())}, "
+            f"режим {'агрессивный' if aggressive else 'обычный'}"
         )
     if problems:
         print(f"дефектов: {len(problems)}")

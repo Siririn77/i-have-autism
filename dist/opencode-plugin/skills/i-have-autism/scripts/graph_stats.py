@@ -16,7 +16,7 @@ from typing import TypedDict
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from graph_lib import Graph, load  # noqa: E402
+from graph_lib import Graph, is_aggressive, load  # noqa: E402
 
 
 def longest_cause_chain(graph: Graph) -> list[str]:
@@ -62,6 +62,11 @@ class Report(TypedDict):
     budget: str
     units: int
     unmapped_nodes: list[str]
+    aggressive: bool
+    matrix_covered: int
+    matrix_refused: int
+    matrix_total: int
+    register: int
 
 
 def report(graph: Graph) -> Report:
@@ -74,7 +79,21 @@ def report(graph: Graph) -> Report:
         for qid, text in graph.questions.items()
     ]
     axes: list[AxisRow] = [{"name": axis, "nodes": len(graph.nodes_on(axis))} for axis in graph.axes()]
+    covered = refused = 0
+    for _, cells in graph.matrix:
+        for cell in cells:
+            text = cell.strip()
+            if text.lower().startswith("не относится"):
+                refused += 1
+            elif any(part.strip().startswith("N") for part in text.replace(";", ",").split(",")):
+                covered += 1
+    total_cells = len(graph.stages) * len(graph.axes())
     return {
+        "aggressive": is_aggressive(graph),
+        "matrix_covered": covered,
+        "matrix_refused": refused,
+        "matrix_total": total_cells,
+        "register": len(graph.out_of_scope),
         "title": graph.title,
         "nodes": len(graph.nodes),
         "edges": len(graph.edges),
@@ -118,6 +137,11 @@ def main(argv: list[str]) -> int:
     chain = data["longest_cause_chain"]
     print(f"\nсамая длинная цепь причин ({len(chain)}): " + " → ".join(chain))
     print(f"противоречий (гейтов факта): {len(data['contradictions'])}")
+    if data["aggressive"] or data["matrix_total"]:
+        print(
+            f"матрица: покрыто {data['matrix_covered']}, объяснено отказом {data['matrix_refused']}, "
+            f"из {data['matrix_total']} клеток; в реестре «Вне рамок» {data['register']} записей"
+        )
     if data["unmapped_nodes"]:
         print("узлы без единицы плана: " + ", ".join(data["unmapped_nodes"]))
     return 0

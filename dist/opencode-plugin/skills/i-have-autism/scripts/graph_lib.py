@@ -61,6 +61,9 @@ class Graph:
     edges: list[Edge] = field(default_factory=list)
     mapping: list[tuple[str, str, list[str]]] = field(default_factory=list)
     # The same facts as drawn: compared against the tables by check_graph.py, never merged.
+    stages: list[str] = field(default_factory=list)
+    matrix: list[tuple[str, list[str]]] = field(default_factory=list)
+    out_of_scope: list[tuple[str, str, str, str]] = field(default_factory=list)
     mermaid_nodes: dict[str, str] = field(default_factory=dict)
     mermaid_edges: list[tuple[str, str, str]] = field(default_factory=list)
     bare_edges: list[tuple[str, str]] = field(default_factory=list)
@@ -106,7 +109,17 @@ class Graph:
         return seen
 
 
-def _section(text: str, heading: str) -> str:
+def _sections(text: str, heading: str) -> str:
+    """Все блоки с этим заголовком: план крупного графа разбит по сезонам на несколько таблиц."""
+    return "\n".join(_section(text, heading, index=i) for i in range(len(_headings(text, heading))))
+
+
+def _headings(text: str, heading: str) -> list[int]:
+    pattern = re.compile(rf"^##\s+{re.escape(heading)}\b.*$", re.MULTILINE)
+    return [m.start() for m in pattern.finditer(text)]
+
+
+def _section(text: str, heading: str, index: int = 0) -> str:
     """Return the body of a `## heading` section, up to the next heading of the same level."""
     # Заголовок может иметь уточнение: «## Переход в план: первый сезон» — это тот же раздел.
     pattern = re.compile(rf"^##\s+{re.escape(heading)}\b.*$", re.MULTILINE)
@@ -118,6 +131,37 @@ def _section(text: str, heading: str) -> str:
     return rest[: stop.start()] if stop else rest
 
 
+REGISTER_STATUSES = ("в работе", "отдельная часть", "отдельный сезон", "отдельный проект", "не относится", "нет данных")
+AGGRESSIVE_MARKER = "агрессивный"
+
+
+def is_aggressive(graph: "Graph") -> bool:
+    return AGGRESSIVE_MARKER in graph.meta.get("режим", "").lower()
+
+
+def _matrix_block(text: str) -> tuple[list[str], list[tuple[str, list[str]]]]:
+    """Read the coverage matrix: header cells are stages, each row is an axis."""
+    block = _section(text, "Матрица покрытия")
+    rows = [line.strip() for line in block.splitlines() if line.strip().startswith("|")]
+    if not rows:
+        return [], []
+    header = [cell.strip() for cell in rows[0].strip("|").split("|")][1:]
+    matrix: list[tuple[str, list[str]]] = []
+    for line in rows[2:]:
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        matrix.append((cells[0], cells[1:]))
+    return header, matrix
+
+
+def _register(text: str) -> list[tuple[str, str, str, str]]:
+    entries: list[tuple[str, str, str, str]] = []
+    for row in _table_rows(_section(text, "Вне рамок")):
+        if len(row) < 4:
+            continue
+        entries.append((row[0], row[1], row[2], row[3]))
+    return entries
+
+
 def _table_rows(block: str) -> list[list[str]]:
     rows: list[list[str]] = []
     for line in block.splitlines():
@@ -125,7 +169,7 @@ def _table_rows(block: str) -> list[list[str]]:
         if not line.startswith("|") or set(line) <= set("|-: "):
             continue
         cells = [cell.strip() for cell in line.strip("|").split("|")]
-        if cells and cells[0].lower() in ("id", "от", "часть"):
+        if cells and cells[0].lower() in ("id", "от", "часть", "элемент", "ось", "этап"):
             continue
         rows.append(cells)
     return rows
@@ -172,7 +216,10 @@ def parse(text: str, source: str = "<graph>") -> Graph:
         kind = TYPE_ALIASES.get(row[1].strip().lower(), row[1].strip().lower())
         graph.edges.append(Edge(src=row[0], kind=kind, dst=row[2], note=row[3]))
 
-    for row in _table_rows(_section(text, "Переход в план")):
+    graph.stages, graph.matrix = _matrix_block(text)
+    graph.out_of_scope = _register(text)
+
+    for row in _table_rows(_sections(text, "Переход в план")):
         if len(row) < 3:
             continue
         node_ids = [part.strip() for part in row[-1].split(",") if part.strip()]
