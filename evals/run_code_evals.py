@@ -134,13 +134,18 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=3)
     parser.add_argument("--repeat", type=int, default=3)
     parser.add_argument("--id", default="")
+    parser.add_argument("--file", default=str(CASES), help="which case file to run")
+    parser.add_argument("--arms", default="", help="comma-separated subset: none,graph,aggressive")
     args = parser.parse_args()
 
-    cases = json.loads(CASES.read_text(encoding="utf-8"))
+    cases = json.loads(Path(args.file).read_text(encoding="utf-8"))
     if args.id:
         cases = [case for case in cases if case["id"] == args.id]
     key = load_key()
-    names = list(ARMS)
+    names = [arm.strip() for arm in args.arms.split(",")] if args.arms else list(ARMS)
+    unknown = [arm for arm in names if arm not in ARMS]
+    if unknown:
+        raise SystemExit(f"unknown arms: {unknown}")
 
     jobs = []
     results = {}
