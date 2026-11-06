@@ -27,8 +27,16 @@ model spent the whole budget inside reasoning and emitted nothing — no graph, 
 afterwards passed cleanly.
 
 So the aggressive prompt is not reliably unusable on hard tasks; it is reliably **expensive**, and one
-run in three blew the ceiling without producing a character. For a task of this size the aggressive
-instruction set costs the most and buys nothing measurable: same 26/26, same architecture.
+run in three blew the ceiling without producing a character.
+
+## What the aggressive arm actually produced — corrected after reading the answers
+
+Not nothing. Both successful aggressive runs open with a task graph, and both carry a register of
+decisions; one of the two also carries a coverage matrix. So the instruction set was followed, and the
+artefacts exist. They are simply large: 17 013 and 16 539 characters against 10 655 for the plain arm —
+roughly 60 % more output for the same 26/26.
+
+Cost, measured: the three sequential runs took 16 m 23 s wall clock, about 5.5 minutes each.
 
 ## What it actually built
 
@@ -64,8 +72,9 @@ model cannot do durability", which would have been false.
 ## Conclusion
 
 At this difficulty the model does not fail; it converges on a correct design in all three arms. The
-differentiator is not correctness but cost: the graph arm adds a page of reasoning and no score, and the
-aggressive arm can spend 64 000 tokens to produce nothing.
+differentiator is not correctness but cost: the graph arm adds a plan and no score, the aggressive arm
+adds a plan plus a register (plus a matrix in one run of two) and no score, and one aggressive run out of
+three spent 64 000 tokens to produce nothing at all.
 
 To separate the arms honestly the task has to be larger than one file: several modules, an interface
 between them, and a requirement that cannot be satisfied locally. That is the next rung, and it needs a
