@@ -1,0 +1,223 @@
+{
+  "when": "2026-11-06T00:38:41+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "repeat": 3,
+  "suite": "code",
+  "arms": {
+    "none": "You are a helpful coding assistant. Answer the user's request.",
+    "graph": "You are a coding assistant.\n\nBefore writing code, write the graph of the task as a short section — small, sized to the task (3-5 nodes for a one-liner):\nroot questions the code must answer, nodes with an anchor (what in the request forces this node),\ntyped edges (causes / contrasts / repeats / contradicts). No anchor, no node. Stop when every question\nhas three answers and a new node would need a new axis.\n\nThen write the code. Every node you opened must be discharged by the code or by a test you name.",
+    "aggressive": "You are a coding assistant.\n\nBefore writing code, build a graph of the task with absolute coverage: nothing in the request may\ndisappear without a written decision.\n\n- Root questions the code must answer; nodes with an anchor; typed edges (causes / contrasts / repeats /\n  contradicts).\n- A coverage matrix: axes (inputs, data, refusals, contracts, delivery) x stages, with no empty cell.\n  A cell either names nodes or says \"не относится\" with a reason.\n- A register: anything you deliberately leave out, with status, reason and where it goes.\n\nThen write the code, and make sure every node is discharged by the code or by a test you name."
+  },
+  "totals": {
+    "none": 5,
+    "graph": 5,
+    "aggressive": 5
+  },
+  "rows": [
+    {
+      "id": "slugify",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 40,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalnum():\n            current.append(ch)\n        else:\n            if current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    slug = \"-\".join(words)\n    if len(slug) <= 60:\n        return slug\n\n    chosen = []\n    length = 0\n\n    for word in words:\n        if not chosen:\n            if len(word) > 60:\n                return slug[:60]\n            chosen.append(word)\n            length = len(word)\n        else:\n            new_length = length + 1 + len(word)\n            if new_length <= 60:\n                chosen.append(word)\n                length = new_length\n            else:\n                break\n\n    return \"-\".join(chosen) if chosen else slug[:60]",
+          "code": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalnum():\n            current.append(ch)\n        else:\n            if current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    slug = \"-\".join(words)\n    if len(slug) <= 60:\n        return slug\n\n    chosen = []\n    length = 0\n\n    for word in words:\n        if not chosen:\n            if len(word) > 60:\n                return slug[:60]\n            chosen.append(word)\n            length = len(word)\n        else:\n            new_length = length + 1 + len(word)\n            if new_length <= 60:\n                chosen.append(word)\n                length = new_length\n            else:\n                break\n\n    return \"-\".join(chosen) if chosen else slug[:60]"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "2/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 37,
+          "partial": 0.917,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalnum():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current))\n            current = []\n\n    if current:\n        words.append(\"\".join(current))\n\n    if not words:\n        return \"\"\n\n    lower_words = [word.lower() for word in words]\n\n    parts = []\n    length = 0\n\n    for word in lower_words:\n        extra = len(word) + (1 if parts else 0)\n\n        if length + extra <= 60:\n            parts.append(word)\n            length += extra\n        else:\n            if not parts:\n                return lower_words[0][:60]\n            break\n\n    return \"-\".join(parts)",
+          "code": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalnum():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current))\n            current = []\n\n    if current:\n        words.append(\"\".join(current))\n\n    if not words:\n        return \"\"\n\n    lower_words = [word.lower() for word in words]\n\n    parts = []\n    length = 0\n\n    for word in lower_words:\n        extra = len(word) + (1 if parts else 0)\n\n        if length + extra <= 60:\n            parts.append(word)\n            length += extra\n        else:\n            if not parts:\n                return lower_words[0][:60]\n            break\n\n    return \"-\".join(parts)"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 42,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalpha() or ch.isdigit():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current).lower())\n            current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    if not words:\n        return \"\"\n\n    result = \"-\".join(words)\n\n    if len(result) <= 60:\n        return result\n\n    if len(words[0]) > 60:\n        return result[:60]\n\n    position = 0\n    end = 0\n\n    for i, word in enumerate(words):\n        if i > 0:\n            position += 1\n\n        if position + len(word) > 60:\n            break\n\n        position += len(word)\n        end = position\n\n    return result[:end]",
+          "code": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalpha() or ch.isdigit():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current).lower())\n            current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    if not words:\n        return \"\"\n\n    result = \"-\".join(words)\n\n    if len(result) <= 60:\n        return result\n\n    if len(words[0]) > 60:\n        return result[:60]\n\n    position = 0\n    end = 0\n\n    for i, word in enumerate(words):\n        if i > 0:\n            position += 1\n\n        if position + len(word) > 60:\n            break\n\n        position += len(word)\n        end = position\n\n    return result[:end]"
+        }
+      }
+    },
+    {
+      "id": "chunked",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 18,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "from itertools import islice\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result",
+          "code": "from itertools import islice\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 19,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    result = []\n    chunk = []\n\n    for item in items:\n        chunk.append(item)\n        if len(chunk) == size:\n            result.append(chunk)\n            chunk = []\n\n    if chunk:\n        result.append(chunk)\n\n    return result",
+          "code": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    result = []\n    chunk = []\n\n    for item in items:\n        chunk.append(item)\n        if len(chunk) == size:\n            result.append(chunk)\n            chunk = []\n\n    if chunk:\n        result.append(chunk)\n\n    return result"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 19,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "from itertools import islice\n\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be a positive integer\")\n    if size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result",
+          "code": "from itertools import islice\n\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be a positive integer\")\n    if size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result"
+        }
+      }
+    },
+    {
+      "id": "csv_line",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 51,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n            closed = False\n\n            while i < n:\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        closed = True\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            if not closed:\n                raise ValueError(\"unclosed quoted field\")\n\n            if i < n and line[i] != ',':\n                raise ValueError(\"unexpected character after closing quote\")\n\n            fields.append(''.join(chars))\n        else:\n            start = i\n            while i < n and line[i] != ',':\n                i += 1\n            fields.append(line[start:i])\n\n        if i == n:\n            return fields\n\n        i += 1\n        if i == n:\n            fields.append(\"\")\n            return fields",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n            closed = False\n\n            while i < n:\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        closed = True\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            if not closed:\n                raise ValueError(\"unclosed quoted field\")\n\n            if i < n and line[i] != ',':\n                raise ValueError(\"unexpected character after closing quote\")\n\n            fields.append(''.join(chars))\n        else:\n            start = i\n            while i < n and line[i] != ',':\n                i += 1\n            fields.append(line[start:i])\n\n        if i == n:\n            return fields\n\n        i += 1\n        if i == n:\n            fields.append(\"\")\n            return fields"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 45,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "```python\ndef parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    n = len(line)\n    if n == 0:\n        return []\n\n    fields: list[str] = []\n    i = 0\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            buf: list[str] = []\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quote\")\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        buf.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    buf.append(ch)\n                    i += 1\n\n            if i < n and line[i] != \",\":\n                raise ValueError(\"unexpected text after closing quote\")\n\n            fields.append(\"\".join(buf))\n            if i >= n:\n                return fields\n            i += 1\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n            fields.append(line[start:i])\n            if i >= n:\n                return fields\n            i += 1\n```",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    n = len(line)\n    if n == 0:\n        return []\n\n    fields: list[str] = []\n    i = 0\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            buf: list[str] = []\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quote\")\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        buf.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    buf.append(ch)\n                    i += 1\n\n            if i < n and line[i] != \",\":\n                raise ValueError(\"unexpected text after closing quote\")\n\n            fields.append(\"\".join(buf))\n            if i >= n:\n                return fields\n            i += 1\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n            fields.append(line[start:i])\n            if i >= n:\n                return fields\n            i += 1\n"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 55,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars = []\n            closed = False\n\n            while i < n:\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        closed = True\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            if not closed:\n                raise ValueError(\"unclosed quoted field\")\n\n            if i < n and line[i] != \",\":\n                raise ValueError(\"unexpected character after closing quote\")\n\n            fields.append(\"\".join(chars))\n\n            if i == n:\n                return fields\n\n            i += 1\n\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i == n:\n                return fields\n\n            i += 1",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars = []\n            closed = False\n\n            while i < n:\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        closed = True\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            if not closed:\n                raise ValueError(\"unclosed quoted field\")\n\n            if i < n and line[i] != \",\":\n                raise ValueError(\"unexpected character after closing quote\")\n\n            fields.append(\"\".join(chars))\n\n            if i == n:\n                return fields\n\n            i += 1\n\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i == n:\n                return fields\n\n            i += 1"
+        }
+      }
+    },
+    {
+      "id": "merge_intervals",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 27,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "```python\ndef merge_intervals(intervals):\n    normalized = []\n\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(f\"start ({start}) must not be greater than end ({end})\")\n        normalized.append((start, end))\n\n    if not normalized:\n        return []\n\n    normalized.sort(key=lambda interval: interval[0])\n\n    merged = []\n    current_start, current_end = normalized[0]\n\n    for start, end in normalized[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    normalized = []\n\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(f\"start ({start}) must not be greater than end ({end})\")\n        normalized.append((start, end))\n\n    if not normalized:\n        return []\n\n    normalized.sort(key=lambda interval: interval[0])\n\n    merged = []\n    current_start, current_end = normalized[0]\n\n    for start, end in normalized[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n\n    return merged\n"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 28,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    prepared = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end}; start must be <= end\"\n            )\n        prepared.append((start, end))\n\n    prepared.sort(key=lambda pair: pair[0])\n\n    merged = []\n    current_start, current_end = prepared[0]\n\n    for start, end in prepared[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged",
+          "code": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    prepared = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end}; start must be <= end\"\n            )\n        prepared.append((start, end))\n\n    prepared.sort(key=lambda pair: pair[0])\n\n    merged = []\n    current_start, current_end = prepared[0]\n\n    for start, end in prepared[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 22,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "def merge_intervals(intervals):\n    prepared = []\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(f\"start must be <= end: start={start}, end={end}\")\n        prepared.append((start, end))\n\n    if not prepared:\n        return []\n\n    prepared.sort(key=lambda interval: interval[0])\n    merged = [prepared[0]]\n\n    for start, end in prepared[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged",
+          "code": "def merge_intervals(intervals):\n    prepared = []\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(f\"start must be <= end: start={start}, end={end}\")\n        prepared.append((start, end))\n\n    if not prepared:\n        return []\n\n    prepared.sort(key=lambda interval: interval[0])\n    merged = [prepared[0]]\n\n    for start, end in prepared[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged"
+        }
+      }
+    },
+    {
+      "id": "rate_limiter",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "2/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 38,
+          "partial": 0.667,
+          "detail": "tsFromName\n    module = __import__(module_name)\n  File \"/root/.hermes/profiles/ougi/cache/scratch/tmp4445jnq0/test_solution.py\", line 4, in <module>\n    from solution import RateLimiter\n  File \"/root/.hermes/profiles/ougi/cache/scratch/tmp4445jnq0/solution.py\", line 38\n    if not isinstance(cost, int) or isinstance(c\n                                              ^\nSyntaxError: '(' was never closed",
+          "answer": "```python\nimport threading\nimport time\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if not isinstance(rate, int) or isinstance(rate, bool) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if not isinstance(per_seconds, (int, float)) or isinstance(per_seconds, bool) or per_seconds <= 0:\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._clock = time.monotonic if clock is None else clock\n        self._capacity = rate\n        self._refill_rate = rate / self._per_seconds\n        self._buckets = {}\n        self._lock = threading.Lock()\n\n    def _refill(self, bucket, now):\n        tokens, last = bucket\n        if now > last:\n            tokens = min(float(self._capacity), tokens + (now - last) * self._refill_rate)\n            last = now\n            bucket[0] = tokens\n            bucket[1] = last\n\n    def _bucket_for(self, key, now):\n        bucket = self._buckets.get(key)\n        if bucket is None:\n            bucket = [float(self._capacity), now]\n            self._buckets[key] = bucket\n        else:\n            self._refill(bucket, now)\n        return bucket\n\n    def allow(self, key, cost=1) -> bool:\n        if not isinstance(cost, int) or isinstance(c",
+          "code": "import threading\nimport time\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if not isinstance(rate, int) or isinstance(rate, bool) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if not isinstance(per_seconds, (int, float)) or isinstance(per_seconds, bool) or per_seconds <= 0:\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._clock = time.monotonic if clock is None else clock\n        self._capacity = rate\n        self._refill_rate = rate / self._per_seconds\n        self._buckets = {}\n        self._lock = threading.Lock()\n\n    def _refill(self, bucket, now):\n        tokens, last = bucket\n        if now > last:\n            tokens = min(float(self._capacity), tokens + (now - last) * self._refill_rate)\n            last = now\n            bucket[0] = tokens\n            bucket[1] = last\n\n    def _bucket_for(self, key, now):\n        bucket = self._buckets.get(key)\n        if bucket is None:\n            bucket = [float(self._capacity), now]\n            self._buckets[key] = bucket\n        else:\n            self._refill(bucket, now)\n        return bucket\n\n    def allow(self, key, cost=1) -> bool:\n        if not isinstance(cost, int) or isinstance(c"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 68,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "# Task graph:\n# Q: How to implement RateLimiter?\n# N1: Validate rate/per_seconds/cost (anchor: req 1,4).\n# N2: Lazy token refill from clock under lock (anchor: req 3,6,9,10).\n# N3: Per-key buckets with state/reset (anchor: req 2,5,7,8).\n# Edges:\n# N1 --causes--> N2: valid capacity enables refill/allow.\n# N2 --causes--> N3: atomic refill+spend keeps keys independent.\n# N2 --contrasts--> background threads: no background, lazy only (req 6).\n# N3 --repeats--> req 5: independent keys.\n\nimport threading\nimport time\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if isinstance(rate, bool) or not isinstance(rate, int) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if (\n            isinstance(per_seconds, bool)\n            or not isinstance(per_seconds, (int, float))\n            or not (per_seconds > 0)\n        ):\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._tokens_per_second = self._rate / self._per_seconds\n        self._clock = time.monotonic if clock is None else clock\n        self._lock = threading.Lock()\n        self._buckets = {}\n\n    def _refill(self, bucket, now):\n        if now > bucket[1]:\n            elapsed = now - bucket[1]\n            bucket[0] = min(\n                float(self._rate),\n                bucket[0] + elapsed * self._tokens_per_second,\n            )\n            bucket[1] = now\n\n    def allow(self, key, cost=1) -> bool:\n        if (\n            isinstance(cost, bool)\n            or not isinstance(cost, int)\n            or cost <= 0\n            or cost > self._rate\n        ):\n            raise ValueError(\"cost must be a positive integer not exceeding rate\")\n\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._rate), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            if bucket[0] >= cost:\n                bucket[0] -= cost\n                return True\n            return False\n\n    def state(self, key) -> dict:\n        with self._lock:\n            bucket = self._buckets.get(key)\n            if bucket is None:\n                return {\"tokens\": float(self._rate), \"capacity\": self._rate}\n\n            now = self._clock()\n            self._refill(bucket, now)\n            return {\"tokens\": round(bucket[0], 3), \"capacity\": self._rate}\n\n    def reset(self, key):\n        with self._lock:\n            self._buckets.pop(key, None)",
+          "code": "import threading\nimport time\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if isinstance(rate, bool) or not isinstance(rate, int) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if (\n            isinstance(per_seconds, bool)\n            or not isinstance(per_seconds, (int, float))\n            or not (per_seconds > 0)\n        ):\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._tokens_per_second = self._rate / self._per_seconds\n        self._clock = time.monotonic if clock is None else clock\n        self._lock = threading.Lock()\n        self._buckets = {}\n\n    def _refill(self, bucket, now):\n        if now > bucket[1]:\n            elapsed = now - bucket[1]\n            bucket[0] = min(\n                float(self._rate),\n                bucket[0] + elapsed * self._tokens_per_second,\n            )\n            bucket[1] = now\n\n    def allow(self, key, cost=1) -> bool:\n        if (\n            isinstance(cost, bool)\n            or not isinstance(cost, int)\n            or cost <= 0\n            or cost > self._rate\n        ):\n            raise ValueError(\"cost must be a positive integer not exceeding rate\")\n\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._rate), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            if bucket[0] >= cost:\n                bucket[0] -= cost\n                return True\n            return False\n\n    def state(self, key) -> dict:\n        with self._lock:\n            bucket = self._buckets.get(key)\n            if bucket is None:\n                return {\"tokens\": float(self._rate), \"capacity\": self._rate}\n\n            now = self._clock()\n            self._refill(bucket, now)\n            return {\"tokens\": round(bucket[0], 3), \"capacity\": self._rate}\n\n    def reset(self, key):\n        with self._lock:\n            self._buckets.pop(key, None)"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 73,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "import time\nfrom threading import Lock\n\n\ndef _is_integer(value):\n    return isinstance(value, int) and not isinstance(value, bool)\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if not _is_integer(rate) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if (\n            isinstance(per_seconds, bool)\n            or not isinstance(per_seconds, (int, float))\n            or per_seconds <= 0\n        ):\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._capacity = rate\n        self._clock = time.monotonic if clock is None else clock\n        self._lock = Lock()\n        self._buckets = {}\n\n    def _refill(self, bucket, now):\n        if now > bucket[1]:\n            elapsed = now - bucket[1]\n            bucket[0] = min(\n                float(self._capacity),\n                bucket[0] + elapsed * self._rate / self._per_seconds,\n            )\n            bucket[1] = now\n\n    def allow(self, key, cost: int = 1) -> bool:\n        if not _is_integer(cost) or cost <= 0 or cost > self._rate:\n            raise ValueError(\"cost must be a positive integer no greater than rate\")\n\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._capacity), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            if bucket[0] + 1e-12 >= cost:\n                bucket[0] = max(0.0, bucket[0] - cost)\n                return True\n            return False\n\n    def state(self, key) -> dict:\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._capacity), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            return {\n                \"tokens\": round(bucket[0], 3),\n                \"capacity\": self._capacity,\n            }\n\n    def reset(self, key) -> None:\n        with self._lock:\n            self._buckets[key] = [float(self._capacity), self._clock()]",
+          "code": "import time\nfrom threading import Lock\n\n\ndef _is_integer(value):\n    return isinstance(value, int) and not isinstance(value, bool)\n\n\nclass RateLimiter:\n    def __init__(self, rate: int, per_seconds: float, clock=None):\n        if not _is_integer(rate) or rate <= 0:\n            raise ValueError(\"rate must be a positive integer\")\n        if (\n            isinstance(per_seconds, bool)\n            or not isinstance(per_seconds, (int, float))\n            or per_seconds <= 0\n        ):\n            raise ValueError(\"per_seconds must be positive\")\n\n        self._rate = rate\n        self._per_seconds = float(per_seconds)\n        self._capacity = rate\n        self._clock = time.monotonic if clock is None else clock\n        self._lock = Lock()\n        self._buckets = {}\n\n    def _refill(self, bucket, now):\n        if now > bucket[1]:\n            elapsed = now - bucket[1]\n            bucket[0] = min(\n                float(self._capacity),\n                bucket[0] + elapsed * self._rate / self._per_seconds,\n            )\n            bucket[1] = now\n\n    def allow(self, key, cost: int = 1) -> bool:\n        if not _is_integer(cost) or cost <= 0 or cost > self._rate:\n            raise ValueError(\"cost must be a positive integer no greater than rate\")\n\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._capacity), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            if bucket[0] + 1e-12 >= cost:\n                bucket[0] = max(0.0, bucket[0] - cost)\n                return True\n            return False\n\n    def state(self, key) -> dict:\n        with self._lock:\n            now = self._clock()\n            bucket = self._buckets.get(key)\n\n            if bucket is None:\n                bucket = [float(self._capacity), now]\n                self._buckets[key] = bucket\n            else:\n                self._refill(bucket, now)\n\n            return {\n                \"tokens\": round(bucket[0], 3),\n                \"capacity\": self._capacity,\n            }\n\n    def reset(self, key) -> None:\n        with self._lock:\n            self._buckets[key] = [float(self._capacity), self._clock()]"
+        }
+      }
+    }
+  ]
+}

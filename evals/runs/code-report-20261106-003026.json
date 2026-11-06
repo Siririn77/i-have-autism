@@ -1,0 +1,170 @@
+{
+  "when": "2026-11-06T00:30:26+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "repeat": 3,
+  "suite": "code",
+  "arms": {
+    "none": "You are a helpful coding assistant. Answer the user's request.",
+    "graph": "You are a coding assistant.\n\nBefore writing code, build a graph of the task — small, sized to the task (3-5 nodes for a one-liner):\nroot questions the code must answer, nodes with an anchor (what in the request forces this node),\ntyped edges (causes / contrasts / repeats / contradicts). No anchor, no node. Stop when every question\nhas three answers and a new node would need a new axis.\n\nThen write the code. The graph is a thinking tool, not a deliverable: keep it to a few lines and put\nthe code first if the task is trivial.",
+    "aggressive": "You are a coding assistant.\n\nBefore writing code, build a graph of the task with absolute coverage: nothing in the request may\ndisappear without a written decision.\n\n- Root questions the code must answer; nodes with an anchor; typed edges (causes / contrasts / repeats /\n  contradicts).\n- A coverage matrix: axes (inputs, data, refusals, contracts, delivery) x stages, with no empty cell.\n  A cell either names nodes or says \"не относится\" with a reason.\n- A register: anything you deliberately leave out, with status, reason and where it goes.\n\nThen write the code, and make sure every node is discharged by the code or by a test you name."
+  },
+  "totals": {
+    "none": 4,
+    "graph": 4,
+    "aggressive": 4
+  },
+  "rows": [
+    {
+      "id": "slugify",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 38,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalpha() or ch.isdigit():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current).lower())\n            current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    if not words:\n        return \"\"\n\n    result = \"-\".join(words)\n    if len(result) <= 60:\n        return result\n\n    selected = []\n    length = 0\n\n    for word in words:\n        addition = len(word) + (1 if selected else 0)\n        if length + addition <= 60:\n            selected.append(word)\n            length += addition\n        else:\n            if not selected:\n                return result[:60]\n            break\n\n    return \"-\".join(selected)",
+          "code": "def slugify(text: str) -> str:\n    if not isinstance(text, str):\n        return \"\"\n\n    words = []\n    current = []\n\n    for ch in text:\n        if ch.isalpha() or ch.isdigit():\n            current.append(ch)\n        elif current:\n            words.append(\"\".join(current).lower())\n            current = []\n\n    if current:\n        words.append(\"\".join(current).lower())\n\n    if not words:\n        return \"\"\n\n    result = \"-\".join(words)\n    if len(result) <= 60:\n        return result\n\n    selected = []\n    length = 0\n\n    for word in words:\n        addition = len(word) + (1 if selected else 0)\n        if length + addition <= 60:\n            selected.append(word)\n            length += addition\n        else:\n            if not selected:\n                return result[:60]\n            break\n\n    return \"-\".join(selected)"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 44,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    try:\n        if not isinstance(text, str):\n            return \"\"\n\n        words = []\n        current = []\n\n        for ch in text:\n            if ch.isalpha() or ch.isdigit():\n                current.append(ch)\n            elif current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n        if current:\n            words.append(\"\".join(current).lower())\n\n        if not words:\n            return \"\"\n\n        result = \"-\".join(words)\n\n        if len(result) <= 60:\n            return result\n\n        if len(words[0]) > 60:\n            return result[:60]\n\n        parts = []\n        length = 0\n\n        for word in words:\n            extra = len(word) + (1 if parts else 0)\n\n            if length + extra <= 60:\n                parts.append(word)\n                length += extra\n            else:\n                break\n\n        return \"-\".join(parts)\n    except Exception:\n        return \"\"",
+          "code": "def slugify(text: str) -> str:\n    try:\n        if not isinstance(text, str):\n            return \"\"\n\n        words = []\n        current = []\n\n        for ch in text:\n            if ch.isalpha() or ch.isdigit():\n                current.append(ch)\n            elif current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n        if current:\n            words.append(\"\".join(current).lower())\n\n        if not words:\n            return \"\"\n\n        result = \"-\".join(words)\n\n        if len(result) <= 60:\n            return result\n\n        if len(words[0]) > 60:\n            return result[:60]\n\n        parts = []\n        length = 0\n\n        for word in words:\n            extra = len(word) + (1 if parts else 0)\n\n            if length + extra <= 60:\n                parts.append(word)\n                length += extra\n            else:\n                break\n\n        return \"-\".join(parts)\n    except Exception:\n        return \"\""
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 39,
+          "detail": "",
+          "answer": "def slugify(text: str) -> str:\n    try:\n        if not isinstance(text, str):\n            return \"\"\n\n        words = []\n        current = []\n\n        for ch in text:\n            if ch.isalnum():\n                current.append(ch)\n            elif current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n        if current:\n            words.append(\"\".join(current).lower())\n\n        slug = \"-\".join(words)\n        if len(slug) <= 60:\n            return slug\n\n        parts = []\n        length = 0\n\n        for word in words:\n            extra = len(word) + (1 if parts else 0)\n            if length + extra <= 60:\n                parts.append(word)\n                length += extra\n            else:\n                break\n\n        if parts:\n            return \"-\".join(parts)\n\n        return slug[:60]\n    except Exception:\n        return \"\"",
+          "code": "def slugify(text: str) -> str:\n    try:\n        if not isinstance(text, str):\n            return \"\"\n\n        words = []\n        current = []\n\n        for ch in text:\n            if ch.isalnum():\n                current.append(ch)\n            elif current:\n                words.append(\"\".join(current).lower())\n                current = []\n\n        if current:\n            words.append(\"\".join(current).lower())\n\n        slug = \"-\".join(words)\n        if len(slug) <= 60:\n            return slug\n\n        parts = []\n        length = 0\n\n        for word in words:\n            extra = len(word) + (1 if parts else 0)\n            if length + extra <= 60:\n                parts.append(word)\n                length += extra\n            else:\n                break\n\n        if parts:\n            return \"-\".join(parts)\n\n        return slug[:60]\n    except Exception:\n        return \"\""
+        }
+      }
+    },
+    {
+      "id": "chunked",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 19,
+          "detail": "",
+          "answer": "from itertools import islice\n\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result",
+          "code": "from itertools import islice\n\n\ndef chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int):\n        raise ValueError(\"size must be an integer\")\n    if size <= 0:\n        raise ValueError(\"size must be positive\")\n\n    iterator = iter(items)\n    result = []\n\n    while True:\n        chunk = list(islice(iterator, size))\n        if not chunk:\n            break\n        result.append(chunk)\n\n    return result"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 17,
+          "detail": "",
+          "answer": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    result = []\n    current = []\n\n    for item in items:\n        current.append(item)\n        if len(current) == size:\n            result.append(current)\n            current = []\n\n    if current:\n        result.append(current)\n\n    return result",
+          "code": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    result = []\n    current = []\n\n    for item in items:\n        current.append(item)\n        if len(current) == size:\n            result.append(current)\n            current = []\n\n    if current:\n        result.append(current)\n\n    return result"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 21,
+          "detail": "",
+          "answer": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    iterator = iter(items)\n    chunks = []\n\n    while True:\n        chunk = []\n        for _ in range(size):\n            try:\n                chunk.append(next(iterator))\n            except StopIteration:\n                break\n\n        if not chunk:\n            break\n\n        chunks.append(chunk)\n\n    return chunks",
+          "code": "def chunked(items, size):\n    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:\n        raise ValueError(\"size must be a positive integer\")\n\n    iterator = iter(items)\n    chunks = []\n\n    while True:\n        chunk = []\n        for _ in range(size):\n            try:\n                chunk.append(next(iterator))\n            except StopIteration:\n                break\n\n        if not chunk:\n            break\n\n        chunks.append(chunk)\n\n    return chunks"
+        }
+      }
+    },
+    {
+      "id": "csv_line",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 44,
+          "detail": "",
+          "answer": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            buf: list[str] = []\n            while True:\n                if i >= n:\n                    raise ValueError(\"unterminated quoted field\")\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        buf.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    buf.append(ch)\n                    i += 1\n            fields.append(\"\".join(buf))\n\n            if i == n:\n                return fields\n            if line[i] != \",\":\n                raise ValueError(\"unexpected character after closing quote\")\n            i += 1\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n            fields.append(line[start:i])\n\n            if i == n:\n                return fields\n            i += 1",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            buf: list[str] = []\n            while True:\n                if i >= n:\n                    raise ValueError(\"unterminated quoted field\")\n                ch = line[i]\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        buf.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    buf.append(ch)\n                    i += 1\n            fields.append(\"\".join(buf))\n\n            if i == n:\n                return fields\n            if line[i] != \",\":\n                raise ValueError(\"unexpected character after closing quote\")\n            i += 1\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n            fields.append(line[start:i])\n\n            if i == n:\n                return fields\n            i += 1"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 60,
+          "detail": "",
+          "answer": "```python\ndef parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quote\")\n\n                ch = line[i]\n\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            fields.append(\"\".join(chars))\n\n            if i < n:\n                if line[i] != \",\":\n                    raise ValueError(\"invalid text after closing quote\")\n                i += 1\n                if i == n:\n                    fields.append(\"\")\n                    break\n            else:\n                break\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i < n:\n                i += 1\n                if i == n:\n                    fields.append(\"\")\n                    break\n            else:\n                break\n\n    return fields\n```",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quote\")\n\n                ch = line[i]\n\n                if ch == '\"':\n                    if i + 1 < n and line[i + 1] == '\"':\n                        chars.append('\"')\n                        i += 2\n                    else:\n                        i += 1\n                        break\n                else:\n                    chars.append(ch)\n                    i += 1\n\n            fields.append(\"\".join(chars))\n\n            if i < n:\n                if line[i] != \",\":\n                    raise ValueError(\"invalid text after closing quote\")\n                i += 1\n                if i == n:\n                    fields.append(\"\")\n                    break\n            else:\n                break\n        else:\n            start = i\n            while i < n and line[i] != \",\":\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i < n:\n                i += 1\n                if i == n:\n                    fields.append(\"\")\n                    break\n            else:\n                break\n\n    return fields\n"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 63,
+          "detail": "",
+          "answer": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quoted field\")\n\n                if line[i] != '\"':\n                    chars.append(line[i])\n                    i += 1\n                    continue\n\n                if i + 1 < n and line[i + 1] == '\"':\n                    chars.append('\"')\n                    i += 2\n                    continue\n\n                i += 1\n                break\n\n            fields.append(\"\".join(chars))\n\n            if i == n:\n                break\n\n            if line[i] != ',':\n                raise ValueError(\"unexpected text after closing quote\")\n\n            i += 1\n            if i == n:\n                fields.append(\"\")\n                break\n\n        else:\n            start = i\n\n            while i < n and line[i] != ',':\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i == n:\n                break\n\n            i += 1\n            if i == n:\n                fields.append(\"\")\n                break\n\n    return fields",
+          "code": "def parse_csv_line(line: str) -> list[str]:\n    if line.startswith(\"\\ufeff\"):\n        line = line[1:]\n\n    if line == \"\":\n        return []\n\n    fields: list[str] = []\n    i = 0\n    n = len(line)\n\n    while True:\n        if i < n and line[i] == '\"':\n            i += 1\n            chars: list[str] = []\n\n            while True:\n                if i >= n:\n                    raise ValueError(\"unclosed quoted field\")\n\n                if line[i] != '\"':\n                    chars.append(line[i])\n                    i += 1\n                    continue\n\n                if i + 1 < n and line[i + 1] == '\"':\n                    chars.append('\"')\n                    i += 2\n                    continue\n\n                i += 1\n                break\n\n            fields.append(\"\".join(chars))\n\n            if i == n:\n                break\n\n            if line[i] != ',':\n                raise ValueError(\"unexpected text after closing quote\")\n\n            i += 1\n            if i == n:\n                fields.append(\"\")\n                break\n\n        else:\n            start = i\n\n            while i < n and line[i] != ',':\n                i += 1\n\n            fields.append(line[start:i])\n\n            if i == n:\n                break\n\n            i += 1\n            if i == n:\n                fields.append(\"\")\n                break\n\n    return fields"
+        }
+      }
+    },
+    {
+      "id": "merge_intervals",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 29,
+          "detail": "",
+          "answer": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    items = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(\n                f\"invalid interval: start {start} is greater than end {end}\"\n            )\n        items.append((start, end))\n\n    items.sort(key=lambda pair: pair[0])\n\n    merged = []\n    for start, end in items:\n        if not merged:\n            merged.append((start, end))\n            continue\n\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged",
+          "code": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    items = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(\n                f\"invalid interval: start {start} is greater than end {end}\"\n            )\n        items.append((start, end))\n\n    items.sort(key=lambda pair: pair[0])\n\n    merged = []\n    for start, end in items:\n        if not merged:\n            merged.append((start, end))\n            continue\n\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 22,
+          "detail": "",
+          "answer": "```python\ndef merge_intervals(intervals):\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(\n                f\"start ({start}) must not be greater than end ({end})\"\n            )\n\n    if not intervals:\n        return []\n\n    sorted_intervals = sorted((start, end) for start, end in intervals)\n    merged = []\n\n    for start, end in sorted_intervals:\n        if not merged or start > merged[-1][1]:\n            merged.append((start, end))\n        else:\n            prev_start, prev_end = merged[-1]\n            if end > prev_end:\n                merged[-1] = (prev_start, end)\n\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(\n                f\"start ({start}) must not be greater than end ({end})\"\n            )\n\n    if not intervals:\n        return []\n\n    sorted_intervals = sorted((start, end) for start, end in intervals)\n    merged = []\n\n    for start, end in sorted_intervals:\n        if not merged or start > merged[-1][1]:\n            merged.append((start, end))\n        else:\n            prev_start, prev_end = merged[-1]\n            if end > prev_end:\n                merged[-1] = (prev_start, end)\n\n    return merged\n"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 27,
+          "detail": "",
+          "answer": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    validated = []\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end}; start must be <= end\"\n            )\n        validated.append((start, end))\n\n    validated.sort(key=lambda interval: interval[0])\n\n    merged = []\n    current_start, current_end = validated[0]\n\n    for start, end in validated[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    validated = []\n    for start, end in intervals:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end}; start must be <= end\"\n            )\n        validated.append((start, end))\n\n    validated.sort(key=lambda interval: interval[0])\n\n    merged = []\n    current_start, current_end = validated[0]\n\n    for start, end in validated[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged\n"
+        }
+      }
+    }
+  ]
+}

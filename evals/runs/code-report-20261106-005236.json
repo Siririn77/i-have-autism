@@ -1,0 +1,59 @@
+{
+  "when": "2026-11-06T00:52:36+00:00",
+  "model": "deepseek-v4.1-flash:1017",
+  "repeat": 3,
+  "suite": "code",
+  "arms": {
+    "none": "You are a helpful coding assistant. Answer the user's request.",
+    "graph": "You are a coding assistant.\n\nBefore writing code, write the graph of the task as a short section — small, sized to the task (3-5 nodes for a one-liner):\nroot questions the code must answer, nodes with an anchor (what in the request forces this node),\ntyped edges (causes / contrasts / repeats / contradicts). No anchor, no node. Stop when every question\nhas three answers and a new node would need a new axis.\n\nThen write the code. Every node you opened must be discharged by the code or by a test you name.",
+    "aggressive": "You are a coding assistant.\n\nBefore writing code, build a graph of the task with absolute coverage: nothing in the request may\ndisappear without a written decision.\n\n- Root questions the code must answer; nodes with an anchor; typed edges (causes / contrasts / repeats /\n  contradicts).\n- A coverage matrix: axes (inputs, data, refusals, contracts, delivery) x stages, with no empty cell.\n  A cell either names nodes or says \"не относится\" with a reason.\n- A register: anything you deliberately leave out, with status, reason and where it goes.\n\nThen write the code, and make sure every node is discharged by the code or by a test you name."
+  },
+  "totals": {
+    "none": 1,
+    "graph": 1,
+    "aggressive": 1
+  },
+  "rows": [
+    {
+      "id": "merge_intervals",
+      "arms": {
+        "none": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 21,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    ordered = sorted(intervals, key=lambda interval: interval[0])\n    merged = []\n\n    for start, end in ordered:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end} (start > end)\"\n            )\n\n        if not merged or start > merged[-1][1]:\n            merged.append((start, end))\n        else:\n            prev_start, prev_end = merged[-1]\n            if end > prev_end:\n                merged[-1] = (prev_start, end)\n\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    ordered = sorted(intervals, key=lambda interval: interval[0])\n    merged = []\n\n    for start, end in ordered:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end} (start > end)\"\n            )\n\n        if not merged or start > merged[-1][1]:\n            merged.append((start, end))\n        else:\n            prev_start, prev_end = merged[-1]\n            if end > prev_end:\n                merged[-1] = (prev_start, end)\n\n    return merged\n"
+        },
+        "graph": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": true,
+          "matrix": false,
+          "register": false,
+          "code_lines": 26,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "## Graph\n\n- **Q** — what must `merge_intervals` guarantee? Anchor: rules 1–7.\n- **N1 Validate** — check each pair; raise `ValueError` if `start > end`. Anchor: rule 6. Edge: `Q → N1` (causes).\n- **N2 Merge** — sort by start; merge when `next_start <= current_end`, keeping `max(end)`. Anchor: rules 2–4. Edge: `N1 → N2` (causes).\n- **N3 Preserve/empty** — return `[]` for empty input; build a new list of tuples without mutating input. Anchor: rules 5, 7. Edge: `Q → N3` (contrasts: empty fast-path vs merge path).\n\nDischarge: N1 by `test_start_gt_end_raises`, N2 by `test_touching_and_nested_merge`, N3 by `test_empty_and_input_unchanged`.\n\n```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    prepared = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(f\"start > end: start={start}, end={end}\")\n        prepared.append((start, end))\n\n    prepared.sort(key=lambda pair: (pair[0], pair[1]))\n\n    merged = []\n    current_start, current_end = prepared[0]\n\n    for start, end in prepared[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    if not intervals:\n        return []\n\n    prepared = []\n    for interval in intervals:\n        start, end = interval\n        if start > end:\n            raise ValueError(f\"start > end: start={start}, end={end}\")\n        prepared.append((start, end))\n\n    prepared.sort(key=lambda pair: (pair[0], pair[1]))\n\n    merged = []\n    current_start, current_end = prepared[0]\n\n    for start, end in prepared[1:]:\n        if start <= current_end:\n            if end > current_end:\n                current_end = end\n        else:\n            merged.append((current_start, current_end))\n            current_start, current_end = start, end\n\n    merged.append((current_start, current_end))\n    return merged\n"
+        },
+        "aggressive": {
+          "majority": true,
+          "rate": "3/3",
+          "graphed": false,
+          "matrix": false,
+          "register": false,
+          "code_lines": 30,
+          "partial": 1.0,
+          "detail": "",
+          "answer": "```python\ndef merge_intervals(intervals):\n    items = list(intervals)\n\n    if not items:\n        return []\n\n    for start, end in items:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end} (start > end)\"\n            )\n\n    items.sort(key=lambda pair: pair[0])\n\n    merged = []\n\n    for start, end in items:\n        if not merged:\n            merged.append((start, end))\n            continue\n\n        last_start, last_end = merged[-1]\n\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged\n```",
+          "code": "def merge_intervals(intervals):\n    items = list(intervals)\n\n    if not items:\n        return []\n\n    for start, end in items:\n        if start > end:\n            raise ValueError(\n                f\"Invalid interval: start={start}, end={end} (start > end)\"\n            )\n\n    items.sort(key=lambda pair: pair[0])\n\n    merged = []\n\n    for start, end in items:\n        if not merged:\n            merged.append((start, end))\n            continue\n\n        last_start, last_end = merged[-1]\n\n        if start <= last_end:\n            if end > last_end:\n                merged[-1] = (last_start, end)\n        else:\n            merged.append((start, end))\n\n    return merged\n"
+        }
+      }
+    }
+  ]
+}
