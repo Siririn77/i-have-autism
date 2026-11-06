@@ -10,7 +10,7 @@ decides.
 |---|---|
 | `none` | a neutral coding assistant |
 | `graph` | graph first — root questions, nodes with anchors, typed edges, stop rule |
-| `aggressive` | graph first + coverage matrix (axes × stages, no empty cell) + register of what is left out |
+| `ultra` | graph first + a cloud per node + a fidelity bar whose kind is a test |
 
 Same user prompt in all three. Three samples per arm; the majority decides; partial score is the mean
 fraction of tests passed.

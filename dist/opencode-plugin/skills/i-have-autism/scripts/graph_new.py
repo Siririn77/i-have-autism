@@ -73,23 +73,6 @@ graph LR
 | 1 | TODO | N1 |
 """
 
-AGGRESSIVE_BLOCK = """
-## Матрица покрытия
-
-| ось | этап 1 | этап 2 |
-|---|---|---|
-| __FIRST_AXIS__ | N1 | не относится |
-
-Клетка либо называет узлы, либо пишет «не относится» — и тогда для неё обязательна запись в реестре
-«Вне рамок» с именем «ось × этап». Пустая клетка в агрессивном режиме — дыра в покрытии.
-
-## Вне рамок
-
-| элемент | статус | почему | где |
-|---|---|---|---|
-| __FIRST_AXIS__ × этап 2 | не относится | TODO — причина, а не отговорка | — |
-"""
-
 
 def main(argv: list[str]) -> int:
     if not argv:
@@ -97,7 +80,6 @@ def main(argv: list[str]) -> int:
         return 2
     task = argv[0]
     kind = "history"
-    aggressive = "--aggressive" in argv
     out: Path | None = None
     for index, arg in enumerate(argv):
         if arg == "--kind":
@@ -113,16 +95,6 @@ def main(argv: list[str]) -> int:
         .replace("__AXES__", " · ".join(AXES[kind]))
         .replace("__FIRST_AXIS__", AXES[kind][0])
     )
-    if aggressive:
-        text = text.replace(
-            "- части: TODO — сколько единиц крупного размера в работе",
-            "- режим: агрессивный\n- части: TODO — сколько единиц крупного размера в работе",
-        )
-        text = text.replace(
-            "## Переход в план",
-            AGGRESSIVE_BLOCK.replace("__FIRST_AXIS__", AXES[kind][0]) + "\n## Переход в план",
-            1,
-        )
     target = out or Path("graph.md")
     if target.exists():
         print(f"{target} уже существует — не перезаписываю. Возьмите другой путь.")

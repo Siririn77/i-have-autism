@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Code evals: does a graph before the code change the code — and does aggressive mode change it more?
+"""Code evals: does a graph before the code change the code — and does ultra mode change it more?
 
 Three arms, same prompt, hidden tests:
 
   none        neutral system prompt
   graph       graph first: root questions, typed edges, anchors, stop rule
-  aggressive  graph first + coverage matrix, register, no silence
+  ultra       graph first + a cloud per node + a fidelity bar whose kind is a test
 
 The check is not a pattern match on prose: the answer's Python is written to disk and run against a
 hidden unittest suite the model never sees. A pass means the code survives the edge cases — empty input,
@@ -16,6 +16,7 @@ Usage: python3 evals/run_code_evals.py [--repeat 3] [--workers 3] [--id slugify]
 from __future__ import annotations
 
 import argparse
+import ast
 import concurrent.futures
 import json
 import re
@@ -43,32 +44,58 @@ typed edges (causes / contrasts / repeats / contradicts). No anchor, no node. St
 has three answers and a new node would need a new axis.
 
 Then write the code. Every node you opened must be discharged by the code or by a test you name.""",
-    "aggressive": """You are a coding assistant.
+    "ultra": """You are a coding assistant.
 
-Before writing code, build a graph of the task with absolute coverage: nothing in the request may
-disappear without a written decision.
+Before writing code, write the graph of the task and expand every node.
 
-- Root questions the code must answer; nodes with an anchor; typed edges (causes / contrasts / repeats /
-  contradicts).
-- A coverage matrix: axes (inputs, data, refusals, contracts, delivery) x stages, with no empty cell.
-  A cell either names nodes or says "не относится" with a reason.
-- A register: anything you deliberately leave out, with status, reason and where it goes.
+Graph: root questions the code must answer; nodes with an anchor; typed edges (causes / contrasts /
+repeats / contradicts). No anchor, no node.
 
-Then write the code, and make sure every node is discharged by the code or by a test you name.""",
+For every node:
+- a cloud of its parts: a core, three to nine elements, and an edge label that says what the relation
+  means (включает / предшествует / вызывает / усиливает / противопоставлен / цена / пример / доказательство);
+- a fidelity bar on exactly this line, with exactly one kind:
+  `- планка: тест | годно: <named test, command or property that fails on a bad implementation> | не годно: <the sentence that sounds like proof and proves nothing>`
+
+Then write the code. The hardest test from the bars must be in the answer as real code, not as prose.
+Every node must be discharged by the code or by one of those tests."""
 }
 
 
 FENCE = re.compile(r"^```([a-zA-Z0-9_+.-]*)[ \t]*\n(.*?)^```[ \t]*$", re.DOTALL | re.MULTILINE)
 
 
+TEST_MARKERS = ("import unittest", "import pytest", "from unittest", "def test_", "class Test")
+
+
+def _parses(code: str) -> bool:
+    try:
+        ast.parse(code)
+    except SyntaxError:
+        return False
+    return True
+
+
 def extract_code(answer: str) -> str:
-    """The last python block, and only it: a graph drawn in ```text must not be mistaken for code."""
+    """The solution block, and only a block that is Python.
+
+    Three stands got this wrong in three ways. A graph drawn in ```text was read as code. Then, once an
+    answer carried both a solution and the tests that prove it, the last block was the test suite. Then a
+    fence with no language held the plan in prose, and prose was imported as the solution. The rule now:
+    a candidate must parse as Python and must not look like a test; among those the longest wins.
+    """
     blocks = FENCE.findall(answer)
-    python_blocks = [body for language, body in blocks if language.lower() in ("python", "py", "python3", "")]
-    if python_blocks:
-        return python_blocks[-1]
-    if blocks:
-        return blocks[-1][1]
+    candidates = [
+        body for language, body in blocks
+        if language.lower() in ("python", "py", "python3", "") and _parses(body)
+    ]
+    solutions = [body for body in candidates if not any(marker in body for marker in TEST_MARKERS)]
+    if solutions:
+        return max(solutions, key=len)
+    if candidates:
+        return max(candidates, key=len)
+    # Ни одного распознанного блока — значит кода нет. Отдать прозу значит импортировать рисунок
+    # и объявить модель виноватой в своей же ошибке.
     lines = answer.splitlines()
     for index, line in enumerate(lines):
         if re.match(r"^(def |class |import |from )", line):
@@ -121,8 +148,8 @@ def run_arm(model: str, key: str, arm: str, case: dict) -> dict:
                 marker in lowered
                 for marker in ("mermaid", "# task graph", "task graph", "--causes-->", "--contrasts-->", "## ")
             ),
-            "matrix": "матрица" in lowered,
-            "register": "вне рамок" in lowered or "реестр" in lowered,
+            "kpi": "планка" in lowered,
+            "kpi_bars": lowered.count("годно:"),
         }
     )
     return result
@@ -135,7 +162,8 @@ def main() -> int:
     parser.add_argument("--repeat", type=int, default=3)
     parser.add_argument("--id", default="")
     parser.add_argument("--file", default=str(CASES), help="which case file to run")
-    parser.add_argument("--arms", default="", help="comma-separated subset: none,graph,aggressive")
+    parser.add_argument("--arms", default="", help="comma-separated subset: none,graph,ultra")
+    parser.add_argument("--max-tokens", type=int, default=0, help="override the case budget for every arm")
     args = parser.parse_args()
 
     cases = json.loads(Path(args.file).read_text(encoding="utf-8"))
@@ -160,7 +188,7 @@ def main() -> int:
             except RuntimeError as error:
                 results[(case_id, arm, sample)] = {
                     "passed": False, "tests": 0, "ok": 0, "partial": 0.0, "detail": f"error: {error}", "answer": "", "code": "",
-                    "code_lines": 0, "truncated": False, "graphed": False, "matrix": False, "register": False,
+                    "code_lines": 0, "truncated": False, "graphed": False, "kpi": False, "kpi_bars": 0,
                 }
 
     rows = []
@@ -173,8 +201,8 @@ def main() -> int:
                 "majority": wins * 2 > args.repeat,
                 "rate": f"{wins}/{args.repeat}",
                 "graphed": sum(1 for s in samples if s["graphed"]) * 2 > args.repeat,
-                "matrix": sum(1 for s in samples if s["matrix"]) * 2 > args.repeat,
-                "register": sum(1 for s in samples if s["register"]) * 2 > args.repeat,
+                "kpi": sum(1 for s in samples if s["kpi"]) * 2 > args.repeat,
+                "kpi_bars": max(s["kpi_bars"] for s in samples),
                 "code_lines": samples[0]["code_lines"],
                 "partial": round(sum(s["partial"] for s in samples) / len(samples), 3),
                 # Каждая проба, а не только первая: число должно восходить к тексту, который его дал.
@@ -183,8 +211,8 @@ def main() -> int:
                         "passed": s["passed"],
                         "partial": s["partial"],
                         "graphed": s["graphed"],
-                        "matrix": s["matrix"],
-                        "register": s["register"],
+                        "kpi": s["kpi"],
+                        "kpi_bars": s["kpi_bars"],
                         "truncated": s.get("truncated", False),
                         "detail": s["detail"],
                         "answer": s["answer"],
@@ -207,9 +235,9 @@ def main() -> int:
         print(f"  {arm}: доля пройденных тестов {mean:.2f}")
     for arm in names:
         graphed = sum(1 for row in rows if row["arms"][arm]["graphed"])
-        print(f"  {arm}: граф в ответе {graphed}/{len(rows)}, матрица "
-              f"{sum(1 for row in rows if row['arms'][arm]['matrix'])}/{len(rows)}, реестр "
-              f"{sum(1 for row in rows if row['arms'][arm]['register'])}/{len(rows)}")
+        print(f"  {arm}: граф в ответе {graphed}/{len(rows)}, планка "
+              f"{sum(1 for row in rows if row['arms'][arm]['kpi'])}/{len(rows)} "
+              f"(больше всего планок в одном ответе: {max(row['arms'][arm]['kpi_bars'] for row in rows)})")
 
     report = {
         "when": datetime.now(timezone.utc).isoformat(timespec="seconds"),

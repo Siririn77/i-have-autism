@@ -5,7 +5,7 @@ Prose cannot be executed, so the checks are about the things prose can be wrong 
 ways: a number and its year, a forecast labelled as a forecast, a source named next to the figure,
 and a range given where the range is the honest answer.
 
-Usage: python3 evals/run_prose_evals.py [--repeat 1] [--arms none,graph,aggressive]
+Usage: python3 evals/run_prose_evals.py [--repeat 1] [--arms none,graph,ultra]
 """
 from __future__ import annotations
 
@@ -48,12 +48,6 @@ Before writing, build the graph of the article in full:
 
 Then write the article, and make sure every node in the expansion is discharged by a paragraph of the
 text. Put the expansion above the text.""",
-    "aggressive": """You are a careful writer.
-
-Before writing, build a graph with absolute coverage: root questions, nodes with anchors, typed edges,
-a coverage matrix of axes x sections with no empty cell (a cell names nodes or says "не относится" with
-a reason), and a register of what you deliberately leave out. Then write the article, and make sure every
-node is discharged by a paragraph. Put the graph, the matrix and the register above the text.""",
 }
 
 

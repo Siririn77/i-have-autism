@@ -393,72 +393,20 @@ Every unit in the plan names the node id it serves.
 
 This is the check that keeps the graph from becoming a picture beside an unrelated plan.
 
-D2b. Aggressive mode — absolute coverage, on request only
----------------------------------------------------------
+D2b. Ultra is the second mode, and the only one
+-----------------------------------------------
 
-Normal mode allows a graph to be incomplete: some region of the topic is cut, the plan says "out of
-scope", and that is a legitimate decision. Aggressive mode does not allow silence. It is opt-in and runs
-only when the reader asks for it by name: "агрессивная графизация", "полное покрытие темы",
-"aggressive graph".
-
-What "absolute coverage" means — and what it does not. It does not mean every fact in the world is
-in the graph; that is an infinite set and a useless one. It means nothing disappears without a written
-decision: every element of the topic is either a node inside a unit of work, or a row in the register
-with a status, a reason and a place where it will be handled. Silence is the only forbidden outcome.
-
-The matrix: axes × stages, no empty cell
-----------------------------------------
-
-A coverage matrix, one row per axis, one column per stage of the work (season, part, chapter, module).
-Every cell either names node ids, or says "не относится" — and a refusal is not free: it needs its
-own row in the register, named ось × этап.
-
-    ## Матрица покрытия
-    | ось | сезон 1 | сезон 2 | сезон 3 |
-    |---|---|---|---|
-    | дипломатия | N1, N5 | N17 | N19 |
-    | операция   | не относится | N7, N9 | N11 |
-
-The matrix is where the omissions show up before the plan inherits them: an empty cell is a hole, and a
-row of empty cells is an axis nobody actually covers.
-
-The register: what is not in the work, and where it goes
---------------------------------------------------------
-
-    ## Вне рамок
-    | элемент | статус | почему | где |
-    |---|---|---|---|
-    | Африканский театр | отдельный сезон | не объясняется европейской логикой | сезон 6 |
-
-Statuses are fixed: в работе · отдельная часть · отдельный сезон · отдельный проект ·
-не относится · нет данных. The reason is a reason, not "we forgot". The place is a phase, a season,
-a project, or an explicit "не будет никогда — потому что".
-
-What changes in the plan
-------------------------
-
-graph_to_plan.py on an aggressive graph writes the register into the plan's out-of-scope section with
-the status and the place, and the matrix as a coverage table. So a reader opening the plan sees not
-"Балканы — вне рамок" but "Балканы — отдельный сезон, потому что не объясняются европейской логикой".
-The difference between a cut and a plan.
-
-The commands and the cost
--------------------------
-
-    python3 scripts/graph_new.py "тема" --kind history --aggressive --out graph.md
-    python3 scripts/check_graph.py graph.md --aggressive      # or `режим: агрессивный` in metadata
-    python3 scripts/graph_stats.py graph.md                   # shows covered / refused / holes
-
-The cost is real: a matrix of five axes and five stages is twenty-five cells, each needing either nodes
-or a written refusal. Aggressive mode is two to three times the graph work of normal mode, and it is worth
-it exactly where omission is the risk — a series, a course, a book, a reference work. For a one-off
-article it is pure ceremony, and the rule says so instead of pretending otherwise.
+There is no aggressive mode any more. It was removed on 2026-11-06: it asked that nothing disappear
+without a decision, and got a coverage matrix and a register for the answer. Ultra asks the better
+question — what is inside the node, and what proves it — and the fidelity bar in D2d makes the answer
+checkable. Two modes, one question each: the graph says what connects to what, ultra says what is
+inside and what would prove it.
 
 D2c. Ultra mode — the graph written out in full, and the cloud inside each node
 ------------------------------------------------------------------------
 
-Aggressive mode guarantees that nothing disappears. Ultra mode answers a different question: what is
-inside each node. The connection is not the answer; the composition is.
+Ultra mode answers a question the graph cannot: what is inside each node. The connection is not the
+answer; the composition is.
 
 graph_expand.py turns a graph into a companion file, one section per node:
 
@@ -1197,9 +1145,6 @@ Before work
    Nodes answer root questions, each with what / why it matters / anchor / when. No anchor, no node.
    Edges typed: causes, contrasts, repeats, contradicts. Stop when every question has three answers and
    a new node would need a new axis. Every plan unit names its node; a node without a unit is a stated
-   out-of-scope. Aggressive mode, only on request: a coverage matrix axes × stages, no empty cell
-   (nodes, or "не относится" plus a register row), every excluded element registered with status,
-   reason, place. Coverage means nothing disappears without a decision, not that every fact is in.
    Ultra mode, only on request: every node gets a written expansion - a cloud of its parts (core, three
    to nine elements, edges carrying meaning: включает / предшествует / вызывает / усиливает /
    противопоставлен / цена / пример / доказательство), what proves it, what follows, how it is shown,

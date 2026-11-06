@@ -28,9 +28,6 @@ The reader is autistic. Apply until the user says "stop autism mode" or "normal 
    Nodes answer root questions, each with what / why it matters / anchor / when. No anchor, no node.
    Edges typed: causes, contrasts, repeats, contradicts. Stop when every question has three answers and
    a new node would need a new axis. Every plan unit names its node; a node without a unit is a stated
-   out-of-scope. Aggressive mode, only on request: a coverage matrix axes × stages, no empty cell
-   (nodes, or "не относится" plus a register row), every excluded element registered with status,
-   reason, place. Coverage means nothing disappears without a decision, not that every fact is in.
    Ultra mode, only on request: every node gets a written expansion - a cloud of its parts (core, three
    to nine elements, edges carrying meaning: включает / предшествует / вызывает / усиливает /
    противопоставлен / цена / пример / доказательство), what proves it, what follows, how it is shown,
