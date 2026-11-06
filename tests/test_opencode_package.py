@@ -135,5 +135,17 @@ class OpenCodePackageTest(unittest.TestCase):
         self.assertFalse((self.config_dir / "opencode" / ".i-have-autism-always").exists())
 
 
+    def test_package_carries_every_script_and_reference(self):
+        """SKILL.md calls these files; a package without them is a rule with no tool."""
+        skill_dir = ROOT / "skills" / "i-have-autism"
+        package_dir = ROOT / "dist" / "opencode-plugin" / "skills" / "i-have-autism"
+        for folder in ("scripts", "references"):
+            for source in sorted((skill_dir / folder).glob("*")):
+                if not source.is_file():
+                    continue
+                copy = package_dir / folder / source.name
+                self.assertTrue(copy.exists(), f"{copy} отсутствует в пакете")
+                self.assertEqual(copy.read_text(encoding="utf-8"), source.read_text(encoding="utf-8"))
+
 if __name__ == "__main__":
     unittest.main()

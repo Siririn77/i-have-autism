@@ -1,7 +1,7 @@
 I HAVE AUTISM — FULL RULESET, AS INJECTED INTO THE SYSTEM PROMPT
 =================================================================
 
-44825 characters, 935 lines.
+46851 characters, 956 lines.
 
 This is the complete text, not the condensed 3,838-character section:
 the hook (Claude Code, Codex), the opencode plugin and the Pi extension
@@ -386,12 +386,33 @@ This is the check that keeps the graph from becoming a picture beside an unrelat
 - **The graph for everything, badly.** A diagram where a sentence was needed. A one-liner gets three
   nodes in the reply — no file, no Mermaid, no ceremony.
 
-#### Checking the graph
+#### The toolkit — six commands
 
-The graph is a file with a format, so it is checked by code rather than by eye:
-`python3 scripts/check_graph.py graph.md` fails when a node misses one of its four fields, when an edge
-points at a node that does not exist, when an edge carries no type, when a node has no edges, or when a
-root question has no answers. Exit code 1 is a stop, not a warning.
+The graph is a file with a format, so it is checked and compiled by code rather than by eye. The format
+is in `references/graph-format.md`; the scripts are in `scripts/`.
+
+| command | what it does | why it exists |
+|---|---|---|
+| `graph_new.py "задача" --kind history --out graph.md` | writes the skeleton: metadata, five empty questions, axis presets for the kind, empty tables | the first hour goes into answering, not into remembering headings |
+| `check_graph.py graph.md` | ten rules: fields, labels, edge types, cycles in `causes`, reachability, three answers per question, three nodes per axis, budget, and the Mermaid block agreeing with the tables | a picture that drifts from the table is a lie the reader cannot see |
+| `graph_stats.py graph.md` | coverage: answers per question, nodes per axis, the longest cause chain, contradictions, unmapped nodes | shows where the graph is thin before the plan inherits the thinness |
+| `graph_to_plan.py graph.md --out plan.md` | compiles a plan skeleton: one unit per mapping row, gates from every `contradicts`, out-of-scope for uncited nodes, an empty drift log | the mechanical part of the plan is not a decision, so it should not cost a decision's attention |
+| `graph_diff.py old.md new.md` | added, removed, retyped nodes and edges | the drift log wants the delta, not a rewritten file with no history |
+| `graph_render.py graph.md --out graph.png` | renders the Mermaid block to PNG or SVG | a graph nobody can look at is a table with extra steps |
+
+**The tables are the source of truth; the Mermaid block is the drawing.** Both are written, and
+`check_graph.py` fails when they disagree — in either direction. Root questions attach with the
+`answers` type; a bare `A --> B` is an error, because an untyped edge has no meaning.
+
+Russian type names are accepted in the table (`причина`, `контраст`, `повтор`, `противоречие`) and
+normalised to `causes`, `contrasts`, `repeats`, `contradicts` — one canonical spelling, so edges compare.
+
+#### What the compiled plan looks like
+
+`graph_to_plan.py` writes a skeleton, not a finished plan: units carry their node ids and anchors, every
+`contradicts` edge becomes a gate on the units that touch it, and every placeholder is marked `TODO`. A
+plan containing `TODO` is not a plan — it is a form that says what is still missing, which is exactly what
+a skeleton should say.
 
 ### D3. What a full plan contains
 

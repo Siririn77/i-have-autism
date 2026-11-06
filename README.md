@@ -186,6 +186,7 @@ Full text in [SKILL.md](./skills/i-have-autism/SKILL.md).
 - **The two load-bearing rules.** KISS (the simplest thing that works) and DRY (one fact in one place).
 - **Readability, maintainability, and correctness.** All three required; correctness never traded for the other two.
 - **Before work — the decomposition plan.** Rules D1–D8: the plan is a file; its size is the task's size; ten required sections; every line has a check; unknowns become steps; changes go to an append-only drift log; the plan and the post-mortem are two documents; a template to copy.
+- **The graph toolkit.** Six commands: scaffold, check, stats, compile to plan, diff, render. `check_graph.py` runs ten rules — fields, labels, edge types, cycles, reachability, three answers per question, three nodes per axis, budget, and the Mermaid block agreeing with the tables — and exits 1 on the first defect. Format: `skills/i-have-autism/references/graph-format.md`.
 - **Evals — the rules as a test.** `evals/` holds controlled A/B runs: the same prompts with and without the ruleset, scored by pattern checks. The 2026-11-05 run covers the decomposition rule: **16/22 without the rules, 22/22 with them**, with every answer saved side by side.
 - **Part 1 — Code that reads.** 11 rules, from the reader's straight path to "the size of the task is the size of the edit".
 - **Part 2 — Comments that earn their place.** 7 rules, including two lines in one voice and the four-question check.

@@ -273,12 +273,22 @@ def build() -> dict[Path, str]:
         "repository": {"type": "git", "url": "https://github.com/Siririn77/i-have-autism"},
     }
 
-    return {
+    files = {
         OUT / "i-have-autism.js": js,
         OUT / "package.json": json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         OUT / "README.md": README.format(version=version),
         OUT / "skills" / "i-have-autism" / "SKILL.md": SKILL.read_text(encoding="utf-8"),
     }
+    # SKILL.md ссылается на scripts/ и references/ — пакет обязан их нести,
+    # иначе у читателя правило есть, а инструмента к нему нет.
+    skill_dir = SKILL.parent
+    for folder in ("scripts", "references"):
+        for source in sorted((skill_dir / folder).glob("*")):
+            if source.is_file():
+                files[OUT / "skills" / "i-have-autism" / folder / source.name] = source.read_text(
+                    encoding="utf-8"
+                )
+    return files
 
 
 def main() -> int:
