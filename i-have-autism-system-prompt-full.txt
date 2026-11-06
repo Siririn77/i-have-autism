@@ -1,7 +1,7 @@
 I HAVE AUTISM — FULL RULESET, AS INJECTED INTO THE SYSTEM PROMPT
 =================================================================
 
-44197 characters, 924 lines.
+44825 characters, 935 lines.
 
 This is the complete text, not the condensed 3,838-character section:
 the hook (Claude Code, Codex), the opencode plugin and the Pi extension
@@ -312,6 +312,10 @@ An untyped edge ("related to") is decoration: it cannot be checked and cannot be
 connected but no type fits, the connection is not yet understood — write the question that would
 reveal it, and leave the edge out.
 
+A **root question** connects to its answering nodes with a fifth label, `answers`. That is the root
+relation, not one of the four: it says "this node exists to answer this question", and it is what makes
+the graph an argument rather than a map.
+
 #### Axes
 
 Group the nodes by axis. For a history work: theatres · period · people · technology · production ·
@@ -381,6 +385,13 @@ This is the check that keeps the graph from becoming a picture beside an unrelat
 - **The decoration.** A beautiful graph, a plan written without opening it. Test: no unit cites a node id.
 - **The graph for everything, badly.** A diagram where a sentence was needed. A one-liner gets three
   nodes in the reply — no file, no Mermaid, no ceremony.
+
+#### Checking the graph
+
+The graph is a file with a format, so it is checked by code rather than by eye:
+`python3 scripts/check_graph.py graph.md` fails when a node misses one of its four fields, when an edge
+points at a node that does not exist, when an edge carries no type, when a node has no edges, or when a
+root question has no answers. Exit code 1 is a stop, not a warning.
 
 ### D3. What a full plan contains
 
