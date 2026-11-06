@@ -78,6 +78,10 @@ def ask(model: str, key: str, system: str, prompt: str, max_tokens: int) -> str:
     raise RuntimeError(last_error)
 
 
+def _words(text: str) -> int:
+    return len(re.findall(r"\w+", text))
+
+
 def check(answer: str, rule: dict) -> tuple[bool, list[str]]:
     """Return (passed, failures). Every check must hold; a check is a plain pattern test."""
     failures: list[str] = []
@@ -87,7 +91,7 @@ def check(answer: str, rule: dict) -> tuple[bool, list[str]]:
 
     for item in rule["checks"]:
         kind = item["type"]
-        patterns = item["patterns"]
+        patterns = item.get("patterns", [])
         if kind == "requires":
             hit = any(p.lower() in lowered for p in patterns)
         elif kind == "forbids":
@@ -99,6 +103,27 @@ def check(answer: str, rule: dict) -> tuple[bool, list[str]]:
             hit = not any(p.lower() in answer[:limit].lower() for p in patterns)
         elif kind == "first_line_has":
             hit = any(p.lower() in first_160.lower() for p in patterns)
+        elif kind == "regex":
+            hit = re.search(patterns[0], answer, re.MULTILINE) is not None
+        elif kind == "regex_forbids":
+            hit = re.search(patterns[0], answer, re.MULTILINE) is None
+        elif kind == "min_words":
+            hit = _words(answer) >= int(patterns[0])
+        elif kind == "max_words":
+            hit = _words(answer) <= int(patterns[0])
+        elif kind == "count_ge":
+            hit = sum(1 for item in patterns if item.lower() in lowered) >= int(item["n"])
+        elif kind == "count_regex":
+            hit = len(re.findall(patterns[0], answer, re.MULTILINE)) >= int(item["n"])
+        elif kind == "near":
+            window = int(item.get("chars", 200))
+            anchor = item["a"].lower()
+            hit = False
+            start = lowered.find(anchor)
+            while start >= 0 and not hit:
+                segment = lowered[start : start + window]
+                hit = item["b"].lower() in segment
+                start = lowered.find(anchor, start + 1)
         else:
             raise ValueError(f"unknown check type: {kind}")
         if not hit:
