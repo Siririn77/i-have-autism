@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.14.0"
+  version: "0.15.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
@@ -32,6 +32,14 @@ correctness compromise, correctness wins and the clarity rule gives way — the 
 does not.
 
 ---
+
+## Updating this ruleset
+
+One command, and every copy follows: `python3 tools/update.py`. It rebuilds the opencode package, the
+Cursor always-on rule and the two text exports, installs the Hermes plugin into the live profile,
+checks the rendered length against the ceiling, and fails if any copy is stale. `--bump 0.15.0` sets
+the version in every manifest first; `--check` changes nothing and exits 1 on drift. Never edit a
+generated file — edit `hermes/rules.md` or this file and run the command.
 
 ## Persistence
 

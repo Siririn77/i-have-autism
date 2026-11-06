@@ -19,6 +19,20 @@ Client-specific manifests are included in the tree for the clients that want the
 
 ---
 
+## Updating an installed copy
+
+The rules live in `hermes/rules.md` (condensed) and `skills/i-have-autism/SKILL.md` (full). Every
+client copy is generated from them, so the update is one command:
+
+```bash
+python3 tools/update.py              # rebuild every copy, install the Hermes plugin, verify
+python3 tools/update.py --bump 0.15.1  # same, and set the version in every manifest
+python3 tools/update.py --check      # change nothing; exit 1 on drift
+```
+
+Do not edit a generated file: `cursor/always-on/*.mdc`, `dist/`, the two `.txt` exports and the plugin
+directory are outputs.
+
 ## Claude Code
 
 From a local folder, for one session:
