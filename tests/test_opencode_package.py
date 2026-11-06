@@ -71,7 +71,8 @@ class OpenCodePackageTest(unittest.TestCase):
         self.assertEqual(
             json.loads((ROOT / "package.json").read_text(encoding="utf-8"))["version"],
             manifest["version"],
-            "package version must match the repository version",
+            "version mismatch: the package is stale, run python3 tools/build_opencode_plugin.py "
+            "after bumping the version",
         )
 
     def test_injection_matches_the_repository_plugin(self):
