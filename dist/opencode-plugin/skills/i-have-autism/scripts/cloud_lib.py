@@ -75,6 +75,42 @@ def parse(block: str) -> Cloud:
     return cloud
 
 
+INLINE_CORE = re.compile(r"\*\*Ядро:\*\*\s*(.+)", re.IGNORECASE)
+INLINE_CLOUD = re.compile(r"\*\*Облако:\*\*\s*(.+)", re.IGNORECASE | re.DOTALL)
+INLINE_ITEM = re.compile(r"(?:^|;)\s*(.+?)\s*[—-]\s*\*([а-яё]+)\*", re.IGNORECASE)
+
+
+def parse_inline(block: str) -> Cloud:
+    """The free-form variant a model writes by itself: `**Ядро:** X` and `**Облако:** a — *verb*; b — *verb*`.
+
+    The meaning is the same; only the typography differs. A checker that rejects this rejects the best
+    text in the set for the shape of its headings, which is not what a contract is for.
+    """
+    cloud = Cloud()
+    core = INLINE_CORE.search(block)
+    if core:
+        cloud.core = core.group(1).strip().rstrip(".")
+    body = INLINE_CLOUD.search(block)
+    if not body:
+        return cloud
+    text = body.group(1).split("**")[0]
+    items = INLINE_ITEM.findall(text)
+    if not items:
+        return cloud
+    if not cloud.core:
+        cloud.core = items[0][0]
+    cloud.elements.append(cloud.core)
+    # В свободной вёрстке глагол при элементе описывает его связь с самим узлом, а не с соседом:
+    # «1,91 млн — *доказательство*» значит «это доказательство для узла». Отсюда звезда от ядра.
+    for element, relation in items:
+        element = element.strip()
+        if element and element not in cloud.elements:
+            cloud.elements.append(element)
+        if element and element != cloud.core:
+            cloud.edges.append((cloud.core, relation.strip().lower(), element))
+    return cloud
+
+
 def check(cloud: Cloud) -> list[str]:
     """A cloud is a single connected piece with a core, a known verb on every edge, and a readable size."""
     problems: list[str] = []

@@ -31,6 +31,19 @@ Before writing, build a short graph of the article: the questions it must answer
 anchor (which fact or source forces this node), typed edges between them, and the stop rule — every
 question answered three ways, no new node without a new axis. Then write the article. Keep the graph to
 a compact block above the text.""",
+    "ultra": """You are a careful writer.
+
+Before writing, build the graph of the article in full:
+- root questions the article must answer, nodes with an anchor (which fact or source forces the node),
+  typed edges between them;
+- for every node a CLOUD of its parts: a core, three to nine elements, and edges whose label is the meaning
+  of the relation — one of: включает / предшествует / вызывает / усиливает / противопоставлен / цена /
+  пример / доказательство;
+- for every node four fields: чем доказано, что из этого следует, чем показано, что исключает;
+- one mechanism line for every edge of the graph.
+
+Then write the article, and make sure every node in the expansion is discharged by a paragraph of the
+text. Put the expansion above the text.""",
     "aggressive": """You are a careful writer.
 
 Before writing, build a graph with absolute coverage: root questions, nodes with anchors, typed edges,

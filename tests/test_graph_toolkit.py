@@ -333,6 +333,22 @@ class CloudTest(unittest.TestCase):
         problems = graph_expand.check(graph, text)
         self.assertTrue(any("ядро" in p or "ни одной связи" in p for p in problems), problems)
 
+    def test_inline_cloud_is_read_as_a_star_from_the_core(self):
+        block = (
+            "**Ядро:** прогнозы условны.\n"
+            "**Облако:** 1,91 млн к 2050 — *доказательство*; 39 млн кумулятивно — *включает*;"
+            " 10 млн к 2050 — *противопоставлен*; сценарии — *противопоставлен*."
+        )
+        cloud = cloud_lib.parse_inline(block)
+        self.assertEqual(cloud.core, "прогнозы условны")
+        self.assertEqual(len(cloud.elements), 5)
+        self.assertEqual(cloud.edges[0], ("прогнозы условны", "доказательство", "1,91 млн к 2050"))
+        self.assertEqual(cloud_lib.check(cloud), [])
+
+    def test_inline_cloud_with_a_bad_verb_is_still_rejected(self):
+        block = "**Ядро:** x.\n**Облако:** a — *связано*; b — *включает*; c — *включает*."
+        self.assertTrue(any("не из списка" in p for p in cloud_lib.check(cloud_lib.parse_inline(block))))
+
 
 if __name__ == "__main__":
     unittest.main()

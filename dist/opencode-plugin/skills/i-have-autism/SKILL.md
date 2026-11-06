@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.11.0"
+  version: "0.12.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
@@ -476,6 +476,12 @@ purpose: an edge whose label is a sentence is prose with an arrow drawn next to 
 `cloud_lib.py` checks five things: a core exists; three to nine elements (two is a note, ten is a diagram
 nobody reads); every edge uses a known verb; no self-edge and no duplicate edge; and every element is
 reachable from the core — one cloud is one connected piece, islands are where the thinking stopped.
+
+**Two spellings, one meaning.** The canonical cloud is a table under `### Облако`. The checker also reads
+the free-form spelling a model writes by itself — `**Ядро:** …` and `**Облако:** a — *доказательство*;
+b — *включает*` — where the verb on an element says how it relates to the node, so the cloud reads as a
+star from the core. A contract that rejects the meaning because of the typography is measuring the wrong
+thing; what it must not accept is a missing core, an unknown verb, or an island.
 
 #### The four remaining fields
 

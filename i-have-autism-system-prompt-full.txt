@@ -1,7 +1,7 @@
 I HAVE AUTISM — FULL RULESET, AS INJECTED INTO THE SYSTEM PROMPT
 =================================================================
 
-53137 characters, 1093 lines.
+53637 characters, 1099 lines.
 
 This is the complete text, not the condensed 3,838-character section:
 the hook (Claude Code, Codex), the opencode plugin and the Pi extension
@@ -484,6 +484,12 @@ purpose: an edge whose label is a sentence is prose with an arrow drawn next to 
 `cloud_lib.py` checks five things: a core exists; three to nine elements (two is a note, ten is a diagram
 nobody reads); every edge uses a known verb; no self-edge and no duplicate edge; and every element is
 reachable from the core — one cloud is one connected piece, islands are where the thinking stopped.
+
+**Two spellings, one meaning.** The canonical cloud is a table under `### Облако`. The checker also reads
+the free-form spelling a model writes by itself — `**Ядро:** …` and `**Облако:** a — *доказательство*;
+b — *включает*` — where the verb on an element says how it relates to the node, so the cloud reads as a
+star from the core. A contract that rejects the meaning because of the typography is measuring the wrong
+thing; what it must not accept is a missing core, an unknown verb, or an island.
 
 #### The four remaining fields
 

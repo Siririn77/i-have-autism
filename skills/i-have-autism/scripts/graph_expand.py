@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from cloud_lib import check as check_cloud, parse as parse_cloud  # noqa: E402
+from cloud_lib import check as check_cloud, parse as parse_cloud, parse_inline  # noqa: E402
 from graph_lib import Graph, load  # noqa: E402
 
 NODE_FIELDS = ("чем доказано", "что из этого следует", "чем показано", "что исключает")
@@ -117,7 +117,11 @@ def check(graph: Graph, expansion_text: str) -> list[str]:
             elif value.strip().lower().startswith("todo"):
                 problems.append(f"{title}: поле «{field}» не заполнено")
         if title.startswith("N"):
-            cloud = parse_cloud(clouds.get(title, ""))
+            block = clouds.get(title, "")
+            cloud = parse_cloud(block)
+            if not cloud.edges:
+                # Свободная вёрстка: ядро и облако одной строкой. Смысл тот же, синтаксис другой.
+                cloud = parse_inline(block)
             for problem in check_cloud(cloud):
                 problems.append(f"{title}: {problem}")
     for title in sections:
