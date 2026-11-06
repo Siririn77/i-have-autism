@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.15.0"
+  version: "0.16.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
@@ -40,6 +40,65 @@ Cursor always-on rule and the two text exports, installs the Hermes plugin into 
 checks the rendered length against the ceiling, and fails if any copy is stale. `--bump 0.15.0` sets
 the version in every manifest first; `--check` changes nothing and exits 1 on drift. Never edit a
 generated file — edit `hermes/rules.md` or this file and run the command.
+
+## Part 5. Checks that can fail, claims that can be wrong, reports that start with the damage
+
+Three rules, each bought with a specific failure. They are one section because they share a shape: the
+thing that looks like proof is usually the thing that needs proving.
+
+### 5a. A check you have not seen fail is not a check
+
+Three times in one day a stand reported a model failure that was the stand's own doing: a drawn graph
+was parsed as code, a test suite was taken for the solution, prose in an unlabelled fence was imported
+as Python. Every time the check was green, because it was checking the wrong object.
+
+The rule: every check declares an input that must pass **and** an input that must fail. The bad input is
+kept in the repository next to the check, not remembered. In this repository that is `tools/checks.json`
+and `tools/check_teeth.py`:
+
+```
+python3 tools/check_teeth.py          # each check: good input exit 0, bad input non-zero
+python3 tools/check_teeth.py --list
+```
+
+Adding a check means adding a pair. A check without a failing pair is a wish with a green light. If the
+bad input passes, the check has no teeth and the run stops — including when the bad input was written by
+me and passes because the check looks at the wrong thing.
+
+For the same reason, a defect in the stand is never a finding about the work. Say which one broke.
+
+### 5b. A claim enters the text with work, journal, year and status
+
+Twice in one day a figure was right and the journal was wrong: the +46 % belongs to *Lancet Planetary
+Health*, and both times it was attributed to *PNAS*. Every text-level check passed, because the words
+were there. The defect lives in a cell, so the check has to live there too.
+
+A ledger row is `утверждение | работа | журнал | год | статус | источник`, and:
+
+- `работа` is author and title, not a nickname;
+- `журнал` is the publication — not the author's institution, not a press release, not a preprint server;
+- `год` is four digits, and it is the year of the work, not of the press coverage;
+- `статус` comes from a closed list: установлено, вероятно, возможно, не проверено, не подтверждено,
+  опровергнуто;
+- `источник` is a domain or a URL that resolves.
+
+```
+python3 tools/claims.py ledger.md            # exit 1 names the row and the cell
+python3 tools/claims.py --template ledger.md # empty table, six columns
+```
+
+The checker cannot tell that a journal is the wrong journal — it can only demand that one is named. That
+limit is the reason the rule is a rule and not a tool: reading the journal against the work stays my job.
+What the tool removes is the class of defect where the cell is empty and the prose is confident.
+
+### 5c. A report starts with what broke
+
+My report once said the graph made the model stop writing, when the model had hit a token ceiling. The
+measurement was fine; the sentence was a lie made of true numbers.
+
+Order: what broke, why, what it costs — then the results, then the numbers. No praise of my own work,
+no summary that opens with «получилось». If nothing broke, say that in one line and move on; do not
+manufacture drama either.
 
 ## Persistence
 

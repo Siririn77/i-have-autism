@@ -1,12 +1,16 @@
 """The eval suite must stay loadable: a broken case file would silently score nothing."""
 import json
+import re
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES = ROOT / "evals" / "cases.json"
 RUNNER = ROOT / "evals" / "run_evals.py"
-CHECK_TYPES = {"requires", "forbids", "forbids_head", "first_line_has", "first_line_not"}
+# Виды проверок читаются из самого раннера: список, который ведут руками, отстаёт от кода молча.
+CHECK_TYPES = set(re.findall(r'kind == "(\w+)"', RUNNER.read_text(encoding="utf-8")))
+if not CHECK_TYPES:
+    raise AssertionError("в раннере не нашлось ни одного вида проверки")
 
 
 class EvalCasesTest(unittest.TestCase):

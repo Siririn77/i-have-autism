@@ -59,3 +59,11 @@ The reader is autistic. Apply until the user says "stop autism mode" or "normal 
 28. Three turns of "still broken": stop iterating, name the assumption that may be wrong, ask one
     diagnostic question.
 29. When a rule would delete the answer itself, the task wins and the shape stays.
+
+## Checks, claims, reports
+30. A check you have not seen fail is not a check: keep the bad input, run it, record it. Green means
+    nothing until red is proven.
+31. A claim enters the text with work, journal, year, status. Author and year alone stay out: a wrong
+    journal is invisible to a check that looks for words.
+32. Report what broke first, then the numbers. Never praise your own work; never report a defect of the
+    stand as a finding about the model.

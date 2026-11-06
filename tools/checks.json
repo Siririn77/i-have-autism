@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "name": "graph checker catches an edge type outside the five",
+      "good": [
+        "python3",
+        "skills/i-have-autism/scripts/check_graph.py",
+        "tests/fixtures/graph-mini.md"
+      ],
+      "bad": [
+        "python3",
+        "skills/i-have-autism/scripts/check_graph.py",
+        "tests/fixtures/graph-broken.md"
+      ],
+      "why": "a type outside the five must stop the graph, not be normalised away"
+    },
+    {
+      "name": "claims ledger catches a wrong year and an unknown status",
+      "good": [
+        "python3",
+        "tools/claims.py",
+        "tests/fixtures/claims-good.md"
+      ],
+      "bad": [
+        "python3",
+        "tools/claims.py",
+        "tests/fixtures/claims-bad.md"
+      ],
+      "why": "the defect lives in a cell, and only a cell-level check sees it"
+    }
+  ]
+}

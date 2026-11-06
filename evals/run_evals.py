@@ -124,6 +124,14 @@ def check(answer: str, rule: dict) -> tuple[bool, list[str]]:
                 segment = lowered[start : start + window]
                 hit = item["b"].lower() in segment
                 start = lowered.find(anchor, start + 1)
+        elif kind == "before":
+            # Порядок как проверка: первое упоминание провала обязано идти раньше первого упоминания успеха.
+            first_a = min((lowered.find(p.lower()) for p in patterns if p.lower() in lowered), default=-1)
+            first_b = min(
+                (lowered.find(p.lower()) for p in item.get("after", []) if p.lower() in lowered),
+                default=-1,
+            )
+            hit = first_a >= 0 and (first_b < 0 or first_a < first_b)
         else:
             raise ValueError(f"unknown check type: {kind}")
         if not hit:
