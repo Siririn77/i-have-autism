@@ -4,7 +4,7 @@ An opencode plugin that installs the **i-have-autism** ruleset: literal meaning,
 every implicit step named, no social padding, direct disagreement, and code held
 to correctness, readability and maintainability.
 
-Generated from `skills/i-have-autism/SKILL.md`, version 0.12.0.
+Generated from `skills/i-have-autism/SKILL.md`, version 0.13.0.
 
 ## Install
 

@@ -58,7 +58,13 @@ def _filled_expansion(graph, skip: tuple[str, ...] = ()) -> str:
         if title.startswith("N"):
             parts.extend(_cloud())
         for field in fields:
-            parts.append(f"- {field}: содержание")
+            if field == "планка":
+                parts.append(
+                    "- планка: тест | годно: `test_%s` проходит на граничном случае, 0 отказов | "
+                    "не годно: «работает» без имени теста и без границы" % title.split()[0].lower()
+                )
+            else:
+                parts.append(f"- {field}: содержание")
         parts.append("")
     return "\n".join(parts)
 
@@ -348,6 +354,36 @@ class CloudTest(unittest.TestCase):
     def test_inline_cloud_with_a_bad_verb_is_still_rejected(self):
         block = "**Ядро:** x.\n**Облако:** a — *связано*; b — *включает*; c — *включает*."
         self.assertTrue(any("не из списка" in p for p in cloud_lib.check(cloud_lib.parse_inline(block))))
+
+    def test_a_fidelity_bar_names_its_kind_and_both_halves(self):
+        seen: dict[str, str] = {}
+        bar = (
+            "тест | годно: `test_merge_touching` проходит на 200 потоках и не даёт дублей | "
+            "не годно: «интервалы слиты» на глаз, без границы и без перекрытия"
+        )
+        self.assertEqual([], graph_expand.check_kpi(bar, seen, "N1"))
+
+    def test_a_bar_without_a_subject_is_a_slogan(self):
+        problems = graph_expand.check_kpi(
+            "тест | годно: реализация качественно проработана и надёжна | не годно: плохо", {}, "N1")
+        self.assertTrue(any("без предмета" in p for p in problems))
+        self.assertTrue(any("мягкое слово" in p for p in problems))
+
+    def test_a_bar_of_an_unknown_kind_is_rejected(self):
+        problems = graph_expand.check_kpi(
+            "ощущение | годно: `test_x` падает при 200 потоках | не годно: проверка глазами", {}, "N1")
+        self.assertTrue(any("не из списка" in p for p in problems))
+
+    def test_two_nodes_cannot_share_one_bar(self):
+        seen: dict[str, str] = {}
+        bar = "цифра | годно: 1,27 млн смертей, GRAM, Lancet 2022 | не годно: «много» без года и источника"
+        graph_expand.check_kpi(bar, seen, "N1")
+        self.assertTrue(any("та же планка" in p for p in graph_expand.check_kpi(bar, seen, "N2")))
+
+    def test_every_node_carries_a_bar_in_the_skeleton(self):
+        graph = graph_expand.load(Path(FIXTURE))
+        text = graph_expand.skeleton(graph)
+        self.assertEqual(sum(1 for _ in graph.nodes), text.count("- планка:"))
 
 
 if __name__ == "__main__":

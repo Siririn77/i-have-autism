@@ -5,7 +5,7 @@ license: MIT
 disable-model-invocation: true
 metadata:
   author: Ougi Oshino
-  version: "0.12.0"
+  version: "0.13.0"
   tags: "autism, literal, explicit, directness, readability, clean-code, comments, beauty, correctness, kiss, dry, response-format, review, decomposition, planning, graph, knowledge-graph, neurodivergent"
 ---
 
@@ -476,6 +476,21 @@ purpose: an edge whose label is a sentence is prose with an arrow drawn next to 
 `cloud_lib.py` checks five things: a core exists; three to nine elements (two is a note, ten is a diagram
 nobody reads); every edge uses a known verb; no self-edge and no duplicate edge; and every element is
 reachable from the core — one cloud is one connected piece, islands are where the thinking stopped.
+
+### D2d. The fidelity bar — every node carries its own acceptance test
+
+Ultra mode gives every node a **планка**: the check that proves this node right, written as
+`тип | годно: … | не годно: …`. The kind is closed: `тест` (code), `цифра` (research), `цитата`
+(documents), `воспроизведение` (experiments and calculations), `наблюдение` (history and empirics),
+`решение` (architecture). The passing half must name something checkable — a test, a number with a
+year, a quoted line, an input. The failing half must name the cheap substitute: the phrase that
+sounds like the same thing and checks nothing.
+
+Why both halves. A bar with only the passing half gets satisfied by prose that gestures at it; the
+failing half is what makes the bar high, because it says which plausible sentence is not evidence.
+`graph_expand.py` rejects a bar that has no subject, no kind, no cheap substitute, is shorter than
+the bar it claims to be, or repeats another node's bar word for word — a bar that applies to every
+node is a bar for the section, not for the node.
 
 **Two spellings, one meaning.** The canonical cloud is a table under `### Облако`. The checker also reads
 the free-form spelling a model writes by itself — `**Ядро:** …` and `**Облако:** a — *доказательство*;

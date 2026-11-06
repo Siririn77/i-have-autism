@@ -500,6 +500,22 @@ cloud_lib.py checks five things: a core exists; three to nine elements (two is a
 nobody reads); every edge uses a known verb; no self-edge and no duplicate edge; and every element is
 reachable from the core — one cloud is one connected piece, islands are where the thinking stopped.
 
+D2d. The fidelity bar — every node carries its own acceptance test
+------------------------------------------------------------------
+
+Ultra mode gives every node a планка: the check that proves this node right, written as
+тип | годно: … | не годно: …. The kind is closed: тест (code), цифра (research), цитата
+(documents), воспроизведение (experiments and calculations), наблюдение (history and empirics),
+решение (architecture). The passing half must name something checkable — a test, a number with a
+year, a quoted line, an input. The failing half must name the cheap substitute: the phrase that
+sounds like the same thing and checks nothing.
+
+Why both halves. A bar with only the passing half gets satisfied by prose that gestures at it; the
+failing half is what makes the bar high, because it says which plausible sentence is not evidence.
+graph_expand.py rejects a bar that has no subject, no kind, no cheap substitute, is shorter than
+the bar it claims to be, or repeats another node's bar word for word — a bar that applies to every
+node is a bar for the section, not for the node.
+
 Two spellings, one meaning. The canonical cloud is a table under ### Облако. The checker also reads
 the free-form spelling a model writes by itself — Ядро: … and Облако: a — доказательство;
 b — включает — where the verb on an element says how it relates to the node, so the cloud reads as a
@@ -1187,7 +1203,9 @@ Before work
    Ultra mode, only on request: every node gets a written expansion - a cloud of its parts (core, three
    to nine elements, edges carrying meaning: включает / предшествует / вызывает / усиливает /
    противопоставлен / цена / пример / доказательство), what proves it, what follows, how it is shown,
-   what it excludes; every graph edge a mechanism. An empty field or TODO stops.
+   what it excludes; every graph edge a mechanism; every node a fidelity bar - kind of check, what
+   passes it, what only looks like it passes. An empty field, a bar without a subject or without its
+   cheap substitute stops.
 10. Then the plan, in a file: 2–3 lines for a one-shot, 500–1000 for a film. Each unit: input, action,
    output, a check that can fail. Unknowns as [?], closed before the units that need them. Changes go to
    an append-only drift log. The post-mortem follows, with a "plan vs fact" section.
