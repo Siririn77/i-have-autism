@@ -141,7 +141,11 @@ def check_kpi(value: str, seen: dict[str, str], title: str) -> list[str]:
     good = " ".join(match.group("good").split())
     bad = " ".join(match.group("bad").split())
     if kind not in KPI_TYPES:
-        problems.append(f"{title}: тип планки «{kind}» не из списка {', '.join(KPI_TYPES)}")
+        if "+" in kind or "/" in kind:
+            problems.append(f"{title}: тип планки «{kind}» составной — у узла одна проверка, "
+                            "две означают, что узел не решён")
+        else:
+            problems.append(f"{title}: тип планки «{kind}» не из списка {', '.join(KPI_TYPES)}")
     if not CONCRETE.search(good):
         problems.append(f"{title}: планка без предмета — в «годно» нет ни числа, ни имени, ни команды")
     if len(good) < KPI_GOOD_MIN:

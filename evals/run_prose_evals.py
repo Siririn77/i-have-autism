@@ -40,8 +40,10 @@ Before writing, build the graph of the article in full:
   of the relation — one of: включает / предшествует / вызывает / усиливает / противопоставлен / цена /
   пример / доказательство;
 - for every node four fields: чем доказано, что из этого следует, чем показано, что исключает;
-- for every node a fidelity bar: kind of check (тест / цифра / цитата / воспроизведение / наблюдение /
-  решение), what passes it, and what only looks like it passes;
+- for every node a fidelity bar, written on exactly this line and with exactly one kind:
+  `- планка: цифра | годно: <что именно проверяемо: число, имя теста, цитата с местом> | не годно: <фраза,
+  которая звучит так же и не проверяет ничего>`
+  Kinds: тест / цифра / цитата / воспроизведение / наблюдение / решение;
 - one mechanism line for every edge of the graph.
 
 Then write the article, and make sure every node in the expansion is discharged by a paragraph of the
