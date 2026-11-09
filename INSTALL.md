@@ -15,6 +15,7 @@ Client-specific manifests are included in the tree for the clients that want the
 | Codex | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json` |
 | Gemini CLI | `gemini-extension.json`, `GEMINI.md` |
 | opencode | `.opencode/plugins/i-have-autism.mjs` (plugin) + `.opencode/command/i-have-autism.md` (command) |
+| DeepSeek Harness | `dsh/` bundle: `package.json` with `dsh.bundle`, `cordis.patch.yml`, `lib/index.js` |
 | Pi / OMP | `package.json` (`pi.extensions`, `omp.extensions`), `extensions/i-have-autism.ts` |
 
 ---
@@ -209,3 +210,16 @@ into the skills directory it scans. The rules live in one file: `skills/i-have-a
 
 The rules persist for the whole session. Say **"stop autism mode"** or **"normal mode"** to return to the
 default style.
+
+## DeepSeek Harness
+
+A Cordis bundle that registers one always-on system-prompt section. Install it into the profile you
+run, then check the row is in the composed tree:
+
+```sh
+dsh plugin --profile headless add file:$PWD/dsh
+dsh --profile headless --dump-config | grep -A2 i-have-autism
+```
+
+Details, including the off switch and what the package deliberately does not contain:
+[`dsh/README.md`](dsh/README.md).

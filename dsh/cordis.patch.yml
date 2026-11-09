@@ -1,0 +1,10 @@
+# The i-have-autism bundle patch: one prompt section, nothing else.
+#
+# A bundle patch is a list of operations applied to the profile's config rows.
+# This one inserts a single plugin row; the module it names registers
+# `i-have-autism` in `ctx.systemPrompt` when the profile boots. No tool, no
+# permission change, no server, and nothing to disable in the base layers.
+
+- insert:
+    - id: i-have-autism
+      name: 'i-have-autism-dsh'

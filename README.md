@@ -65,6 +65,7 @@ native manifest for the clients that predate it. Nothing is rewritten per platfo
 | **Cursor** | `.agents/plugins/` marketplace manifest **and** [`cursor/`](cursor/) `.mdc` rules **and** the always-on rule — see [Cursor: the hybrid setup](#cursor-the-hybrid-setup) |
 | **Gemini CLI** | `gemini-extension.json` |
 | **opencode** | a server plugin that registers the skill, the `/i-have-autism` command, and the always-on system-prompt hook; also shipped as a self-contained package in `dist/opencode-plugin/` (`bash opencode/install.sh`) |
+| **DeepSeek Harness** | [`dsh/`](dsh/) — a Cordis bundle that registers one `ctx.systemPrompt` section; `dsh plugin --profile <name> add file:$PWD/dsh` |
 | **Any other agent** | paste [`AGENTS.md`](AGENTS.md), or point it at [`skills/i-have-autism/SKILL.md`](skills/i-have-autism/SKILL.md) directly |
 
 If your client cannot read the package, the fix is a new manifest next to the existing ones — open an
@@ -85,6 +86,7 @@ It is off until you create a flag file. The file is the whole switch — delete 
 | **Pi / OMP** | `extensions/i-have-autism.ts` → `pi.sendMessage` with `display: false` on `session_start`, re-sent after `session_compact` | `--autism` flag, `alwaysOn: true` in `i-have-autism.json`, or `~/.pi/.i-have-autism-always` |
 | **Cursor** | `cursor/always-on/i-have-autism.mdc` (`alwaysApply: true`) — Cursor has no hook, so the file's presence is the switch | `bash cursor/install.sh <project> --always`; global: paste into Settings → Rules → User Rules |
 | **Hermes** | `hermes/` — `ctx.register_system_prompt_section("i-have-autism.rules")`, a cache-safe section rendered once per session | `hermes plugins enable i-have-autism` |
+| **DeepSeek Harness** | `dsh/lib/index.js` → `ctx.systemPrompt.section({ order: 50, interpolate: false })` at boot, read from `dsh/rules.md` | installed bundle; `I_HAVE_AUTISM_OFF=1` for one run |
 
 Two properties are deliberate:
 

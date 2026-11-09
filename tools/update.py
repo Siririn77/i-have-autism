@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """One command that brings every copy of the ruleset up to date.
 
-The rules live in one place and are copied into seven clients: the Hermes plugin, the Cursor
-always-on rule, the opencode package, the two text exports, and the installed plugin directory the
-running agent actually reads. Each copy had its own build step and its own way of going stale, which
+The rules live in one place and are copied into eight clients: the Hermes plugin, the Cursor
+always-on rule, the opencode package, the DeepSeek Harness package, the two text exports, and the
+installed plugin directory the running agent actually reads. Each copy had its own build step and its own way of going stale, which
 is how a rule gets edited and never reaches the agent that needs it.
 
     python3 tools/update.py              # rebuild everything, install into the profile, verify
@@ -37,6 +37,7 @@ MANIFESTS = (
     ".codex-plugin/plugin.json",
     "hermes/plugin.yaml",
     "skills/i-have-autism/SKILL.md",
+    "dsh/package.json",
 )
 VERSION_LINE = re.compile(r'("?version"?\s*:\s*"|version:\s*")[0-9][^"\n]*(")')
 
@@ -45,11 +46,13 @@ BUILDERS = (
     ("cursor always-on", [sys.executable, "cursor/build_always_on.py"]),
     ("rules text export", [sys.executable, "tools/export_rules_txt.py"]),
     ("system prompt export", [sys.executable, "tools/export_system_prompt_txt.py"]),
+    ("dsh package", [sys.executable, "tools/build_dsh_plugin.py"]),
 )
 
 CHECKS = (
     ("opencode package", [sys.executable, "tools/build_opencode_plugin.py", "--check"]),
     ("cursor always-on", [sys.executable, "cursor/build_always_on.py", "--check"]),
+    ("dsh package", [sys.executable, "tools/build_dsh_plugin.py", "--check"]),
 )
 
 

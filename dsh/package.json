@@ -1,0 +1,40 @@
+{
+  "name": "i-have-autism-dsh",
+  "version": "0.17.0",
+  "description": "Always-on system-prompt section for the DeepSeek Harness: shape output and code for an autistic reader, with literal meaning, every implicit step named, and no social padding.",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/index.d.ts",
+    "cordis.patch.yml",
+    "rules.md",
+    "README.md"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Siririn77/i-have-autism.git",
+    "directory": "dsh"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "autism",
+    "system-prompt"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
