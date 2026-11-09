@@ -436,7 +436,14 @@ Every unit in the plan names the node id it serves.
 
 This is the check that keeps the graph from becoming a picture beside an unrelated plan.
 
-### D2b. Ultra is the second mode, and the only one
+### D2b. Ultra is the second mode, the only one, and the default
+
+**Ultra is the default.** Every task that gets a graph gets the expansion with it: the graph file plus
+`graph-expanded.md` (clouds, the four fields, a fidelity bar per node, a mechanism per edge). A plain
+graph without the expansion is used only when the reader asks for the graph alone, or when the task is
+small enough for the three-node reply in D2e that has no file at all. The reason is not thoroughness for
+its own sake: a graph says what connects to what, and a node with nothing inside is a heading pretending
+to be a thought — the expansion is what turns that heading into a part that can be written.
 
 There is no aggressive mode any more. It was removed on 2026-11-06: it asked that nothing disappear
 without a decision, and got a coverage matrix and a register for the answer. Ultra asks the better

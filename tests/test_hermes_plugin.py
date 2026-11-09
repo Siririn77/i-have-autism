@@ -39,14 +39,18 @@ class HermesPluginTest(unittest.TestCase):
         section_id, content, kwargs = ctx.sections[0]
         self.assertEqual("i-have-autism.rules", section_id)
         self.assertEqual("after_memory", kwargs["position"])
-        self.assertEqual(4500, kwargs["max_chars"])
+        self.assertEqual(4000, kwargs["max_chars"])
         self.assertTrue(content.strip())
 
     def test_section_fits_the_hard_limit_including_an_audit_heading(self):
-        # Hermes caps a section at 4500 chars and adds its own audit heading
-        # around plugin content, so the body must not fill the budget exactly.
+        # Hermes refuses a section whose declared budget is not between 1 and 4000
+        # and adds its own audit heading around plugin content, so the body must
+        # stay clear of the ceiling. 4500 was believed to be the cap once; the
+        # plugin then failed to load on every gateway start, silently, with the
+        # rules never reaching the prompt.
+        self.assertLessEqual(self.plugin.MAX_CHARS, 4000)
         body = self.plugin.render_rules()
-        self.assertLessEqual(len(body), 4500 - 100)
+        self.assertLessEqual(len(body), self.plugin.MAX_CHARS)
 
     def test_section_carries_the_load_bearing_rules(self):
         body = self.plugin.render_rules()

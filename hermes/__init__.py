@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 SECTION_ID = "i-have-autism.rules"
 RULES_MD = Path(__file__).resolve().parent / "rules.md"
-MAX_CHARS = 4500
+MAX_CHARS = 4000
 
 
 def render_rules(path: Path | None = None) -> str:

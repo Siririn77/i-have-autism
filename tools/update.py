@@ -154,7 +154,7 @@ def main(argv: list[str]) -> int:
     if args.check:
         ok = all(run(step, command) for step, command in CHECKS)
         length = rules_length()
-        limit = 4500
+        limit = 4000
         say(f"  {'ok  ' if length <= limit else 'FAIL'} длина отрендеренного правила: {length} / {limit}")
         if length > limit:
             ok = False
@@ -169,10 +169,10 @@ def main(argv: list[str]) -> int:
             return 1
 
     length = rules_length()
-    if length > 4500:
-        say(f"  FAIL правило длиннее потолка: {length} > 4500")
+    if length > 4000:
+        say(f"  FAIL правило длиннее потолка: {length} > 4000")
         return 1
-    say(f"  ok   длина отрендеренного правила: {length} / 4500")
+    say(f"  ok   длина отрендеренного правила: {length} / 4000")
 
     if not install():
         return 1
